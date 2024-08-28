@@ -1,0 +1,6 @@
+@EFarma_HostAddress = http://localhost:5038
+
+GET {{EFarma_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
