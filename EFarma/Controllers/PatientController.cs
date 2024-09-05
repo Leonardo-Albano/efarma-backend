@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EFarma.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
@@ -7,5 +7,19 @@ namespace EFarma.Controllers
     [ApiController]
     public class PatientController : ControllerBase
     {
+        [HttpGet]
+        public async Task<ActionResult<List<Patient>>> GetAllPatients()
+        {
+            List<Patient> patients = new()
+            {
+                new Patient
+                {
+                    CPF="123",
+                    Name="Leo"
+                }
+            };
+
+            return Ok(patients);
+        }
     }
 }
