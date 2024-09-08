@@ -7,6 +7,6 @@
         public required string Name { get; set; }
         public required string Address { get; set; }
 
-        public required List<InStockItems> InStockItems { get; set; } = [];
+        public required List<InStockItem> InStockItems { get; set; } = [];
     }
 }

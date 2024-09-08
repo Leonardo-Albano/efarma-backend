@@ -1,5 +1,8 @@
-﻿namespace EFarma.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace EFarma.Models
 {
+    [Keyless]
     public class AccessLog
     {
         public int EmployeeId { get; set; }

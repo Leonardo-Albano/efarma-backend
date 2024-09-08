@@ -4,7 +4,7 @@
     {
         IAccessLogRepository AccessLogs { get; }
         IEmployeeRepository Employees { get; }
-        IInStockItemsRepository InStockItems { get; }
+        IInStockItemRepository InStockItems { get; }
         IMedicamentRepository Medicaments { get; }
         IPatientRepository Patients { get; }
         IPermissionRepository Permissions { get; }

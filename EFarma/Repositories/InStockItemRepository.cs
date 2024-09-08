@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EFarma.Repositories
 {
-    public class InStockItemsRepository : Repository<InStockItems>, IInStockItemsRepository
+    public class InStockItemRepository : Repository<InStockItem>, IInStockItemRepository
     {
-        public InStockItemsRepository(DbContext context) : base(context)
+        public InStockItemRepository(DbContext context) : base(context)
         {
         }
 

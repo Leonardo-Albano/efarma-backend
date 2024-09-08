@@ -1,6 +1,6 @@
 ﻿namespace EFarma.Models
 {
-    public class InStockItems
+    public class InStockItem
     {
         public int Id { get; set; }
         public int StockRoomId { get; set; }

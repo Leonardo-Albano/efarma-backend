@@ -2,7 +2,7 @@
 
 namespace EFarma.Repositories.Interfaces
 {
-    public interface IInStockItemsRepository : IRepository<InStockItems>
+    public interface IInStockItemRepository : IRepository<InStockItem>
     {
     }
 }
