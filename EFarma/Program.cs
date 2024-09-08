@@ -16,6 +16,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
+    //options.UseMySQL(builder.Configuration.GetConnectionString("LocalConnection"));
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 

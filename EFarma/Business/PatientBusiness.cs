@@ -17,7 +17,7 @@ namespace EFarma.Business
 
         public IEnumerable<Patient> GetAllPatients()
         {
-            return _repository.GetAllPatients();
+            return _repository.GetAll();
         }
     }
 }

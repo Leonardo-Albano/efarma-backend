@@ -12,10 +12,26 @@ namespace EFarma.Repositories
         public UnitOfWork(DataContext context)
         {
             _context = context;
+            AccessLogs = new AccessLogRepository(_context);
+            Employees = new EmployeeRepository(_context);
+            InStockItems = new InStockItemsRepository(_context);
+            Medicaments = new MedicamentRepository(_context);
             Patients = new PatientRepository(_context);
+            Permissions = new PermissionRepository(_context);
+            Roles = new RoleRepository(_context);
+            StatusCodes = new StatusCodeRepository(_context);
+            StockRooms = new StockRoomRepository(_context);
         }
 
-        public IPatientRepository Patients { get; private set };
+        public IAccessLogRepository AccessLogs { get; private set; }
+        public IEmployeeRepository Employees { get; private set; }
+        public IInStockItemsRepository InStockItems { get; private set; }
+        public IMedicamentRepository Medicaments { get; private set; }
+        public IPatientRepository Patients { get; private set; }
+        public IPermissionRepository Permissions { get; private set; }
+        public IRoleRepository Roles { get; private set; }
+        public IStatusCodeRepository StatusCodes { get; private set; }
+        public IStockRoomRepository StockRooms { get; private set; }
 
         public void Dispose()
         {

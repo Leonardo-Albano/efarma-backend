@@ -1,14 +1,13 @@
 ﻿using EFarma.Data;
 using EFarma.Models;
-using EFarma.Repositories;
 using EFarma.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFarma.Repository
+namespace EFarma.Repositories
 {
-    public class PatientRepository : Repository<Patient>, IPatientRepository
+    public class AccessLogRepository : Repository<AccessLog>, IAccessLogRepository
     {
-        public PatientRepository(DbContext context) : base(context)
+        public AccessLogRepository(DbContext context) : base(context)
         {
         }
 

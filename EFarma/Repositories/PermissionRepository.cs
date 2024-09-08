@@ -1,14 +1,13 @@
 ﻿using EFarma.Data;
 using EFarma.Models;
-using EFarma.Repositories;
 using EFarma.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFarma.Repository
+namespace EFarma.Repositories
 {
-    public class PatientRepository : Repository<Patient>, IPatientRepository
+    public class PermissionRepository : Repository<Permission>, IPermissionRepository
     {
-        public PatientRepository(DbContext context) : base(context)
+        public PermissionRepository(DbContext context) : base(context)
         {
         }
 

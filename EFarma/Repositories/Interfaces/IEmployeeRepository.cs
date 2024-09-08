@@ -2,7 +2,7 @@
 
 namespace EFarma.Repositories.Interfaces
 {
-    public interface IPatientRepository : IRepository<Patient>
+    public interface IEmployeeRepository : IRepository<Employee>
     {
     }
 }
