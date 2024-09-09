@@ -1,9 +1,17 @@
-﻿namespace EFarma.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EFarma.Models
 {
     public class Employee
     {
+        [Key]
         public int Id { get; set; }
+
+        [ForeignKey("Permission")]
         public int PermissionId { get; set; }
+        
+        [ForeignKey("Role")]
         public int RoleId { get; set; }
 
         public int EmployeeId { get; set; }

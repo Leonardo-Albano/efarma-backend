@@ -1,7 +1,10 @@
-﻿namespace EFarma.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EFarma.Models
 {
     public class Patient
     {
+        [Key]
         public int Id { get; set; }
 
         public required string Name { get; set; }

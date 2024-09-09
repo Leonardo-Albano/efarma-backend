@@ -1,12 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EFarma.Models
 {
     [Keyless]
     public class AccessLog
     {
+        [ForeignKey("Employee")]
         public int EmployeeId { get; set; }
+
+        [ForeignKey("StockRoom")]
         public int StockRoomId { get; set; }
+
+        [ForeignKey("StatusCode")]
         public int StatusCodeId { get; set; }
 
         public DateTime DateTimeAccess { get; set; }
