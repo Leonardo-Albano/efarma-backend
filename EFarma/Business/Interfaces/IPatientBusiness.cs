@@ -4,6 +4,6 @@ namespace EFarma.Business.Interfaces
 {
     public interface IPatientBusiness
     {
-        IEnumerable<Patient> GetAllPatients();
+        Task<IEnumerable<Patient>> GetAllPatients();
     }
 }

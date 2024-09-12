@@ -15,9 +15,9 @@ namespace EFarma.Business
             _repository = repository;
         }
 
-        public IEnumerable<Patient> GetAllPatients()
+        public async Task<IEnumerable<Patient>> GetAllPatients()
         {
-            return _repository.GetAll();
+            return await _repository.GetAll();
         }
     }
 }

@@ -13,28 +13,28 @@ namespace EFarma.Repositories
         {
             _context = context;
         }
-        public TEntity Get(int id)
+        public async Task<TEntity> Get(int id)
         {
-            return _context.Set<TEntity>().Find(id);
+            return await _context.Set<TEntity>().FindAsync(id);
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAll()
         {
-            return _context.Set<TEntity>().ToList();
+            return await _context.Set<TEntity>().ToListAsync();
         }
         public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
         {
             return _context.Set<TEntity>().Where(predicate);
         }
 
-        public void Add(TEntity entity)
+        public async void Add(TEntity entity)
         {
-            _context.Set<TEntity>().Add(entity);
+            await _context.Set<TEntity>().AddAsync(entity);
         }
 
-        public void AddRange(IEnumerable<TEntity> entities)
+        public async void AddRange(IEnumerable<TEntity> entities)
         {
-            _context.Set<TEntity>().AddRange(entities);
+            await _context.Set<TEntity>().AddRangeAsync(entities);
         }
 
         public void Remove(TEntity entity)
