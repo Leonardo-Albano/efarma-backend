@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using EFarma.Business.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
 {
@@ -6,5 +7,13 @@ namespace EFarma.Controllers
     [ApiController]
     public class PrescriptionController : ControllerBase
     {
+        private readonly ILogger<PrescriptionController> _logger;
+        private readonly IPrescriptionBusiness _business;
+
+        public PrescriptionController(ILogger<PrescriptionController> logger, IPrescriptionBusiness business)
+        {
+            _logger = logger;
+            _business = business;
+        }
     }
 }
