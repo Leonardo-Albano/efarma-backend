@@ -17,6 +17,13 @@ namespace EFarma.Controllers
             _business = business;
         }
 
+        [HttpPost]
+        public async Task<ActionResult> CreatePatient()
+        {
+            
+            return Ok();
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Patient>>> GetAllPatients()
         {

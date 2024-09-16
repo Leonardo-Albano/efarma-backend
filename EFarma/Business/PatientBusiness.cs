@@ -1,6 +1,7 @@
 ﻿using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
+using EFarma.Models.Resource;
 using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
@@ -13,6 +14,13 @@ namespace EFarma.Business
         { 
             _logger = logger;
             _repository = repository;
+        }
+
+        public async Task<bool> CreatePatient(PatientDTO patient)
+        {
+
+
+            return true;
         }
 
         public async Task<IEnumerable<Patient>> GetAllPatients()
