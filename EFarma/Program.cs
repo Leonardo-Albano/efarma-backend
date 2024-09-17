@@ -1,15 +1,14 @@
+using EFarma.Config;
 using EFarma.Data;
 using EFarma.Repositories;
 using EFarma.Repositories.Interfaces;
-using EFarma.Repository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+DependencyInjection.AddBusiness(builder);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

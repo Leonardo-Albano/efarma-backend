@@ -7,12 +7,12 @@ namespace EFarma.Business
     public class MedicamentBusiness : IMedicamentBusiness
     {
         private readonly ILogger<Medicament> _logger;
-        private readonly IMedicamentRepository _medicamentRepository;
+        private readonly IUnitOfWork _repository;
 
-        public MedicamentBusiness(ILogger<Medicament> logger, IMedicamentRepository medicamentRepository)
+        public MedicamentBusiness(ILogger<Medicament> logger, IUnitOfWork repository)
         {
             _logger = logger;
-            _medicamentRepository = medicamentRepository;
+            _repository = repository;
         }
 
 

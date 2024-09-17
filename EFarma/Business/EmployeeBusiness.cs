@@ -7,9 +7,9 @@ namespace EFarma.Business
     public class EmployeeBusiness : IEmployeeBusiness
     {
         private readonly ILogger<EmployeeController> _logger;
-        private readonly IEmployeeRepository _repository;
+        private readonly IUnitOfWork _repository;
 
-        public EmployeeBusiness(ILogger<EmployeeController> logger, IEmployeeRepository repository)
+        public EmployeeBusiness(ILogger<EmployeeController> logger, IUnitOfWork repository)
         {
             _logger = logger;
             _repository = repository;

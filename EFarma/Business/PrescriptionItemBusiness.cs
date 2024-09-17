@@ -7,9 +7,9 @@ namespace EFarma.Business
     public class PrescriptionItemBusiness : IPrescriptionBusiness
     {
         private readonly ILogger<PrescriptionController> _logger;
-        private readonly IPrescriptionItemRepository _repository;
+        private readonly IUnitOfWork _repository;
 
-        public PrescriptionItemBusiness(ILogger<PrescriptionController> logger, IPrescriptionItemRepository repository)
+        public PrescriptionItemBusiness(ILogger<PrescriptionController> logger, IUnitOfWork repository)
         {
             _logger = logger;
             _repository = repository;

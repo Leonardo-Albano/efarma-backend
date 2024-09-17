@@ -8,9 +8,9 @@ namespace EFarma.Business
     public class AccessLogBusiness : IAccessLogBusiness
     {
         private readonly ILogger<AccessLogController> _logger;
-        private readonly IAccessLogRepository _repository;
+        private readonly IUnitOfWork _repository;
 
-        public AccessLogBusiness(ILogger<AccessLogController> logger, IAccessLogRepository repository)
+        public AccessLogBusiness(ILogger<AccessLogController> logger, IUnitOfWork repository)
         {
             _logger = logger;
             _repository = repository;
@@ -18,7 +18,7 @@ namespace EFarma.Business
 
         public async Task<IEnumerable<AccessLog>> GetAllAccessLogs()
         {
-            return await _repository.GetAll();
+            return await _repository.AccessLogs.GetAll();
         }
     }
 }
