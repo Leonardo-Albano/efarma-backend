@@ -16,21 +16,10 @@ namespace EFarma.Business
             _repository = repository;
         }
 
-        public async Task<int> CreatePatient(Patient patientDTO)
+        public async Task<int> CreatePatient(Patient patient)
         {
-            Patient patient = new()
-            {
-                BirthDay = patientDTO.BirthDay,
-                CPF = patientDTO.CPF,
-                Id = 1,
-                Mail = patientDTO.Mail,
-                Name = patientDTO.Name,
-                Observations = patientDTO.Observations,
-                PhoneNumber = patientDTO.PhoneNumber
-            };
-
-            var existent_patient = _repository.Patients.Find(patient=>patient.CPF.Equals(patient.CPF));
-            if(existent_patient != null)
+            var existent_patient = await _repository.Patients.Find(p=>p.CPF == patient.CPF);
+            if(existent_patient.Any())
             {
                 return 409;
             } 

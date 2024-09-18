@@ -4100,19 +4100,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\776553\\.nuget\\packages\\": {}
+    "C:\\Users\\User\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\efarma-backend\\EFarma\\EFarma.csproj",
+      "projectUniqueName": "C:\\Workspace\\TCC\\Dotnet\\EFarma\\EFarma\\EFarma.csproj",
       "projectName": "EFarma",
-      "projectPath": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\efarma-backend\\EFarma\\EFarma.csproj",
-      "packagesPath": "C:\\Users\\776553\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\efarma-backend\\EFarma\\obj\\",
+      "projectPath": "C:\\Workspace\\TCC\\Dotnet\\EFarma\\EFarma\\EFarma.csproj",
+      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+      "outputPath": "C:\\Workspace\\TCC\\Dotnet\\EFarma\\EFarma\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\776553\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -4120,6 +4120,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -4189,7 +4190,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

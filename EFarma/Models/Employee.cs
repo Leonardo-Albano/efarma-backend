@@ -17,7 +17,7 @@ namespace EFarma.Models
         public int EmployeeId { get; set; }
         public required string Name { get; set; }
         public required string CPF { get; set; }
-        public DateOnly BirthDate { get; set; }
+        public DateTime BirthDate { get; set; }
         public string? Phone { get; set; } 
         public required string Mail { get; set; }
         public required string PasswordHash { get; set; }

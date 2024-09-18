@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFarma.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240908183049_FirstMigration")]
+    [Migration("20240918004546_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -54,8 +54,8 @@ namespace EFarma.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("BirthDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("CPF")
                         .IsRequired()
@@ -103,8 +103,8 @@ namespace EFarma.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("ExpirationDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("MedicamentId")
                         .HasColumnType("int");
@@ -155,8 +155,8 @@ namespace EFarma.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("BirthDay")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("BirthDay")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("CPF")
                         .IsRequired()

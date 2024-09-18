@@ -14,7 +14,7 @@ namespace EFarma.Models
         [ForeignKey("Medicament")]
         public int MedicamentId { get; set; }
 
-        public DateOnly ExpirationDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
         public int Quantity { get; set; }
         public int Shelf { get; set; }
 

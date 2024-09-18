@@ -39,7 +39,7 @@ namespace EFarma.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     CPF = table.Column<string>(type: "longtext", nullable: false),
-                    BirthDay = table.Column<DateOnly>(type: "date", nullable: false),
+                    BirthDay = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: true),
                     Mail = table.Column<string>(type: "longtext", nullable: true),
                     Observations = table.Column<string>(type: "longtext", nullable: true)
@@ -103,7 +103,7 @@ namespace EFarma.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     StockRoomId = table.Column<int>(type: "int", nullable: false),
                     MedicamentId = table.Column<int>(type: "int", nullable: false),
-                    ExpirationDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Shelf = table.Column<int>(type: "int", nullable: false)
                 },
@@ -158,7 +158,7 @@ namespace EFarma.Migrations
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     CPF = table.Column<string>(type: "longtext", nullable: false),
-                    BirthDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Phone = table.Column<string>(type: "longtext", nullable: true),
                     Mail = table.Column<string>(type: "longtext", nullable: false),
                     PasswordHash = table.Column<string>(type: "longtext", nullable: false),
