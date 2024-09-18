@@ -25,9 +25,7 @@ namespace EFarma.Controllers
         public async Task<ActionResult> CreatePatient([FromBody]PatientDTO patientDto)
         {
             var patient = _mapper.Map<Patient>(patientDto);
-
             var result = await _business.CreatePatient(patient);
-
             return StatusCode(result);
         }
 
@@ -42,18 +40,6 @@ namespace EFarma.Controllers
             }
 
             return Ok(patients);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Patient>> GetPatientById(int id)
-        {
-            var patient = new Patient
-            {
-                CPF = "123",
-                Name = "Leo"
-            };
-
-            return Ok(patient);
         }
     }
 }

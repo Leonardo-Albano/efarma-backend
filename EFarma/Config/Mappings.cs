@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EFarma.Models;
+using EFarma.Models.DTO;
 using EFarma.Models.Resource;
 
 namespace EFarma.Config
@@ -9,6 +10,7 @@ namespace EFarma.Config
         public Mappings()
         {
             CreateMap<PatientDTO, Patient>();
+            CreateMap<RoleDTO, Role>();
         }
     }
 }

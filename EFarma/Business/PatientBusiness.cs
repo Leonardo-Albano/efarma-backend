@@ -18,8 +18,8 @@ namespace EFarma.Business
 
         public async Task<int> CreatePatient(Patient patient)
         {
-            var existent_patient = await _repository.Patients.Find(p=>p.CPF == patient.CPF);
-            if(existent_patient.Any())
+            var existent_patients = await _repository.Patients.Find(p=>p.CPF == patient.CPF);
+            if(existent_patients.Any())
             {
                 return 409;
             } 
