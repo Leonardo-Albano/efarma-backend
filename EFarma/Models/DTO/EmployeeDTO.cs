@@ -1,0 +1,20 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace EFarma.Models.DTO
+{
+    public class EmployeeDTO
+    {
+        public DateTime BirthDate { get; set; }
+        public required string CPF { get; set; }
+        public int? CRM { get; set; }
+        public string? EmployeeId { get; set; }
+        public required string Mail { get; set; }
+        public required string Name { get; set; }
+        public int Permission { get; set; }
+        public required string Phone { get; set; }
+        public int Role { get; set; }
+
+
+    }
+}

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EFarma")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8fab290930301a2f598b0b9347e9751cdab15d9d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+12607a9ea8f4781c6cb257f98b25807d6cc3cad9")]
 [assembly: System.Reflection.AssemblyProductAttribute("EFarma")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EFarma")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
