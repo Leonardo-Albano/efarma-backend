@@ -10,6 +10,7 @@ namespace EFarma.Models.DTO
         public int? CRM { get; set; }
         public string? EmployeeId { get; set; }
         public required string Mail { get; set; }
+        public required string ResponsibleMail { get; set; }
         public required string Name { get; set; }
         public int Permission { get; set; }
         public required string Phone { get; set; }

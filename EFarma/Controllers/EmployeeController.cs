@@ -4,6 +4,7 @@ using EFarma.Models;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using EFarma.Models.DTO;
+using EFarma.Models.Views;
 
 namespace EFarma.Controllers
 {
@@ -28,6 +29,13 @@ namespace EFarma.Controllers
             var employee = _mapper.Map<Employee>(employeeDto);
             var result = await _business.CreateEmployee(employee);
             return StatusCode(result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PersonView>>> GetPersonList()
+        {
+            var persons = await _business.GetPersonList();
+            return persons;
         }
     }
 }

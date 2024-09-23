@@ -16,7 +16,6 @@ namespace EFarma.Models
 
         public DateTime ExpirationDate { get; set; }
         public int Quantity { get; set; }
-        public int Shelf { get; set; }
 
         public required StockRoom StockRoom { get; set; }
         public required Medicament Medicament { get; set; }

@@ -2,7 +2,7 @@
 
 namespace EFarma.Business.Interfaces
 {
-    public interface IEmployeeBusiness
+    public interface IEmployeeBusiness : IPersonBusiness
     {
         Task<int> CreateEmployee(Employee employee);
     }

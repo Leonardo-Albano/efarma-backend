@@ -5,12 +5,12 @@ using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
 {
-    public class EmployeeBusiness : IEmployeeBusiness
+    public class EmployeeBusiness : PersonBusiness, IEmployeeBusiness
     {
         private readonly ILogger<EmployeeController> _logger;
         private readonly IUnitOfWork _repository;
 
-        public EmployeeBusiness(ILogger<EmployeeController> logger, IUnitOfWork repository)
+        public EmployeeBusiness(ILogger<EmployeeController> logger, IUnitOfWork repository) : base(logger, repository)
         {
             _logger = logger;
             _repository = repository;
@@ -31,5 +31,7 @@ namespace EFarma.Business
 
             return await _repository.SaveChangesAsync() > 0 ? 200 : 500;
         }
+
+
     }
 }

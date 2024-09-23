@@ -20,6 +20,7 @@ namespace EFarma.Models
         public DateTime BirthDate { get; set; }
         public string? Phone { get; set; } 
         public required string Mail { get; set; }
+        public required string ResponsibleMail { get; set; }
         public required string PasswordHash { get; set; }
         public int? CRM { get; set; }
 
