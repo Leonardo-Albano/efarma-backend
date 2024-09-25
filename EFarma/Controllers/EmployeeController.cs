@@ -31,11 +31,11 @@ namespace EFarma.Controllers
             return StatusCode(result);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PersonView>>> GetPersonList()
+        [HttpGet("GetPersons")]
+        public async Task<ActionResult<IEnumerable<PersonView>>> GetPersonList(string? name, string? cpf)
         {
-            var persons = await _business.GetPersonList();
-            return persons;
+            var persons = await _business.GetPersonList(name, cpf);
+            return Ok(persons);
         }
     }
 }

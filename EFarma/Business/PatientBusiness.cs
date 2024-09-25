@@ -1,4 +1,5 @@
-﻿using EFarma.Business.Interfaces;
+﻿using AutoMapper;
+using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
 using EFarma.Models.Resource;
@@ -10,10 +11,13 @@ namespace EFarma.Business
     {
         private readonly ILogger<PatientController> _logger;
         private readonly IUnitOfWork _repository;
-        public PatientBusiness(ILogger<PatientController> logger, IUnitOfWork repository) 
+        private readonly IMapper _mapper;
+
+        public PatientBusiness(ILogger<PatientController> logger, IUnitOfWork repository, IMapper mapper) 
         { 
             _logger = logger;
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<int> CreatePatient(Patient patient)

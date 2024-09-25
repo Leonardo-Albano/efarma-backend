@@ -4,6 +4,6 @@ namespace EFarma.Business.Interfaces
 {
     public interface IPersonBusiness
     {
-        Task<IEnumerable<PersonView>> GetPersonList();
+        Task<IEnumerable<PersonView>> GetPersonList(string? name, string? cpf);
     }
 }

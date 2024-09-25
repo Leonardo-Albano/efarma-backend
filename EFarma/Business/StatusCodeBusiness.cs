@@ -1,4 +1,5 @@
-﻿using EFarma.Business.Interfaces;
+﻿using AutoMapper;
+using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Data;
 using EFarma.Repositories.Interfaces;
@@ -11,11 +12,13 @@ namespace EFarma.Business
     {
         private readonly ILogger<ControllerBase> _logger;
         private readonly IUnitOfWork _repository;
+        private readonly IMapper _mapper;
 
-        public StatusCodeBusiness(ILogger<ControllerBase> logger, IUnitOfWork repository)
+        public StatusCodeBusiness(ILogger<ControllerBase> logger, IUnitOfWork repository, IMapper mapper)
         {
             _logger = logger;
             _repository = repository;
+            _mapper = mapper;
         }
     }
 }

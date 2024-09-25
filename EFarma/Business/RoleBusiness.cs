@@ -1,4 +1,5 @@
-﻿using EFarma.Business.Interfaces;
+﻿using AutoMapper;
+using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
 using EFarma.Repositories;
@@ -10,11 +11,13 @@ namespace EFarma.Business
     {
         private readonly ILogger<RoleController> _logger;
         private readonly IUnitOfWork _repository;
+        private readonly IMapper _mapper;
 
-        public RoleBusiness(ILogger<RoleController> logger, IUnitOfWork repository)
+        public RoleBusiness(ILogger<RoleController> logger, IUnitOfWork repository, IMapper mapper)
         {
             _logger = logger;
             _repository = repository;
+            _mapper = mapper;
         }
 
         public async Task<int> CreateRole(Role role)

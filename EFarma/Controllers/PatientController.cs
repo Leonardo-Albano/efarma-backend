@@ -2,6 +2,7 @@
 using EFarma.Business.Interfaces;
 using EFarma.Models;
 using EFarma.Models.Resource;
+using EFarma.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
@@ -41,5 +42,6 @@ namespace EFarma.Controllers
 
             return Ok(patients);
         }
+
     }
 }
