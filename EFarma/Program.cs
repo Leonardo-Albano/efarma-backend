@@ -12,6 +12,7 @@ DependencyInjection.AddBusiness(builder);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddDbContext<DataContext>(options =>

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
+using EFarma.Config;
 using EFarma.Controllers;
 using EFarma.Models;
 using EFarma.Repositories.Interfaces;
@@ -11,12 +12,14 @@ namespace EFarma.Business
         private readonly ILogger<EmployeeController> _logger;
         private readonly IUnitOfWork _repository;
         private readonly IMapper _mapper;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public EmployeeBusiness(ILogger<EmployeeController> logger, IUnitOfWork repository, IMapper mapper) : base(logger, repository, mapper)
+        public EmployeeBusiness(ILogger<EmployeeController> logger, IUnitOfWork repository, IMapper mapper, IPasswordHasher passwordHasher) : base(logger, repository, mapper)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<int> CreateEmployee(Employee employee)
@@ -28,8 +31,7 @@ namespace EFarma.Business
                 return 409;
             }
             
-            employee.PasswordHash = employee.CPF;
-
+            employee.PasswordHash = _passwordHasher.Hash(employee.CPF.Replace(".", "").Replace("-", ""));
             _repository.Employees.Add(employee);
 
             return await _repository.SaveChangesAsync() > 0 ? 200 : 500;

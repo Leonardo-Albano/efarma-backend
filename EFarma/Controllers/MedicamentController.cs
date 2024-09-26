@@ -1,4 +1,5 @@
 ﻿using EFarma.Business.Interfaces;
+using EFarma.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
@@ -14,6 +15,19 @@ namespace EFarma.Controllers
         {
             _logger = logger;
             _business = business;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()
+        {
+            Dictionary<int, string> patients = await _business.GetAllMedicaments();
+
+            if (!patients.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(patients);
         }
     }
 }

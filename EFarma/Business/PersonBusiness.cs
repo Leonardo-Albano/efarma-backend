@@ -22,17 +22,20 @@ namespace EFarma.Business
         public async Task<IEnumerable<PersonView>> GetPersonList(string? name, string? cpf)
         {
             var patients = await _repository.Patients
-                .Find(p => (!string.IsNullOrEmpty(name) && p.Name == name) ||
+                .Find(p =>
+               (!string.IsNullOrEmpty(name) && p.Name == name) ||
                (!string.IsNullOrEmpty(cpf) && p.CPF == cpf) ||
                (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(cpf)));
 
             var employees = await _repository.Employees
-                .Find(p => (!string.IsNullOrEmpty(name) && p.Name == name) ||
+                .Find(p =>
+               (!string.IsNullOrEmpty(name) && p.Name == name) ||
                (!string.IsNullOrEmpty(cpf) && p.CPF == cpf) ||
                (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(cpf)));
 
-            var people = _mapper.Map<IEnumerable<PersonView>>(patients);
-            people = people.Concat(_mapper.Map<IEnumerable<PersonView>>(employees));
+
+            var people = _mapper.Map<IEnumerable<PersonView>>(patients)
+                            .Concat(_mapper.Map<IEnumerable<PersonView>>(employees));
 
             return people;
         }

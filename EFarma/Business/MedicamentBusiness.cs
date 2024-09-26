@@ -18,6 +18,15 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<Dictionary<int, string>>> GetAllMedicaments()
+        {
+            var medicaments = await _repository.Medicaments.GetAll();
+            var result = medicaments.Select(m => new Dictionary<int, string>
+            {
+                { m.Id, $"{m.Description} {m.Dosage}{m.Measure}" }
+            });
 
+            return result;
+        }
     }
 }
