@@ -25,7 +25,7 @@ namespace EFarma.Business
         public async Task<int> CreateEmployee(Employee employee)
         {
             var existent_employee = await _repository.Employees.Find(e => e.CPF == employee.CPF ||
-                                                                    (!string.IsNullOrEmpty(employee.EmployeeId) && e.EmployeeId == employee.EmployeeId));
+                                     (!string.IsNullOrEmpty(employee.EmployeeId) && e.EmployeeId == employee.EmployeeId));
             if (existent_employee.Any())
             {
                 return 409;
@@ -37,6 +37,7 @@ namespace EFarma.Business
             return await _repository.SaveChangesAsync() > 0 ? 200 : 500;
         }
 
-
+        public async Task<Employee?> GetEmployee(string cpf) 
+            => await _repository.Employees.FirstOrDefault(e => e.CPF == cpf);
     }
 }

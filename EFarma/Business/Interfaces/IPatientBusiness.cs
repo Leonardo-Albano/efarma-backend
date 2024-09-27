@@ -6,5 +6,6 @@ namespace EFarma.Business.Interfaces
     {
         Task<int> CreatePatient(Patient patient);
         Task<IEnumerable<Patient>> GetAllPatients();
+        Task<Patient?> GetPatient(string cpf);
     }
 }

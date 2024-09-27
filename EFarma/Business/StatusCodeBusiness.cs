@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
-using EFarma.Controllers;
-using EFarma.Data;
 using EFarma.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EFarma.Business
 {

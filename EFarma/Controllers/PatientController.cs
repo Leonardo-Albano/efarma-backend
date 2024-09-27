@@ -30,6 +30,18 @@ namespace EFarma.Controllers
             return StatusCode(result);
         }
 
+        [HttpGet("{cpf}")]
+        public async Task<ActionResult<Patient>> GetPatient(string cpf)
+        {
+            var patient = await _business.GetPatient(cpf);
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(patient);
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Patient>>> GetAllPatients()
         {

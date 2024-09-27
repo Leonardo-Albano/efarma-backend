@@ -27,6 +27,11 @@ namespace EFarma.Repositories
             return await _context.Set<TEntity>().Where(predicate).ToListAsync();
         }
 
+        public async Task<TEntity?> FirstOrDefault(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
+        }
+
         public async void Add(TEntity entity)
         {
             await _context.Set<TEntity>().AddAsync(entity);

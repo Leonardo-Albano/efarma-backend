@@ -2,7 +2,6 @@
 using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
-using EFarma.Repositories;
 using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business

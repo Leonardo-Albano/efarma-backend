@@ -2,7 +2,6 @@
 using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
-using EFarma.Models.Resource;
 using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
@@ -22,8 +21,8 @@ namespace EFarma.Business
 
         public async Task<int> CreatePatient(Patient patient)
         {
-            var existent_patients = await _repository.Patients.Find(p=>p.CPF == patient.CPF);
-            if(existent_patients.Any())
+            var existent_patients = await _repository.Patients.FirstOrDefault(p=>p.CPF == patient.CPF);
+            if(existent_patients != null)
             {
                 return 409;
             } 
@@ -37,5 +36,8 @@ namespace EFarma.Business
         {
             return await _repository.Patients.GetAll();
         }
+
+        public async Task<Patient?> GetPatient(string cpf)
+            => await _repository.Patients.FirstOrDefault(p => p.CPF == cpf);
     }
 }
