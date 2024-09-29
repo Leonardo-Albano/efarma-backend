@@ -4,6 +4,7 @@ using EFarma.Models;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using EFarma.Models.DTOs;
+using EFarma.Models.Views;
 
 namespace EFarma.Controllers
 {
@@ -32,6 +33,19 @@ namespace EFarma.Controllers
                 return BadRequest();
             }
             return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PrescriptionView>>> GetPrescriptions()
+        {
+            IEnumerable<PrescriptionView> prescriptions = await _business.GetPrescriptions();
+
+            if (!prescriptions.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(prescriptions);
         }
     }
 }

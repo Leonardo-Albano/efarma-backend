@@ -11,10 +11,15 @@ namespace EFarma.Models
         [ForeignKey("Employee")]
         public int EmployeeId { get; set; }
 
+        [ForeignKey("Patient")]
+        public int PatientId { get; set; }
+
         public required string CPF { get; set; }
         public required string Status { get; set; }
         public required string Local { get; set; }
 
+        public required Patient Patient { get; set; }
+        public required Employee Employee { get; set; }
         public List<PrescriptionItem> Items { get; set; } = new();
     }
 }
