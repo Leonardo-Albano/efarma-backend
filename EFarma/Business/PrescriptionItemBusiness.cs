@@ -5,7 +5,7 @@ using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
 {
-    public class PrescriptionItemBusiness : IPrescriptionBusiness
+    public class PrescriptionItemBusiness : IPrescriptionItemBusiness
     {
         private readonly ILogger<PrescriptionController> _logger;
         private readonly IUnitOfWork _repository;

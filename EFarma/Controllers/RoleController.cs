@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
 using EFarma.Models;
-using EFarma.Models.DTO;
+using EFarma.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers

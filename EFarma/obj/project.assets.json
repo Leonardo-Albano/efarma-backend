@@ -4105,11 +4105,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\efarma-backend\\EFarma\\EFarma.csproj",
+      "projectUniqueName": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\TCC\\efarma-backend\\EFarma\\EFarma.csproj",
       "projectName": "EFarma",
-      "projectPath": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\efarma-backend\\EFarma\\EFarma.csproj",
+      "projectPath": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\TCC\\efarma-backend\\EFarma\\EFarma.csproj",
       "packagesPath": "C:\\Users\\776553\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\efarma-backend\\EFarma\\obj\\",
+      "outputPath": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\TCC\\efarma-backend\\EFarma\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\776553\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
 using EFarma.Controllers;
+using EFarma.Models;
 using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
@@ -18,5 +19,17 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
+        public async Task<Prescription> CreatePrescription(Prescription prescription)
+        {
+            prescription.Status = "Pendente";
+            foreach (var item in prescription.Items)
+            {
+                item.Prescription = prescription;
+                item.Medicament = await _repository.Medicaments.FirstOrDefault(m=>m.Id == item.MedicamentId);
+            }
+            _repository.Prescriptions.Add(prescription);
+            await _repository.SaveChangesAsync();
+            return prescription;
+        }
     }
 }

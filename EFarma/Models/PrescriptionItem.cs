@@ -11,13 +11,13 @@ namespace EFarma.Models
         [ForeignKey("Prescription")]
         public int PrescriptionId { get; set; }
 
-        [ForeignKey("InStockItem")]
-        public int InStockItemId { get; set; }
+        [ForeignKey("Medicament")]
+        public int MedicamentId { get; set; }
 
         public int PrescribedQuantity { get; set; }
 
         public required Prescription Prescription { get; set; }
-        public required InStockItem InStockItem { get; set; }
+        public required Medicament Medicament { get; set; }
 
     }
 }

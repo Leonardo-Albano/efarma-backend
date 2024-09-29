@@ -20,7 +20,7 @@ namespace EFarma.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()
         {
-            Dictionary<int, string> patients = await _business.GetAllMedicaments();
+            var patients = await _business.GetAllMedicaments();
 
             if (!patients.Any())
             {

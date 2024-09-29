@@ -18,7 +18,8 @@ namespace EFarma.Repositories
             Medicaments = new MedicamentRepository(_context);
             Patients = new PatientRepository(_context);
             Permissions = new PermissionRepository(_context);
-            Prescription = new PrescriptionRepository(_context);
+            Prescriptions = new PrescriptionRepository(_context);
+            PrescriptionItems = new PrescriptionItemRepository(_context);
             Roles = new RoleRepository(_context);
             StatusCodes = new StatusCodeRepository(_context);
             StockRooms = new StockRoomRepository(_context);
@@ -30,7 +31,8 @@ namespace EFarma.Repositories
         public IMedicamentRepository Medicaments { get; private set; }
         public IPatientRepository Patients { get; private set; }
         public IPermissionRepository Permissions { get; private set; }
-        public IPrescriptionRepository Prescription { get; private set; }
+        public IPrescriptionRepository Prescriptions { get; private set; }
+        public IPrescriptionItemRepository PrescriptionItems { get; private set; }
         public IRoleRepository Roles { get; private set; }
         public IStatusCodeRepository StatusCodes { get; private set; }
         public IStockRoomRepository StockRooms { get; private set; }

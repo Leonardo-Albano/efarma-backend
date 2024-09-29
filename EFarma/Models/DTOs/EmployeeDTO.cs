@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace EFarma.Models.DTO
+﻿namespace EFarma.Models.DTOs
 {
     public class EmployeeDTO
     {

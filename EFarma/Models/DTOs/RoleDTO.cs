@@ -1,4 +1,4 @@
-﻿namespace EFarma.Models.DTO
+﻿namespace EFarma.Models.DTOs
 {
     public class RoleDTO
     {

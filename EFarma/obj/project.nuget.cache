@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lpE+HpWWqA8=",
+  "dgSpecHash": "MliqpAdfEGk=",
   "success": true,
-  "projectFilePath": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\efarma-backend\\EFarma\\EFarma.csproj",
+  "projectFilePath": "C:\\Users\\776553\\OneDrive - BRF S.A\\Documents\\Workspace\\Educational\\Faculdade\\TCC\\efarma-backend\\EFarma\\EFarma.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\776553\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\776553\\.nuget\\packages\\bouncycastle.cryptography\\2.3.1\\bouncycastle.cryptography.2.3.1.nupkg.sha512",

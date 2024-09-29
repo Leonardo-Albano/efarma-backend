@@ -1,10 +1,9 @@
-﻿using EFarma.Business.Interfaces;
-using EFarma.Models.Resource;
+﻿using AutoMapper;
+using EFarma.Business.Interfaces;
 using EFarma.Models;
-using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
-using EFarma.Models.DTO;
+using EFarma.Models.DTOs;
 using EFarma.Models.Views;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
 {
