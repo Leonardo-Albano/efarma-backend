@@ -6,7 +6,7 @@ namespace EFarma.Repositories.Interfaces
     {
         Task<TEntity> Get(int id);
         Task<IEnumerable<TEntity>> GetAll();
-        Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate);
+        Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate, int? take = null);
         Task<TEntity?> FirstOrDefault(Expression<Func<TEntity, bool>> predicate);
 
         void Add(TEntity entity);

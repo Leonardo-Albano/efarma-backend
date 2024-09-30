@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFarma.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240918004546_FirstMigration")]
+    [Migration("20240930225358_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -64,8 +64,9 @@ namespace EFarma.Migrations
                     b.Property<int?>("CRM")
                         .HasColumnType("int");
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployeeId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Mail")
                         .IsRequired()
@@ -83,6 +84,10 @@ namespace EFarma.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Phone")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ResponsibleMail")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("RoleId")
@@ -110,9 +115,6 @@ namespace EFarma.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Shelf")
                         .HasColumnType("int");
 
                     b.Property<int>("StockRoomId")
@@ -202,6 +204,66 @@ namespace EFarma.Migrations
                     b.HasIndex("StockRoomId");
 
                     b.ToTable("Permissions");
+                });
+
+            modelBuilder.Entity("EFarma.Models.Prescription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CPF")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Local")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Prescriptions");
+                });
+
+            modelBuilder.Entity("EFarma.Models.PrescriptionItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("MedicamentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PrescribedQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PrescriptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MedicamentId");
+
+                    b.HasIndex("PrescriptionId");
+
+                    b.ToTable("PrescriptionItems");
                 });
 
             modelBuilder.Entity("EFarma.Models.Role", b =>
@@ -335,6 +397,49 @@ namespace EFarma.Migrations
                         .IsRequired();
 
                     b.Navigation("StockRoom");
+                });
+
+            modelBuilder.Entity("EFarma.Models.Prescription", b =>
+                {
+                    b.HasOne("EFarma.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EFarma.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("EFarma.Models.PrescriptionItem", b =>
+                {
+                    b.HasOne("EFarma.Models.Medicament", "Medicament")
+                        .WithMany()
+                        .HasForeignKey("MedicamentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EFarma.Models.Prescription", "Prescription")
+                        .WithMany("Items")
+                        .HasForeignKey("PrescriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Medicament");
+
+                    b.Navigation("Prescription");
+                });
+
+            modelBuilder.Entity("EFarma.Models.Prescription", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("EFarma.Models.StockRoom", b =>

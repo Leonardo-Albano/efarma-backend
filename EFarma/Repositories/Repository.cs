@@ -22,9 +22,16 @@ namespace EFarma.Repositories
         {
             return await _context.Set<TEntity>().ToListAsync();
         }
-        public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate, int? take = null)
         {
-            return await _context.Set<TEntity>().Where(predicate).ToListAsync();
+            var query = _context.Set<TEntity>().Where(predicate);
+
+            if (take.HasValue)
+            {
+                query = query.Take(take.Value);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<TEntity?> FirstOrDefault(Expression<Func<TEntity, bool>> predicate)

@@ -17,6 +17,7 @@ namespace EFarma.Models
         public required string CPF { get; set; }
         public required string Status { get; set; }
         public required string Local { get; set; }
+        public required DateTime Date { get; set; } = DateTime.Now;
 
         public required Patient Patient { get; set; }
         public required Employee Employee { get; set; }

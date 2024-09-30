@@ -2,6 +2,7 @@
 using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
+using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
@@ -31,5 +32,15 @@ namespace EFarma.Business
             await _repository.SaveChangesAsync();
             return prescription;
         }
+
+        public async Task<IEnumerable<PrescriptionView>> GetPrescriptions()
+        {
+            var prescriptions = await _repository.Prescriptions.GetDetailedPrescriptions();
+            return _mapper.Map<IEnumerable<PrescriptionView>>(prescriptions);
+        }
+
+        public async Task<Patient?> GetPatient(string cpf)
+            => await _repository.Patients.FirstOrDefault(p => p.CPF == cpf);
+
     }
 }

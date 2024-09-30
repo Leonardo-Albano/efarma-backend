@@ -11,6 +11,14 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<IEnumerable<Prescription>> GetDetailedPrescriptions()
+        {
+            return await DataContext.Prescriptions
+                .Include(p => p.Items)
+                .Take(500)
+                .ToArrayAsync();
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }
