@@ -1,8 +1,10 @@
 ﻿
+using EFarma.Models.Response;
+
 namespace EFarma.Business.Interfaces
 {
     public interface IMedicamentBusiness
     {
-        Task<IEnumerable<Dictionary<int, string>>> GetAllMedicaments();
+        Task<DataResult<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments();
     }
 }

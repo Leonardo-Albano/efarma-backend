@@ -2,6 +2,7 @@
 using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
+using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
@@ -19,9 +20,31 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AccessLog>> GetAllAccessLogs()
+        public async Task<DataResult<IEnumerable<AccessLog>>> GetAllAccessLogs()
         {
-            return await _repository.AccessLogs.GetAll();
+            try
+            {
+                var access_logs = await _repository.AccessLogs.GetAll();
+                var hasLogs = access_logs.Any();
+
+                return new DataResult<IEnumerable<AccessLog>>()
+                {
+                    Result = access_logs,
+                    Message = hasLogs ? "Access logs retrieved successfully." : "No access logs found.",
+                    Success = hasLogs,
+                    StatusCode = hasLogs ? 200 : 404
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataResult<IEnumerable<AccessLog>>()
+                {
+                    Result = [],
+                    Message = $"Error: {ex.Message}",
+                    Success = false,
+                    StatusCode = 500
+                };
+            }
         }
     }
 }

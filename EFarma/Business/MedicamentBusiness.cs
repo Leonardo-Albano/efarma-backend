@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
 using EFarma.Models;
+using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
@@ -18,7 +19,7 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Dictionary<int, string>>> GetAllMedicaments()
+        public async Task<DataResult<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()
         {
             var medicaments = await _repository.Medicaments.GetAll();
             var result = medicaments.Select(m => new Dictionary<int, string>
@@ -26,7 +27,15 @@ namespace EFarma.Business
                 { m.Id, $"{m.Description} {m.Dosage}{m.Measure}" }
             });
 
-            return result;
+            bool success = result.Any();
+            
+            return new()
+            {
+                Message = success ? "Medicaments found" : "No medicaments found.",
+                Result = result,
+                StatusCode = success ? 200 : 400,
+                Success = success
+            };
         }
     }
 }

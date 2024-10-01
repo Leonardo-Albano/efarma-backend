@@ -2,6 +2,7 @@
 using EFarma.Business.Interfaces;
 using EFarma.Models;
 using EFarma.Models.DTOs;
+using EFarma.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
@@ -22,23 +23,26 @@ namespace EFarma.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateRole([FromBody] RoleDTO roleDto)
+        public async Task<ActionResult<VoidResult>> CreateRole([FromBody] RoleDTO roleDto)
         {
             var role = _mapper.Map<Role>(roleDto);
             var result = await _business.CreateRole(role);
-            return StatusCode(result);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<KeyValuePair<int, string>>>> GetRoles()
+        public async Task<ActionResult<DataResult<IEnumerable<KeyValuePair<int, string>>>>> GetRoles()
         {
             var result = await _business.GetRoles();
 
-            if (!result.Any())
-            {
-                return NotFound();
-            }
-            return Ok(result);
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
         }
     }
 }

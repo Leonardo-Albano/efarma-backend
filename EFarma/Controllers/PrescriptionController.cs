@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using EFarma.Models.DTOs;
 using EFarma.Models.Views;
+using EFarma.Models.Response;
+using MySqlX.XDevAPI.Common;
 
 namespace EFarma.Controllers
 {
@@ -24,28 +26,26 @@ namespace EFarma.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreatePrescription([FromBody] PrescriptionDTO prescriptionDTO)
+        public async Task<ActionResult<VoidResult>> CreatePrescription([FromBody] PrescriptionDTO prescriptionDTO)
         {
             var prescription = _mapper.Map<Prescription>(prescriptionDTO);
             var result = await _business.CreatePrescription(prescription);
-            if(result == null)
-            {
-                return BadRequest();
-            }
-            return Ok(result);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PrescriptionView>>> GetPrescriptions()
+        public async Task<ActionResult<DataResult<IEnumerable<PrescriptionView>>>> GetPrescriptions()
         {
-            IEnumerable<PrescriptionView> prescriptions = await _business.GetPrescriptions();
-
-            if (!prescriptions.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(prescriptions);
+            var result = await _business.GetPrescriptions();
+            
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
         }
     }
 }

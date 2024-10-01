@@ -1,10 +1,11 @@
 ﻿using EFarma.Models;
+using EFarma.Models.Response;
 
 namespace EFarma.Business.Interfaces
 {
     public interface IRoleBusiness
     {
-        Task<int> CreateRole(Role role);
-        Task<IEnumerable<KeyValuePair<int, string>>> GetRoles();
+        Task<VoidResult> CreateRole(Role role);
+        Task<DataResult<IEnumerable<KeyValuePair<int, string>>>> GetRoles();
     }
 }

@@ -2,8 +2,10 @@
 using EFarma.Business.Interfaces;
 using EFarma.Models;
 using EFarma.Models.Resource;
+using EFarma.Models.Response;
 using EFarma.Models.Views;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
 
 namespace EFarma.Controllers
 {
@@ -23,36 +25,37 @@ namespace EFarma.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreatePatient([FromBody]PatientDTO patientDto)
+        public async Task<ActionResult<VoidResult>> CreatePatient([FromBody]PatientDTO patientDto)
         {
             var patient = _mapper.Map<Patient>(patientDto);
             var result = await _business.CreatePatient(patient);
-            return StatusCode(result);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
         }
 
         [HttpGet("{cpf}")]
-        public async Task<ActionResult<Patient>> GetPatient(string cpf)
+        public async Task<ActionResult<DataResult<Patient>>> GetPatient(string cpf)
         {
-            var patient = await _business.GetPatient(cpf);
-            if (patient == null)
-            {
-                return NotFound();
-            }
+            var result = await _business.GetPatient(cpf);
 
-            return Ok(patient);
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Patient>>> GetAllPatients()
+        public async Task<ActionResult<DataResult<IEnumerable<Patient>>>> GetAllPatients()
         {
-            IEnumerable<Patient> patients = await _business.GetAllPatients();
+            var result = await _business.GetAllPatients();
 
-            if (!patients.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(patients);
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
         }
 
     }

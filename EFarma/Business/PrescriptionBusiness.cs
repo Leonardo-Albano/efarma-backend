@@ -2,6 +2,7 @@
 using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
+using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
 
@@ -20,27 +21,52 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<Prescription> CreatePrescription(Prescription prescription)
+        public async Task<VoidResult> CreatePrescription(Prescription prescription)
         {
             prescription.Status = "Pendente";
+
             foreach (var item in prescription.Items)
             {
+                var medicament = await _repository.Medicaments.FirstOrDefault(m => m.Id == item.MedicamentId);
+                if (medicament == null)
+                {
+                    return new VoidResult
+                    {
+                        Message = $"Medicament with ID {item.MedicamentId} is not registered.",
+                        StatusCode = 404,
+                        Success = false
+                    };
+                }
+
                 item.Prescription = prescription;
-                item.Medicament = await _repository.Medicaments.FirstOrDefault(m=>m.Id == item.MedicamentId);
+                item.Medicament = medicament;
             }
+
             _repository.Prescriptions.Add(prescription);
-            await _repository.SaveChangesAsync();
-            return prescription;
+
+            bool success = await _repository.SaveChangesAsync() > 0;
+            return new VoidResult
+            {
+                Message = success ? "Prescription created successfully." : "An error occurred while creating the prescription.",
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
         }
 
-        public async Task<IEnumerable<PrescriptionView>> GetPrescriptions()
+        public async Task<DataResult<IEnumerable<PrescriptionView>>> GetPrescriptions()
         {
-            var prescriptions = await _repository.Prescriptions.GetDetailedPrescriptions();
-            return _mapper.Map<IEnumerable<PrescriptionView>>(prescriptions);
+            var detaliedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions();
+            var prescriptions = _mapper.Map<IEnumerable<PrescriptionView>>(detaliedPrescriptions);
+
+            bool success = prescriptions.Any();
+
+            return new()
+            {
+                Message = success ? "Found prescriptions." : "No prescriptions found.",
+                Result = prescriptions,
+                StatusCode = success ? 200 : 404,
+                Success = success
+            };
         }
-
-        public async Task<Patient?> GetPatient(string cpf)
-            => await _repository.Patients.FirstOrDefault(p => p.CPF == cpf);
-
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EFarma.Business.Interfaces;
 using EFarma.Models;
+using EFarma.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
@@ -18,16 +19,14 @@ namespace EFarma.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AccessLog>>> GetAllAccessLogs()
+        public async Task<ActionResult<DataResult<IEnumerable<AccessLog>>>> GetAllAccessLogs()
         {
-            IEnumerable<AccessLog> accessLogs = await _business.GetAllAccessLogs();
+            var accessLogs = await _business.GetAllAccessLogs();
 
-            if (!accessLogs.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(accessLogs);
+            return StatusCode(
+                statusCode: accessLogs.StatusCode,
+                value: accessLogs
+            );
         }
     }
 }

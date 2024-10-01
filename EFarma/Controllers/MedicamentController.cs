@@ -1,6 +1,8 @@
 ﻿using EFarma.Business.Interfaces;
 using EFarma.Models;
+using EFarma.Models.Response;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
 
 namespace EFarma.Controllers
 {
@@ -18,16 +20,14 @@ namespace EFarma.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()
+        public async Task<ActionResult<DataResult<IEnumerable<Dictionary<int, string>>>>> GetAllMedicaments()
         {
-            var patients = await _business.GetAllMedicaments();
-
-            if (!patients.Any())
-            {
-                return NotFound();
-            }
-
-            return Ok(patients);
+            var result = await _business.GetAllMedicaments();
+  
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
         }
     }
 }

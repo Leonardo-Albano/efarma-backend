@@ -9,9 +9,10 @@
         public required string Mail { get; set; }
         public required string ResponsibleMail { get; set; }
         public required string Name { get; set; }
-        public int Permission { get; set; }
         public required string Phone { get; set; }
-        public int Role { get; set; }
+
+        public int PermissionId { get; set; }
+        public int RoleId { get; set; }
 
 
     }

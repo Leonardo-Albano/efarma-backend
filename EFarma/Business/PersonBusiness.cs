@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
 using EFarma.Controllers;
+using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
 
@@ -19,7 +20,7 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PersonView>> GetPersonList(string? name, string? cpf)
+        public async Task<DataResult<IEnumerable<PersonView>>> GetPersonList(string? name, string? cpf)
         {
             var patients = await _repository.Patients
                 .Find(p =>
@@ -37,7 +38,15 @@ namespace EFarma.Business
             var people = _mapper.Map<IEnumerable<PersonView>>(patients)
                             .Concat(_mapper.Map<IEnumerable<PersonView>>(employees));
 
-            return people;
+            bool success = people.Any();
+
+            return new()
+            {
+                Message = success ? "Found people." : "No people found.",
+                Result = people,
+                StatusCode = success ? 200 : 404,
+                Success = success
+            };
         }
     }
 }

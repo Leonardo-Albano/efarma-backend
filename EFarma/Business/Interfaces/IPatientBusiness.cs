@@ -1,11 +1,12 @@
 ﻿using EFarma.Models;
+using EFarma.Models.Response;
 
 namespace EFarma.Business.Interfaces
 {
     public interface IPatientBusiness
     {
-        Task<int> CreatePatient(Patient patient);
-        Task<IEnumerable<Patient>> GetAllPatients();
-        Task<Patient?> GetPatient(string cpf);
+        Task<VoidResult> CreatePatient(Patient patient);
+        Task<DataResult<IEnumerable<Patient>>> GetAllPatients();
+        Task<DataResult<Patient>> GetPatient(string cpf);
     }
 }
