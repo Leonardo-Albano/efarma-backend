@@ -58,11 +58,10 @@ namespace EFarma.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("CRM")
-                        .HasColumnType("int");
+                    b.Property<string>("CRM")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("EmployeeId")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Mail")
@@ -193,7 +192,7 @@ namespace EFarma.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("StockRoomId")
+                    b.Property<int?>("StockRoomId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -389,9 +388,7 @@ namespace EFarma.Migrations
                 {
                     b.HasOne("EFarma.Models.StockRoom", "StockRoom")
                         .WithMany()
-                        .HasForeignKey("StockRoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StockRoomId");
 
                     b.Navigation("StockRoom");
                 });

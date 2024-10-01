@@ -55,8 +55,8 @@ namespace EFarma.Business
 
         public async Task<DataResult<IEnumerable<PrescriptionView>>> GetPrescriptions()
         {
-            var detaliedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions();
-            var prescriptions = _mapper.Map<IEnumerable<PrescriptionView>>(detaliedPrescriptions);
+            var detailedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions();
+            var prescriptions = _mapper.Map<IEnumerable<PrescriptionView>>(detailedPrescriptions);
 
             bool success = prescriptions.Any();
 

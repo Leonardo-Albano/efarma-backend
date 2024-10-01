@@ -9,11 +9,11 @@ namespace EFarma.Models
         public int Id { get; set; }
 
         [ForeignKey("StockRoom")]
-        public int StockRoomId { get; set; }
+        public int? StockRoomId { get; set; }
 
         public required string Name { get; set; }
         public required string Description { get; set; }
 
-        public required StockRoom StockRoom { get; set; }
+        public StockRoom? StockRoom { get; set; }
     }
 }

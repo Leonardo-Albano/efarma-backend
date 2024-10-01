@@ -14,7 +14,7 @@ namespace EFarma.Models
         [ForeignKey("Role")]
         public int RoleId { get; set; }
 
-        public string EmployeeId { get; set; }
+        public string? EmployeeId { get; set; }
         public required string Name { get; set; }
         public required string CPF { get; set; }
         public DateTime BirthDate { get; set; }
@@ -22,7 +22,7 @@ namespace EFarma.Models
         public required string Mail { get; set; }
         public required string ResponsibleMail { get; set; }
         public required string PasswordHash { get; set; }
-        public int? CRM { get; set; }
+        public string? CRM { get; set; }
 
         public required Permission Permission { get; set; }
         public required Role Role { get; set; }

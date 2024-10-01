@@ -23,6 +23,9 @@ namespace EFarma.Config
             CreateMap<PrescriptionDTO,  Prescription>();
             CreateMap<PrescriptionItemDTO,  PrescriptionItem>();
 
+            CreateMap<PermissionDTO, Permission>();
+            CreateMap<Permission, PermissionView>();
+
         }
     }
 }

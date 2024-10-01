@@ -130,7 +130,7 @@ namespace EFarma.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    StockRoomId = table.Column<int>(type: "int", nullable: false),
+                    StockRoomId = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     Description = table.Column<string>(type: "longtext", nullable: false)
                 },
@@ -141,8 +141,7 @@ namespace EFarma.Migrations
                         name: "FK_Permissions_StockRooms_StockRoomId",
                         column: x => x.StockRoomId,
                         principalTable: "StockRooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -154,7 +153,7 @@ namespace EFarma.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     PermissionId = table.Column<int>(type: "int", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
-                    EmployeeId = table.Column<string>(type: "longtext", nullable: false),
+                    EmployeeId = table.Column<string>(type: "longtext", nullable: true),
                     Name = table.Column<string>(type: "longtext", nullable: false),
                     CPF = table.Column<string>(type: "longtext", nullable: false),
                     BirthDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -162,7 +161,7 @@ namespace EFarma.Migrations
                     Mail = table.Column<string>(type: "longtext", nullable: false),
                     ResponsibleMail = table.Column<string>(type: "longtext", nullable: false),
                     PasswordHash = table.Column<string>(type: "longtext", nullable: false),
-                    CRM = table.Column<int>(type: "int", nullable: true)
+                    CRM = table.Column<string>(type: "longtext", nullable: true)
                 },
                 constraints: table =>
                 {

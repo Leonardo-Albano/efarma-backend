@@ -4,7 +4,7 @@
     {
         public DateTime BirthDate { get; set; }
         public required string CPF { get; set; }
-        public int? CRM { get; set; }
+        public string? CRM { get; set; }
         public string? EmployeeId { get; set; }
         public required string Mail { get; set; }
         public required string ResponsibleMail { get; set; }
