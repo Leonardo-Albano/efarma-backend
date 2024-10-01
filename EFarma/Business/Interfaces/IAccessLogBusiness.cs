@@ -5,6 +5,6 @@ namespace EFarma.Business.Interfaces
 {
     public interface IAccessLogBusiness
     {
-        Task<DataResult<IEnumerable<AccessLog>>> GetAllAccessLogs();
+        Task<ResultDataObject<IEnumerable<AccessLog>>> GetAllAccessLogs();
     }
 }

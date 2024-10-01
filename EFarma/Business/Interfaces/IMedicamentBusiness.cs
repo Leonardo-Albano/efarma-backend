@@ -5,6 +5,6 @@ namespace EFarma.Business.Interfaces
 {
     public interface IMedicamentBusiness
     {
-        Task<DataResult<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments();
+        Task<ResultDataObject<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments();
     }
 }

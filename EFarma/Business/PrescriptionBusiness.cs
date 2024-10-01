@@ -21,7 +21,7 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<VoidResult> CreatePrescription(Prescription prescription)
+        public async Task<ResultObject> CreatePrescription(Prescription prescription)
         {
             prescription.Status = "Pendente";
 
@@ -30,7 +30,7 @@ namespace EFarma.Business
                 var medicament = await _repository.Medicaments.FirstOrDefault(m => m.Id == item.MedicamentId);
                 if (medicament == null)
                 {
-                    return new VoidResult
+                    return new ResultObject
                     {
                         Message = $"Medicament with ID {item.MedicamentId} is not registered.",
                         StatusCode = 404,
@@ -45,7 +45,7 @@ namespace EFarma.Business
             _repository.Prescriptions.Add(prescription);
 
             bool success = await _repository.SaveChangesAsync() > 0;
-            return new VoidResult
+            return new ResultObject
             {
                 Message = success ? "Prescription created successfully." : "An error occurred while creating the prescription.",
                 StatusCode = success ? 200 : 500,
@@ -53,9 +53,9 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<DataResult<IEnumerable<PrescriptionView>>> GetPrescriptions()
+        public async Task<ResultDataObject<IEnumerable<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date)
         {
-            var detailedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions();
+            var detailedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions(cpf, date);
             var prescriptions = _mapper.Map<IEnumerable<PrescriptionView>>(detailedPrescriptions);
 
             bool success = prescriptions.Any();
@@ -63,7 +63,7 @@ namespace EFarma.Business
             return new()
             {
                 Message = success ? "Found prescriptions." : "No prescriptions found.",
-                Result = prescriptions,
+                Data = prescriptions,
                 StatusCode = success ? 200 : 404,
                 Success = success
             };

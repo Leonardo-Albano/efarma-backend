@@ -23,13 +23,13 @@ namespace EFarma.Business
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<VoidResult> CreateEmployee(Employee employee)
+        public async Task<ResultObject> CreateEmployee(Employee employee)
         {
             var existent_employee = await _repository.Employees.Find(e => e.CPF == employee.CPF ||
                                      (!string.IsNullOrEmpty(employee.EmployeeId) && e.EmployeeId == employee.EmployeeId));
             if (existent_employee.Any())
             {
-                return new VoidResult
+                return new ResultObject
                 {
                     Message = "CPF already exists in the system.",
                     StatusCode = 409,
@@ -41,7 +41,7 @@ namespace EFarma.Business
             _repository.Employees.Add(employee);
 
             bool success = await _repository.SaveChangesAsync() > 0;
-            return new VoidResult
+            return new ResultObject
             {
                 Message = success ? "Employee created successfully." : "An error occurred while creating the employee.",
                 StatusCode = success ? 200 : 500,
@@ -49,7 +49,7 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<DataResult<Employee>> GetEmployee(string cpf)
+        public async Task<ResultDataObject<Employee>> GetEmployee(string cpf)
         {
             var employee = await _repository.Employees.FirstOrDefault(e => e.CPF == cpf);
             bool success = employee != null;
@@ -57,7 +57,7 @@ namespace EFarma.Business
             return new()
             {
                 Message = success ? "Employee found." : "No employee found.",
-                Result = employee,
+                Data = employee,
                 Success = success,
                 StatusCode = success ? 200 : 404
             };

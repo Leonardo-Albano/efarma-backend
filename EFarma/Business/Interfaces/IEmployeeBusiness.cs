@@ -5,7 +5,7 @@ namespace EFarma.Business.Interfaces
 {
     public interface IEmployeeBusiness : IPersonBusiness
     {
-        Task<VoidResult> CreateEmployee(Employee employee);
-        Task<DataResult<Employee>> GetEmployee(string cpf);
+        Task<ResultObject> CreateEmployee(Employee employee);
+        Task<ResultDataObject<Employee>> GetEmployee(string cpf);
     }
 }

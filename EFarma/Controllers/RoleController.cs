@@ -23,7 +23,7 @@ namespace EFarma.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VoidResult>> CreateRole([FromBody] RoleDTO roleDto)
+        public async Task<ActionResult<ResultObject>> CreateRole([FromBody] RoleDTO roleDto)
         {
             var role = _mapper.Map<Role>(roleDto);
             var result = await _business.CreateRole(role);
@@ -35,7 +35,7 @@ namespace EFarma.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<DataResult<IEnumerable<KeyValuePair<int, string>>>>> GetRoles()
+        public async Task<ActionResult<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>>> GetRoles()
         {
             var result = await _business.GetRoles();
 

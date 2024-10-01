@@ -5,8 +5,8 @@ namespace EFarma.Business.Interfaces
 {
     public interface IPatientBusiness
     {
-        Task<VoidResult> CreatePatient(Patient patient);
-        Task<DataResult<IEnumerable<Patient>>> GetAllPatients();
-        Task<DataResult<Patient>> GetPatient(string cpf);
+        Task<ResultObject> CreatePatient(Patient patient);
+        Task<ResultDataObject<IEnumerable<Patient>>> GetAllPatients();
+        Task<ResultDataObject<Patient>> GetPatient(string cpf);
     }
 }

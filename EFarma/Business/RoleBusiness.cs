@@ -20,12 +20,12 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<VoidResult> CreateRole(Role role)
+        public async Task<ResultObject> CreateRole(Role role)
         {
             var existent_roles = await _repository.Roles.Find(r => r.Name == role.Name);
             if (existent_roles.Any())
             {
-                return new VoidResult
+                return new ResultObject
                 {
                     Message = $"Role with the name '{role.Name}' already exists in the system.",
                     StatusCode = 409,
@@ -36,7 +36,7 @@ namespace EFarma.Business
             _repository.Roles.Add(role);
 
             bool success = await _repository.SaveChangesAsync() > 0;
-            return new VoidResult
+            return new ResultObject
             {
                 Message = success ? "Role created successfully." : "An error occurred while creating the role.",
                 StatusCode = success ? 200 : 500,
@@ -44,7 +44,7 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<DataResult<IEnumerable<KeyValuePair<int, string>>>> GetRoles()
+        public async Task<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>> GetRoles()
         {
             var roles = await _repository.Roles.GetAll();
             var result = roles.Select(r => new KeyValuePair<int, string>(r.Id, r.Name)).ToList();
@@ -54,7 +54,7 @@ namespace EFarma.Business
             return new()
             {
                 Message = success ? "Roles found" : "No roles found.",
-                Result = result,
+                Data = result,
                 StatusCode = success ? 200 : 400,
                 Success = success
             };

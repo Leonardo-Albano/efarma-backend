@@ -19,7 +19,7 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<DataResult<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()
+        public async Task<ResultDataObject<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()
         {
             var medicaments = await _repository.Medicaments.GetAll();
             var result = medicaments.Select(m => new Dictionary<int, string>
@@ -32,7 +32,7 @@ namespace EFarma.Business
             return new()
             {
                 Message = success ? "Medicaments found" : "No medicaments found.",
-                Result = result,
+                Data = result,
                 StatusCode = success ? 200 : 400,
                 Success = success
             };

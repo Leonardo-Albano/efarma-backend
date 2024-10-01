@@ -5,7 +5,7 @@ namespace EFarma.Business.Interfaces
 {
     public interface IRoleBusiness
     {
-        Task<VoidResult> CreateRole(Role role);
-        Task<DataResult<IEnumerable<KeyValuePair<int, string>>>> GetRoles();
+        Task<ResultObject> CreateRole(Role role);
+        Task<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>> GetRoles();
     }
 }

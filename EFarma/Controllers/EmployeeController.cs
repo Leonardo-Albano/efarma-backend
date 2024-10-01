@@ -25,7 +25,7 @@ namespace EFarma.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VoidResult>> CreateEmployee([FromBody] EmployeeDTO employeeDto)
+        public async Task<ActionResult<ResultObject>> CreateEmployee([FromBody] EmployeeDTO employeeDto)
         {
             var employee = _mapper.Map<Employee>(employeeDto);
             var result = await _business.CreateEmployee(employee);
@@ -36,7 +36,7 @@ namespace EFarma.Controllers
         }
 
         [HttpGet("{cpf}")]
-        public async Task<ActionResult<DataResult<Employee>>> GetEmployee(string cpf)
+        public async Task<ActionResult<ResultDataObject<Employee>>> GetEmployee(string cpf)
         {
             var result = await _business.GetEmployee(cpf);
 
@@ -47,7 +47,7 @@ namespace EFarma.Controllers
         }
 
         [HttpGet("GetPersons")]
-        public async Task<ActionResult<DataResult<IEnumerable<PersonView>>>> GetPersonList(string? name, string? cpf)
+        public async Task<ActionResult<ResultDataObject<IEnumerable<PersonView>>>> GetPersonList(string? name, string? cpf)
         {
             var result = await _business.GetPersonList(name, cpf);
             

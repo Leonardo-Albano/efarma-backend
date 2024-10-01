@@ -6,7 +6,7 @@ namespace EFarma.Business.Interfaces
 {
     public interface IPrescriptionBusiness
     {
-        Task<VoidResult> CreatePrescription(Prescription prescription);
-        Task<DataResult<IEnumerable<PrescriptionView>>> GetPrescriptions();
+        Task<ResultObject> CreatePrescription(Prescription prescription);
+        Task<ResultDataObject<IEnumerable<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date);
     }
 }

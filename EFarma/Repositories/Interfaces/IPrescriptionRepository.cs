@@ -4,6 +4,6 @@ namespace EFarma.Repositories.Interfaces
 {
     public interface IPrescriptionRepository : IRepository<Prescription>
     {
-        public Task<IEnumerable<Prescription>> GetDetailedPrescriptions();
+        Task<IEnumerable<Prescription>> GetDetailedPrescriptions(string? cpf = null, DateTime? date = null);
     }
 }

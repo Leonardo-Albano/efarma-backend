@@ -19,7 +19,7 @@ namespace EFarma.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<DataResult<IEnumerable<AccessLog>>>> GetAllAccessLogs()
+        public async Task<ActionResult<ResultDataObject<IEnumerable<AccessLog>>>> GetAllAccessLogs()
         {
             var accessLogs = await _business.GetAllAccessLogs();
 

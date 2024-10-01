@@ -21,14 +21,14 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<VoidResult> CreatePermission(Permission permission)
+        public async Task<ResultObject> CreatePermission(Permission permission)
         {
             if(permission.StockRoomId.HasValue)
             {
                 var stockRoom = await _repository.StockRooms.FirstOrDefault(s=>s.Id == permission.StockRoomId.Value);
                 if(stockRoom == null)
                 {
-                    return new VoidResult
+                    return new ResultObject
                     {
                         Message = $"Stock Room with id {permission.StockRoomId.Value} doesn't exists.",
                         StatusCode = 404,
@@ -41,7 +41,7 @@ namespace EFarma.Business
             _repository.Permissions.Add(permission);
 
             bool success = await _repository.SaveChangesAsync() > 0;
-            return new VoidResult
+            return new ResultObject
             {
                 Message = success ? "Permission created successfully." : "An error occurred while creating the permission.",
                 StatusCode = success ? 200 : 500,
@@ -49,7 +49,7 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<DataResult<IEnumerable<PermissionView>>> GetPermissions()
+        public async Task<ResultDataObject<IEnumerable<PermissionView>>> GetPermissions()
         {
             var permissions = await _repository.Permissions.GetAll();
             var permissionsView = _mapper.Map<IEnumerable<PermissionView>>(permissions);
@@ -59,7 +59,7 @@ namespace EFarma.Business
             return new()
             {
                 Message = success ? "Found permissions." : "No permissions found.",
-                Result = permissionsView,
+                Data = permissionsView,
                 StatusCode = success ? 200 : 404,
                 Success = success
             };

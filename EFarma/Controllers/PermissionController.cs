@@ -23,7 +23,7 @@ namespace EFarma.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VoidResult>> CreatePermission([FromBody] PermissionDTO permissionDto)
+        public async Task<ActionResult<ResultObject>> CreatePermission([FromBody] PermissionDTO permissionDto)
         {
             var permission = _mapper.Map<Permission>(permissionDto);
             var result = await _business.CreatePermission(permission);
@@ -35,7 +35,7 @@ namespace EFarma.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<DataResult<IEnumerable<KeyValuePair<int, string>>>>> GetPermissions()
+        public async Task<ActionResult<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>>> GetPermissions()
         {
             var result = await _business.GetPermissions();
 

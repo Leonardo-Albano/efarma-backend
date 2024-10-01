@@ -26,7 +26,7 @@ namespace EFarma.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VoidResult>> CreatePrescription([FromBody] PrescriptionDTO prescriptionDTO)
+        public async Task<ActionResult<ResultObject>> CreatePrescription([FromBody] PrescriptionDTO prescriptionDTO)
         {
             var prescription = _mapper.Map<Prescription>(prescriptionDTO);
             var result = await _business.CreatePrescription(prescription);
@@ -38,10 +38,10 @@ namespace EFarma.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<DataResult<IEnumerable<PrescriptionView>>>> GetPrescriptions()
+        public async Task<ActionResult<ResultDataObject<IEnumerable<PrescriptionView>>>> GetPrescriptions(string? cpf, DateTime? date)
         {
-            var result = await _business.GetPrescriptions();
-            
+            var result = await _business.GetPrescriptions(cpf, date);
+
             return StatusCode(
                 statusCode: result.StatusCode,
                 value: result

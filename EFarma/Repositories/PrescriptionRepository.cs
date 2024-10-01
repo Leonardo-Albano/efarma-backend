@@ -11,13 +11,23 @@ namespace EFarma.Repositories
         {
         }
 
-        public async Task<IEnumerable<Prescription>> GetDetailedPrescriptions()
+        public async Task<IEnumerable<Prescription>> GetDetailedPrescriptions(string? cpf = null, DateTime? date = null)
         {
-            return await DataContext.Prescriptions
-                .Include(p => p.Items)
-                .Take(500)
-                .ToArrayAsync();
+            var query = DataContext.Prescriptions.Include(p => p.Items).AsQueryable();
+
+            if (!string.IsNullOrEmpty(cpf))
+            {
+                query = query.Where(p => p.CPF == cpf);
+            }
+
+            if (date.HasValue)
+            {
+                query = query.Where(p => p.Date == date.Value);
+            }
+
+            return await query.Take(500).ToArrayAsync();
         }
+
 
         public DataContext DataContext
         {

@@ -20,7 +20,7 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<DataResult<IEnumerable<PersonView>>> GetPersonList(string? name, string? cpf)
+        public async Task<ResultDataObject<IEnumerable<PersonView>>> GetPersonList(string? name, string? cpf)
         {
             var patients = await _repository.Patients
                 .Find(p =>
@@ -43,7 +43,7 @@ namespace EFarma.Business
             return new()
             {
                 Message = success ? "Found people." : "No people found.",
-                Result = people,
+                Data = people,
                 StatusCode = success ? 200 : 404,
                 Success = success
             };

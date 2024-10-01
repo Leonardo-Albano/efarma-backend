@@ -1,6 +1,6 @@
 ﻿namespace EFarma.Models.Response
 {
-    public class VoidResult
+    public class ResultObject
     {
         public string Message { get; set; } = "";
         public bool Success { get; set; }

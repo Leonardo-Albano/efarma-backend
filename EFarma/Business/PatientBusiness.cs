@@ -20,12 +20,12 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<VoidResult> CreatePatient(Patient patient)
+        public async Task<ResultObject> CreatePatient(Patient patient)
         {
             var existent_patients = await _repository.Patients.FirstOrDefault(p=>p.CPF == patient.CPF);
             if(existent_patients != null)
             {
-                return new VoidResult
+                return new ResultObject
                 {
                     Message = "CPF already exists in the system.",
                     StatusCode = 409,
@@ -36,7 +36,7 @@ namespace EFarma.Business
             _repository.Patients.Add(patient);
 
             bool success = await _repository.SaveChangesAsync() > 0;
-            return new VoidResult
+            return new ResultObject
             {
                 Message = success ? "Employee created successfully." : "An error occurred while creating the employee.",
                 Success = success,
@@ -44,7 +44,7 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<DataResult<IEnumerable<Patient>>> GetAllPatients()
+        public async Task<ResultDataObject<IEnumerable<Patient>>> GetAllPatients()
         {
             var patients = await _repository.Patients.GetAll();
 
@@ -53,13 +53,13 @@ namespace EFarma.Business
             return new()
             {
                 Message = success ? "Patients found." : "No patients found.",
-                Result = patients,
+                Data = patients,
                 Success = success,
                 StatusCode = success ? 200 : 404
             };
         }
 
-        public async Task<DataResult<Patient>> GetPatient(string cpf)
+        public async Task<ResultDataObject<Patient>> GetPatient(string cpf)
         {
             var patient = await _repository.Patients.FirstOrDefault(p => p.CPF == cpf);
             bool success = patient != null;
@@ -67,7 +67,7 @@ namespace EFarma.Business
             return new()
             {
                 Message = success ? "Patient found." : "No patient found.",
-                Result = patient,
+                Data = patient,
                 Success = success,
                 StatusCode = success ? 200 : 404
             };
