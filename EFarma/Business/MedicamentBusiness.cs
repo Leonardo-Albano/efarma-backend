@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
 using EFarma.Models;
+using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
+using System.Data;
 
 namespace EFarma.Business
 {
@@ -17,6 +19,37 @@ namespace EFarma.Business
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+        }
+
+        public async Task<ResultObject> CreateMedicament(MedicamentDTO medicamentDTO)
+        {
+            var medicament = _mapper.Map<Medicament>(medicamentDTO);
+            
+            var existant_medicament = _repository.Medicaments.FirstOrDefault(m => 
+                m.Description == medicamentDTO.Description &&
+                m.Dosage == medicamentDTO.Dosage &&
+                m.Measure == medicamentDTO.Measure
+            );
+
+            if(existant_medicament != null)
+            {
+                return new ResultObject
+                {
+                    Message = "This medicament already exists in the system.",
+                    StatusCode = 409,
+                    Success = false
+                };
+            }
+
+            _repository.Medicaments.Add(medicament);
+
+            bool success = await _repository.SaveChangesAsync() > 0;
+            return new ResultObject
+            {
+                Message = success ? "Medicament created successfully." : "An error occurred while creating the medicament.",
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
         }
 
         public async Task<ResultDataObject<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()

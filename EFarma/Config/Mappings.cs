@@ -19,6 +19,7 @@ namespace EFarma.Config
             CreateMap<Employee, PersonView>();
             CreateMap<EmployeeDTO, Employee>();
 
+            CreateMap<MedicamentDTO, Medicament>();
 
             CreateMap<PrescriptionDTO,  Prescription>();
             CreateMap<PrescriptionItemDTO,  PrescriptionItem>();

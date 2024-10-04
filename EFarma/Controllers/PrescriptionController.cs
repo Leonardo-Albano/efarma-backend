@@ -7,6 +7,7 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Views;
 using EFarma.Models.Response;
 using MySqlX.XDevAPI.Common;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EFarma.Controllers
 {
@@ -47,5 +48,17 @@ namespace EFarma.Controllers
                 value: result
             );
         }
+
+        [HttpGet("{prescriptionId}")]
+        public async Task<ActionResult<ResultDataObject<IEnumerable<PrescriptionItemView>>>> GetPrescriptionItems(int prescriptionId)
+        {
+            var result = await _business.GetPrescriptionItems(prescriptionId);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
     }
 }

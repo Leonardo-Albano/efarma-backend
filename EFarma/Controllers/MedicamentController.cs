@@ -1,5 +1,6 @@
 ﻿using EFarma.Business.Interfaces;
 using EFarma.Models;
+using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using Microsoft.AspNetCore.Mvc;
 using MySqlX.XDevAPI.Common;
@@ -18,6 +19,18 @@ namespace EFarma.Controllers
             _logger = logger;
             _business = business;
         }
+
+        [HttpPost]
+        public async Task<ActionResult<ResultObject>> CreateMedicament(MedicamentDTO medicamentDTO)
+        {
+            var result = await _business.CreateMedicament(medicamentDTO);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
 
         [HttpGet]
         public async Task<ActionResult<ResultDataObject<IEnumerable<Dictionary<int, string>>>>> GetAllMedicaments()

@@ -3,6 +3,7 @@ using EFarma.Business.Interfaces;
 using EFarma.Config;
 using EFarma.Controllers;
 using EFarma.Models;
+using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
 
@@ -60,6 +61,29 @@ namespace EFarma.Business
                 Data = employee,
                 Success = success,
                 StatusCode = success ? 200 : 404
+            };
+        }
+
+        public async Task<ResultObject> Login(LoginDTO loginDTO)
+        {
+            var employee = await _repository.Employees.FirstOrDefault(e => e.CPF == loginDTO.Login);
+            if (employee == null)
+            {
+                return new()
+                {
+                    Message = "Employee not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            var result = _passwordHasher.Verify(employee.PasswordHash, loginDTO.Password);
+
+            return new()
+            {
+                Message = result ? "Access allowed." : "Access denied.",
+                StatusCode = result ? 200 : 403,
+                Success = result
             };
         }
     }

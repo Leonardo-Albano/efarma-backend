@@ -28,7 +28,6 @@ namespace EFarma.Repositories
             return await query.Take(500).ToArrayAsync();
         }
 
-
         public DataContext DataContext
         {
             get { return _context as DataContext; }

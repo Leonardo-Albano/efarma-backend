@@ -56,5 +56,17 @@ namespace EFarma.Controllers
                 value: result
             );
         }
+
+        [HttpPost("Login")]
+        public async Task<ActionResult<ResultObject>> Login([FromBody] LoginDTO loginDTO)
+        {
+            var result = await _business.Login(loginDTO);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
     }
 }

@@ -5,6 +5,7 @@ using EFarma.Models;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EFarma.Business
 {
@@ -50,6 +51,27 @@ namespace EFarma.Business
                 Message = success ? "Prescription created successfully." : "An error occurred while creating the prescription.",
                 StatusCode = success ? 200 : 500,
                 Success = success
+            };
+        }
+
+        public async Task<ResultDataObject<IEnumerable<PrescriptionItemView>>> GetPrescriptionItems(int prescriptionId)
+        {
+            var items = await _repository.PrescriptionItems.GetPrescriptionItems(prescriptionId);
+            
+            var prescriptionItemsView = items.Select(item => new PrescriptionItemView
+            {
+                Name = item.Medicament.Description,
+                Dosage = $"{item.Medicament.Dosage} {item.Medicament.Measure}",
+                Quantity = item.PrescribedQuantity
+            }).ToArray();
+
+            bool has_items = prescriptionItemsView.Length != 0;
+            return new()
+            {
+                Data = prescriptionItemsView,
+                Message = has_items ? "Found prescription items" : "No items found for this prescription",
+                StatusCode = has_items ? 200 : 404,
+                Success = has_items
             };
         }
 

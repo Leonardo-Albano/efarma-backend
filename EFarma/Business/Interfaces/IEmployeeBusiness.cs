@@ -1,4 +1,5 @@
 ﻿using EFarma.Models;
+using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 
 namespace EFarma.Business.Interfaces
@@ -7,5 +8,6 @@ namespace EFarma.Business.Interfaces
     {
         Task<ResultObject> CreateEmployee(Employee employee);
         Task<ResultDataObject<Employee>> GetEmployee(string cpf);
+        Task<ResultObject> Login(LoginDTO loginDTO);
     }
 }
