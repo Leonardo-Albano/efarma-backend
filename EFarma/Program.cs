@@ -17,8 +17,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseMySQL(builder.Configuration.GetConnectionString("LocalConnection"));
-    //options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
+    //options.UseMySQL(builder.Configuration.GetConnectionString("LocalConnection"));
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 var app = builder.Build();

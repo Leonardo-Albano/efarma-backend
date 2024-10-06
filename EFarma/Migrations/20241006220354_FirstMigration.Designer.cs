@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFarma.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241001025248_FirstMigration")]
+    [Migration("20241006220354_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
