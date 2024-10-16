@@ -10,6 +10,8 @@
         public required string ResponsibleMail { get; set; }
         public required string Name { get; set; }
         public required string Phone { get; set; }
+        public required string TagCode { get; set; }
+
 
         public int PermissionId { get; set; }
         public int RoleId { get; set; }

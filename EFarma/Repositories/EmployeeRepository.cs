@@ -11,6 +11,8 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<Employee?> GetEmployeeByTagCode(string code) 
+            => await DataContext.Employees.FirstOrDefaultAsync(e => e.TagCode == code);
         public DataContext DataContext
         {
             get { return _context as DataContext; }

@@ -26,13 +26,24 @@ namespace EFarma.Business
 
         public async Task<ResultObject> CreateEmployee(Employee employee)
         {
-            var existent_employee = await _repository.Employees.Find(e => e.CPF == employee.CPF ||
+            var existentEmployee = await _repository.Employees.Find(e => e.CPF == employee.CPF ||
                                      (!string.IsNullOrEmpty(employee.EmployeeId) && e.EmployeeId == employee.EmployeeId));
-            if (existent_employee.Any())
+            if (existentEmployee.Any())
             {
                 return new ResultObject
                 {
                     Message = "CPF already exists in the system.",
+                    StatusCode = 409,
+                    Success = false
+                };
+            }
+
+            var existentTagCode = await _repository.Employees.GetEmployeeByTagCode(employee.TagCode);
+            if (existentTagCode != null)
+            {
+                return new ResultObject
+                {
+                    Message = "This tag code belong to another employee.",
                     StatusCode = 409,
                     Success = false
                 };
