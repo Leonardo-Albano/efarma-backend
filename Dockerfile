@@ -6,11 +6,11 @@ WORKDIR /src
 
 # restore
 
-COPY ["src/Efarma/Efarma.csproj", "EFarma/"]
-RUN dotnet restore 'EFarma/Efarma.csproj'
+COPY ["EFarma/EFarma.csproj", "EFarma/"]
+RUN dotnet restore 'EFarma/EFarma.csproj'
 
 # build 
-COPY ["src/Efarma", "EFarma/"]
+COPY ["EFarma", "EFarma/"]
 RUN dotnet build 'EFarma/EFarma.csproj' -c Release -o /app/build
 
 # Stage 2: Publish Stage
