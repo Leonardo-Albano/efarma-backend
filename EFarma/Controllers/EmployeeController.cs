@@ -57,14 +57,41 @@ namespace EFarma.Controllers
             );
         }
 
-        [HttpPost("Login")]
-        public async Task<ActionResult<ResultObject>> Login([FromBody] LoginDTO loginDTO)
+        [HttpPut]
+        public async Task<ActionResult<ResultDataObject<Employee?>>> UpdateEmployee([FromBody] EmployeeDTO employeeDto)
         {
-            var result = await _business.Login(loginDTO);
+            var existingEmployeeResult = await _business.GetEmployee(employeeDto.CPF);
+
+            if (existingEmployeeResult == null || !existingEmployeeResult.Success && existingEmployeeResult.Data == null)
+            {
+                return NotFound(new ResultDataObject<Employee?>
+                {
+                    StatusCode = 404,
+                    Message = "Employee not found.",
+                    Data = null
+                });
+            }
+
+            var existingEmployee = existingEmployeeResult.Data;
+
+            _mapper.Map(employeeDto, existingEmployee);
+            var result = await _business.UpdateEmployee(existingEmployee);
 
             return StatusCode(
                 statusCode: result.StatusCode,
                 value: result
+            );
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ResultObject>> DeleteEmployee(int id)
+        {
+
+            var deleteResult = await _business.DeleteEmployee(id);
+
+            return StatusCode(
+                statusCode: deleteResult.StatusCode,
+                value: deleteResult
             );
         }
 

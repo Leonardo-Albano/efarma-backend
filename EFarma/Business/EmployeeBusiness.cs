@@ -61,6 +61,30 @@ namespace EFarma.Business
             };
         }
 
+        public async Task<ResultObject> DeleteEmployee(int id)
+        {
+            var employee = await _repository.Employees.FirstOrDefault(e=>e.Id == id);
+            if (employee == null)
+            {
+                return new ResultObject
+                {
+                    StatusCode = 404,
+                    Message = "Employee not found.",
+                    Success = false
+                };
+            }
+
+            _repository.Employees.Remove(employee);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Employee deleted successfully." : "An error occurred while deleting the employee.",
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
+        }
+
         public async Task<ResultDataObject<Employee>> GetEmployee(string cpf)
         {
             var employee = await _repository.Employees.FirstOrDefault(e => e.CPF == cpf);
@@ -95,6 +119,19 @@ namespace EFarma.Business
                 Message = result ? "Access allowed." : "Access denied.",
                 StatusCode = result ? 200 : 403,
                 Success = result
+            };
+        }
+
+        public async Task<ResultDataObject<Employee?>> UpdateEmployee(Employee existingEmployee)
+        {
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultDataObject<Employee?>
+            {
+                Message = success ? "Employee updated successfully." : "An error occurred while updating the employee.",
+                Data = success ? existingEmployee : null,
+                StatusCode = success ? 200 : 500,
+                Success = success
             };
         }
     }
