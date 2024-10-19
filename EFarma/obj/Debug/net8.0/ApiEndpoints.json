@@ -9,7 +9,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.AccessLog, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.AccessLog, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -35,7 +35,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.VoidResult",
+        "Type": "EFarma.Models.Response.ResultObject",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -61,7 +61,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[EFarma.Models.Employee, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[EFarma.Models.Employee, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -92,7 +92,59 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.Views.PersonView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.Views.PersonView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EFarma.Controllers.EmployeeController",
+    "Method": "Login",
+    "RelativePath": "api/Employee/Login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "loginDTO",
+        "Type": "EFarma.Models.DTOs.LoginDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EFarma.Models.Response.ResultObject",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EFarma.Controllers.MedicamentController",
+    "Method": "CreateMedicament",
+    "RelativePath": "api/Medicament",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "medicamentDTO",
+        "Type": "EFarma.Models.DTOs.MedicamentDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EFarma.Models.Response.ResultObject",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -112,7 +164,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[System.Collections.Generic.IEnumerable\u00601[[System.Collections.Generic.Dictionary\u00602[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[System.Collections.Generic.Dictionary\u00602[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -138,7 +190,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.VoidResult",
+        "Type": "EFarma.Models.Response.ResultObject",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -158,7 +210,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.Patient, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.Patient, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -184,7 +236,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[EFarma.Models.Patient, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[EFarma.Models.Patient, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -210,7 +262,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.VoidResult",
+        "Type": "EFarma.Models.Response.ResultObject",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -230,7 +282,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[System.Collections.Generic.IEnumerable\u00601[[System.Collections.Generic.KeyValuePair\u00602[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[System.Collections.Generic.KeyValuePair\u00602[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -256,7 +308,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.VoidResult",
+        "Type": "EFarma.Models.Response.ResultObject",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -273,10 +325,47 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "cpf",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "date",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.Views.PrescriptionView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.Views.PrescriptionView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EFarma.Controllers.PrescriptionController",
+    "Method": "GetPrescriptionItems",
+    "RelativePath": "api/Prescription/{prescriptionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "prescriptionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[EFarma.Models.Views.PrescriptionItemView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -302,7 +391,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.VoidResult",
+        "Type": "EFarma.Models.Response.ResultObject",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -322,7 +411,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "EFarma.Models.Response.DataResult\u00601[[System.Collections.Generic.IEnumerable\u00601[[System.Collections.Generic.KeyValuePair\u00602[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.IEnumerable\u00601[[System.Collections.Generic.KeyValuePair\u00602[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[System.String, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",

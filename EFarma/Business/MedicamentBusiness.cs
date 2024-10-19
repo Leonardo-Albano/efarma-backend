@@ -52,6 +52,30 @@ namespace EFarma.Business
             };
         }
 
+        public async Task<ResultObject> DeleteMedicament(int id)
+        {
+            var medicament = await _repository.Medicaments.FirstOrDefault(e => e.Id == id);
+            if (medicament == null)
+            {
+                return new ResultObject
+                {
+                    StatusCode = 404,
+                    Message = "Medicament not found.",
+                    Success = false
+                };
+            }
+
+            _repository.Medicaments.Remove(medicament);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Medicament deleted successfully." : "An error occurred while deleting the medicament.",
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
+        }
+
         public async Task<ResultDataObject<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()
         {
             var medicaments = await _repository.Medicaments.GetAll();
