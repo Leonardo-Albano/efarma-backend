@@ -11,5 +11,6 @@ namespace EFarma.Business.Interfaces
         Task<ResultDataObject<Employee>> GetEmployee(string cpf);
         Task<ResultObject> Login(LoginDTO loginDTO);
         Task<ResultDataObject<Employee?>> UpdateEmployee(Employee employee);
+        Task<ResultObject> UpdatePassword(EmployeeUpdatePasswordDTO updatePasswordDTO);
     }
 }

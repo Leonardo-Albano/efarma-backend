@@ -24,15 +24,11 @@ namespace EFarma.Business
         {
             var patients = await _repository.Patients
                 .Find(p =>
-               (!string.IsNullOrEmpty(name) && p.Name == name) ||
+               (!string.IsNullOrEmpty(name) && p.Name.ToLower().Trim().Contains(name.ToLower().Trim())) ||
                (!string.IsNullOrEmpty(cpf) && p.CPF == cpf) ||
                (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(cpf)));
 
-            var employees = await _repository.Employees
-                .Find(p =>
-               (!string.IsNullOrEmpty(name) && p.Name == name) ||
-               (!string.IsNullOrEmpty(cpf) && p.CPF == cpf) ||
-               (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(cpf)));
+            var employees = await _repository.Employees.GetEmployeeByCpfOrName(cpf, name);
 
 
             var people = _mapper.Map<IEnumerable<PersonView>>(patients)

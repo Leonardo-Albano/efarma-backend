@@ -11,6 +11,14 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<IEnumerable<Employee?>> GetEmployeeByCpfOrName(string? cpf, string? name)
+            => await DataContext.Employees
+                .Include(e=>e.Role)
+                .Where(p =>
+               (!string.IsNullOrEmpty(name) && p.Name.ToLower().Trim().Contains(name.ToLower().Trim())) ||
+               (!string.IsNullOrEmpty(cpf) && p.CPF == cpf) ||
+               (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(cpf))).ToArrayAsync();
+
         public async Task<Employee?> GetEmployeeByTagCode(string code) 
             => await DataContext.Employees.FirstOrDefaultAsync(e => e.TagCode == code);
         public DataContext DataContext

@@ -16,8 +16,9 @@ namespace EFarma.Config
             CreateMap<Patient, PersonView>()
                 .ForMember(pa => pa.Role, opt => opt.MapFrom(src => "patient"));
 
-            CreateMap<Employee, PersonView>();
             CreateMap<EmployeeDTO, Employee>();
+            CreateMap<Employee, PersonView>()
+                .ForMember(pa => pa.Role, opt => opt.MapFrom(src => src.Role.Name));
 
             CreateMap<MedicamentDTO, Medicament>();
 
@@ -25,6 +26,9 @@ namespace EFarma.Config
 
             CreateMap<PrescriptionDTO,  Prescription>();
             CreateMap<PrescriptionItemDTO,  PrescriptionItem>();
+            CreateMap<Prescription, PrescriptionView>()
+                .ForMember(pa => pa.PatientName, opt => opt.MapFrom(src => src.Patient.Name))
+                .ForMember(pa => pa.DoctorName, opt => opt.MapFrom(src => src.Employee.Name));
 
             CreateMap<PermissionDTO, Permission>();
             CreateMap<Permission, PermissionView>();

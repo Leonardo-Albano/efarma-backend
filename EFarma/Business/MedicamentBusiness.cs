@@ -25,7 +25,7 @@ namespace EFarma.Business
         {
             var medicament = _mapper.Map<Medicament>(medicamentDTO);
             
-            var existant_medicament = _repository.Medicaments.FirstOrDefault(m => 
+            var existant_medicament = await _repository.Medicaments.FirstOrDefault(m => 
                 m.Description == medicamentDTO.Description &&
                 m.Dosage == medicamentDTO.Dosage &&
                 m.Measure == medicamentDTO.Measure
@@ -81,7 +81,7 @@ namespace EFarma.Business
             var medicaments = await _repository.Medicaments.GetAll();
             var result = medicaments.Select(m => new Dictionary<int, string>
             {
-                { m.Id, $"{m.Description} {m.Dosage}{m.Measure}" }
+                { m.Id, $"{m.Description} {(int)m.Dosage}{m.Measure}" }
             });
 
             bool success = result.Any();

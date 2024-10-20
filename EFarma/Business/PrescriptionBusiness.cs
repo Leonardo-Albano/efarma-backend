@@ -43,6 +43,39 @@ namespace EFarma.Business
                 item.Medicament = medicament;
             }
 
+            var employee = await _repository.Employees.FirstOrDefault(m => m.Id == prescription.EmployeeId);
+            if (employee == null)
+            {
+                return new ResultObject
+                {
+                    Message = $"Employee not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+            else if (string.IsNullOrEmpty(employee.CRM))
+            {
+                return new ResultObject
+                {
+                    Message = $"Employee not allowed to prescript (CRM not registered).",
+                    StatusCode = 403,
+                    Success = false
+                };
+            }
+            prescription.Employee = employee;
+
+            var patient = await _repository.Patients.FirstOrDefault(m => m.CPF == prescription.CPF);
+            if (patient == null)
+            {
+                return new ResultObject
+                {
+                    Message = $"Patient not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+            prescription.Patient = patient;
+
             _repository.Prescriptions.Add(prescription);
 
             bool success = await _repository.SaveChangesAsync() > 0;

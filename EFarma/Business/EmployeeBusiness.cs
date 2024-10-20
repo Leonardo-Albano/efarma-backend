@@ -101,7 +101,7 @@ namespace EFarma.Business
 
         public async Task<ResultObject> Login(LoginDTO loginDTO)
         {
-            var employee = await _repository.Employees.FirstOrDefault(e => e.CPF == loginDTO.Login);
+            var employee = await _repository.Employees.FirstOrDefault(e => e.Mail == loginDTO.Mail);
             if (employee == null)
             {
                 return new()
@@ -131,6 +131,57 @@ namespace EFarma.Business
             {
                 Message = success ? "Employee updated successfully." : "An error occurred while updating the employee.",
                 Data = success ? employee : null,
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
+        }
+
+        public async Task<ResultObject> UpdatePassword(EmployeeUpdatePasswordDTO updatePasswordDTO)
+        {
+            var employee = await _repository.Employees.FirstOrDefault(e => e.Mail == updatePasswordDTO.Mail);
+            if (employee == null)
+            {
+                return new()
+                {
+                    Message = "Employee not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            var tryLogin = await Login(new()
+            {
+                Mail = updatePasswordDTO.Mail,
+                Password = updatePasswordDTO.OldPassword
+            });
+
+            if(!tryLogin.Success)
+            {
+                return new()
+                {
+                    Message = "Incorrect password.",
+                    StatusCode = 403,
+                    Success = false
+                };
+            }
+
+            if(string.IsNullOrEmpty(updatePasswordDTO.NewPassword))
+            {
+                return new()
+                {
+                    Message = "Invalid password.",
+                    StatusCode = 403,
+                    Success = false
+                };
+            }
+
+            employee.PasswordHash = _passwordHasher.Hash(updatePasswordDTO.NewPassword);
+            _repository.Employees.Update(employee);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Password updated successfully." : "An error occurred while updating the password.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };

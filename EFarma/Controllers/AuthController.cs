@@ -31,5 +31,16 @@ namespace EFarma.Controllers
                 value: result
             );
         }
+
+        [HttpPost("UpdatePassword")]
+        public async Task<ActionResult<ResultObject>> UpdatePassword([FromBody] EmployeeUpdatePasswordDTO updatePasswordDTO)
+        {
+            var result = await _business.UpdatePassword(updatePasswordDTO);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
     }
 }

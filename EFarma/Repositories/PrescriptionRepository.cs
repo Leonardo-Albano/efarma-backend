@@ -13,11 +13,15 @@ namespace EFarma.Repositories
 
         public async Task<IEnumerable<Prescription>> GetDetailedPrescriptions(string? cpf = null, DateTime? date = null)
         {
-            var query = DataContext.Prescriptions.Include(p => p.Items).AsQueryable();
+            var query = DataContext.Prescriptions
+                .Include(p => p.Items)
+                .Include(p => p.Patient)
+                .Include(p => p.Employee)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(cpf))
             {
-                query = query.Where(p => p.CPF == cpf);
+                query = query.Where(p => p.CPF.Replace(".", "").Replace("-", "").Contains(cpf.Replace(".", "").Replace("-", "")));
             }
 
             if (date.HasValue)

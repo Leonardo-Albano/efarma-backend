@@ -55,5 +55,28 @@ namespace EFarma.Controllers
                 value: result
             );
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ResultObject>> UpdatePermission(int id, [FromBody] PermissionDTO permissionDto)
+        {
+            var permission = _mapper.Map<Permission>(permissionDto);
+            var result = await _business.UpdatePermission(id, permission, permissionDto.StockRoomIds, permissionDto.PageIds);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ResultObject>> DeletePermission(int id)
+        {
+            var result = await _business.DeletePermission(id);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
     }
 }

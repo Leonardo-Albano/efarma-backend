@@ -9,5 +9,7 @@ namespace EFarma.Business.Interfaces
         Task<ResultObject> CreatePermission(Permission permission, IEnumerable<int>? stockRoomIds, IEnumerable<int>? pageIds);
         Task<ResultDataObject<Permission?>> GetPermissionDetailed(int id);
         Task<ResultDataObject<IEnumerable<PermissionView>>> GetPermissions();
+        Task<ResultObject> UpdatePermission(int id, Permission updatedPermission, IEnumerable<int>? stockRoomIds, IEnumerable<int>? pageIds);
+        Task<ResultObject> DeletePermission(int id);
     }
 }
