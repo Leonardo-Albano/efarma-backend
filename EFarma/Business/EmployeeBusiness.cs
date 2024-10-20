@@ -122,14 +122,15 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<Employee?>> UpdateEmployee(Employee existingEmployee)
+        public async Task<ResultDataObject<Employee?>> UpdateEmployee(Employee employee)
         {
+            _repository.Employees.Update(employee);
             bool success = await _repository.SaveChangesAsync() > 0;
 
             return new ResultDataObject<Employee?>
             {
                 Message = success ? "Employee updated successfully." : "An error occurred while updating the employee.",
-                Data = success ? existingEmployee : null,
+                Data = success ? employee : null,
                 StatusCode = success ? 200 : 500,
                 Success = success
             };

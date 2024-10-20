@@ -11,6 +11,11 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<StockRoom?> GetStockRoomDetailed(int id)
+            => await DataContext.StockRooms
+            .Include(sr=>sr.InStockItems)
+            .FirstOrDefaultAsync(sr => sr.Id == id);
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }

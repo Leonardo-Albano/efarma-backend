@@ -16,6 +16,7 @@ namespace EFarma.Repositories
             Employees = new EmployeeRepository(_context);
             InStockItems = new InStockItemRepository(_context);
             Medicaments = new MedicamentRepository(_context);
+            Pages = new PageRepository(_context);
             Patients = new PatientRepository(_context);
             Permissions = new PermissionRepository(_context);
             Prescriptions = new PrescriptionRepository(_context);
@@ -29,6 +30,7 @@ namespace EFarma.Repositories
         public IEmployeeRepository Employees { get; private set; }
         public IInStockItemRepository InStockItems { get; private set; }
         public IMedicamentRepository Medicaments { get; private set; }
+        public IPageRepository Pages { get; private set; }
         public IPatientRepository Patients { get; private set; }
         public IPermissionRepository Permissions { get; private set; }
         public IPrescriptionRepository Prescriptions { get; private set; }

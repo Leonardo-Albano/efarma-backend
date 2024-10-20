@@ -94,6 +94,5 @@ namespace EFarma.Controllers
                 value: deleteResult
             );
         }
-
     }
 }

@@ -6,6 +6,7 @@
         IEmployeeRepository Employees { get; }
         IInStockItemRepository InStockItems { get; }
         IMedicamentRepository Medicaments { get; }
+        IPageRepository Pages { get; }
         IPatientRepository Patients { get; }
         IPermissionRepository Permissions { get; }
         IPrescriptionRepository Prescriptions { get; }

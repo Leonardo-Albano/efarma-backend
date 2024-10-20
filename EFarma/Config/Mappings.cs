@@ -21,12 +21,15 @@ namespace EFarma.Config
 
             CreateMap<MedicamentDTO, Medicament>();
 
+            CreateMap<PageDTO, Page>();
+
             CreateMap<PrescriptionDTO,  Prescription>();
             CreateMap<PrescriptionItemDTO,  PrescriptionItem>();
 
             CreateMap<PermissionDTO, Permission>();
             CreateMap<Permission, PermissionView>();
 
+            CreateMap<StockRoomDTO, StockRoom>();
         }
     }
 }

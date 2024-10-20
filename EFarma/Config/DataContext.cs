@@ -14,6 +14,7 @@ namespace EFarma.Data
         public DbSet<Employee> Employees { get; set; }
         public DbSet<InStockItem> InStockItems { get; set; }
         public DbSet<Medicament> Medicaments { get; set; }
+        public DbSet<Page> Page { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }

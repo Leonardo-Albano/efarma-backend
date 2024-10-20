@@ -26,7 +26,7 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultObject>> CreatePermission([FromBody] PermissionDTO permissionDto)
         {
             var permission = _mapper.Map<Permission>(permissionDto);
-            var result = await _business.CreatePermission(permission);
+            var result = await _business.CreatePermission(permission, permissionDto.StockRoomIds, permissionDto.PageIds);
 
             return StatusCode(
                 statusCode: result.StatusCode,
@@ -38,6 +38,17 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>>> GetPermissions()
         {
             var result = await _business.GetPermissions();
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ResultDataObject<Permission>>> GetPermissionDetailed(int id)
+        {
+            var result = await _business.GetPermissionDetailed(id);
 
             return StatusCode(
                 statusCode: result.StatusCode,

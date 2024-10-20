@@ -10,6 +10,6 @@ namespace EFarma.Business.Interfaces
         Task<ResultObject> DeleteEmployee(int id);
         Task<ResultDataObject<Employee>> GetEmployee(string cpf);
         Task<ResultObject> Login(LoginDTO loginDTO);
-        Task<ResultDataObject<Employee?>> UpdateEmployee(Employee existingEmployee);
+        Task<ResultDataObject<Employee?>> UpdateEmployee(Employee employee);
     }
 }

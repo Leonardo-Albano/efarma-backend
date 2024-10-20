@@ -31,7 +31,6 @@ namespace EFarma.Controllers
             );
         }
 
-
         [HttpGet]
         public async Task<ActionResult<ResultDataObject<IEnumerable<Dictionary<int, string>>>>> GetAllMedicaments()
         {

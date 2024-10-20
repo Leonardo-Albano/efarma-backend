@@ -11,6 +11,12 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<Permission?> GetPermissionDetailed(int id)
+            => await DataContext.Permissions
+            .Include(p=>p.Pages)
+            .Include(p=>p.StockRooms)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }

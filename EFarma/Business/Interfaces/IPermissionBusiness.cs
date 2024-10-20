@@ -6,7 +6,8 @@ namespace EFarma.Business.Interfaces
 {
     public interface IPermissionBusiness
     {
-        Task<ResultObject> CreatePermission(Permission permission);
+        Task<ResultObject> CreatePermission(Permission permission, IEnumerable<int>? stockRoomIds, IEnumerable<int>? pageIds);
+        Task<ResultDataObject<Permission?>> GetPermissionDetailed(int id);
         Task<ResultDataObject<IEnumerable<PermissionView>>> GetPermissions();
     }
 }

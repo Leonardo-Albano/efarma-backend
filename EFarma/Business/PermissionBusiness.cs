@@ -21,26 +21,43 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<ResultObject> CreatePermission(Permission permission)
+        public async Task<ResultObject> CreatePermission(Permission permission, IEnumerable<int>? stockRoomIds, IEnumerable<int>? pageIds)
         {
-            if(permission.StockRoomId.HasValue)
+            if (stockRoomIds != null && stockRoomIds.Any())
             {
-                var stockRoom = await _repository.StockRooms.FirstOrDefault(s=>s.Id == permission.StockRoomId.Value);
-                if(stockRoom == null)
+                var stockRooms = await _repository.StockRooms.Find(s => stockRoomIds.Contains(s.Id));
+
+                if (stockRooms.Count() != stockRoomIds.Count())
                 {
                     return new ResultObject
                     {
-                        Message = $"Stock Room with id {permission.StockRoomId.Value} doesn't exists.",
+                        Message = "One or more Stock Rooms don't exist.",
                         StatusCode = 404,
                         Success = false
                     };
                 }
-                permission.StockRoom = stockRoom;
+                permission.StockRooms = stockRooms.ToList();
+            }
+
+            if (pageIds != null && pageIds.Any())
+            {
+                var pages = await _repository.Pages.Find(s => pageIds.Contains(s.Id));
+
+                if (pages.Count() != pageIds.Count())
+                {
+                    return new ResultObject
+                    {
+                        Message = "One or more Pages don't exist.",
+                        StatusCode = 404,
+                        Success = false
+                    };
+                }
+                permission.Pages = pages.ToList();
             }
 
             _repository.Permissions.Add(permission);
-
             bool success = await _repository.SaveChangesAsync() > 0;
+
             return new ResultObject
             {
                 Message = success ? "Permission created successfully." : "An error occurred while creating the permission.",
@@ -60,6 +77,21 @@ namespace EFarma.Business
             {
                 Message = success ? "Found permissions." : "No permissions found.",
                 Data = permissionsView,
+                StatusCode = success ? 200 : 404,
+                Success = success
+            };
+        }
+
+        public async Task<ResultDataObject<Permission?>> GetPermissionDetailed(int id)
+        {
+            var permission = await _repository.Permissions.GetPermissionDetailed(id);
+
+            bool success = permission != null;
+
+            return new()
+            {
+                Message = success ? "Found permission." : "Permission not found.",
+                Data = permission,
                 StatusCode = success ? 200 : 404,
                 Success = success
             };

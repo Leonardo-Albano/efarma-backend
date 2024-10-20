@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EFarma.Models
 {
-    public class Permission
+    public class Page
     {
         [Key]
         public int Id { get; set; }
@@ -11,8 +11,7 @@ namespace EFarma.Models
         public required string Name { get; set; }
         public required string Description { get; set; }
 
-        public List<StockRoom>? StockRooms { get; set; } = [];
-        public List<Page> Pages { get; set; } = [];
-
+        [JsonIgnore]
+        public List<Permission>? Permissions { get; set; } = [];
     }
 }

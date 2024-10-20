@@ -38,9 +38,33 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Employee created successfully." : "An error occurred while creating the employee.",
+                Message = success ? "Patient created successfully." : "An error occurred while creating the patient.",
                 Success = success,
                 StatusCode = success ? 200 : 500
+            };
+        }
+
+        public async Task<ResultObject> DeletePatient(int id)
+        {
+            var patient = await _repository.Patients.FirstOrDefault(e => e.Id == id);
+            if (patient == null)
+            {
+                return new ResultObject
+                {
+                    StatusCode = 404,
+                    Message = "Patient not found.",
+                    Success = false
+                };
+            }
+
+            _repository.Patients.Remove(patient);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Patient deleted successfully." : "An error occurred while deleting the patient.",
+                StatusCode = success ? 200 : 500,
+                Success = success
             };
         }
 
@@ -70,6 +94,20 @@ namespace EFarma.Business
                 Data = patient,
                 Success = success,
                 StatusCode = success ? 200 : 404
+            };
+        }
+
+        public async Task<ResultDataObject<Patient?>> UpdatePatient(Patient patient)
+        {
+            _repository.Patients.Update(patient);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultDataObject<Patient?>
+            {
+                Message = success ? "Patient updated successfully." : "An error occurred while updating the patient.",
+                Data = success ? patient : null,
+                StatusCode = success ? 200 : 500,
+                Success = success
             };
         }
     }

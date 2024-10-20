@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
 using EFarma.Models;
+using EFarma.Models.DTOs;
 using EFarma.Models.Resource;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
@@ -58,5 +59,41 @@ namespace EFarma.Controllers
             );
         }
 
+        [HttpPut]
+        public async Task<ActionResult<ResultDataObject<Patient?>>> UpdatePatient([FromBody] PatientDTO patientDto)
+        {
+            var existingPatientResult = await _business.GetPatient(patientDto.CPF);
+
+            if (existingPatientResult == null || !existingPatientResult.Success && existingPatientResult.Data == null)
+            {
+                return NotFound(new ResultDataObject<Patient?>
+                {
+                    StatusCode = 404,
+                    Message = "Patient not found.",
+                    Data = null
+                });
+            }
+
+            var existingPatient = existingPatientResult.Data;
+
+            _mapper.Map(patientDto, existingPatient);
+            var result = await _business.UpdatePatient(existingPatient);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ResultObject>> DeletePatient(int id)
+        {
+            var result = await _business.DeletePatient(id);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
     }
 }
