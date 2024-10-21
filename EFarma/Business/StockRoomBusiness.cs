@@ -124,7 +124,7 @@ namespace EFarma.Business
             }
             inStockItem.Medicament = medicament;
 
-            var tagCodes = await GetNewTagCodes();
+            var tagCodes = await GetNewTagCodes(inStockItem.StockRoom.UniqueId);
 
             if (quantity != tagCodes.Count())
             {
@@ -216,9 +216,9 @@ namespace EFarma.Business
             };
         }
 
-        private async Task<List<string>> GetNewTagCodes()
+        private async Task<List<string>> GetNewTagCodes(string uniqueId)
         {
-            var readTagCodes = await GetReadTagCodes();
+            var readTagCodes = await GetReadTagCodes(uniqueId);
             var unassignedTags = new List<string>();
 
             foreach (var readTagCode in readTagCodes)
@@ -232,11 +232,11 @@ namespace EFarma.Business
             return unassignedTags;
         }
 
-        private async Task<List<string>> GetReadTagCodes()
+        private async Task<List<string>> GetReadTagCodes(string uniqueId)
         {
             try
             {
-                var requestUrl = "http://127.0.0.1:5000/TagCodes";
+                var requestUrl = $"http://127.0.0.1:5000/TagCodes?code={uniqueId}";
 
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();

@@ -14,7 +14,7 @@ namespace EFarma.Config
 
             CreateMap<PatientDTO, Patient>();
             CreateMap<Patient, PersonView>()
-                .ForMember(pa => pa.Role, opt => opt.MapFrom("patient"));
+                .ForMember(pa => pa.Role, opt => opt.MapFrom(src => "patient"));
 
             CreateMap<EmployeeDTO, Employee>();
             CreateMap<Employee, PersonView>()

@@ -487,3 +487,4 @@ C:\Users\User\Source\Repos\efarma-backend\EFarma\obj\Debug\net8.0\refint\EFarma.
 C:\Users\User\Source\Repos\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.pdb
 C:\Users\User\Source\Repos\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.genruntimeconfig.cache
 C:\Users\User\Source\Repos\efarma-backend\EFarma\obj\Debug\net8.0\ref\EFarma.dll
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\Newtonsoft.Json.dll
