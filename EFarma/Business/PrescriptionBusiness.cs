@@ -5,7 +5,6 @@ using EFarma.Models;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EFarma.Business
 {
@@ -82,6 +81,30 @@ namespace EFarma.Business
             return new ResultObject
             {
                 Message = success ? "Prescription created successfully." : "An error occurred while creating the prescription.",
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
+        }
+
+        public async Task<ResultObject> DeletePrescription(int id)
+        {
+            var prescription = await _repository.Prescriptions.FirstOrDefault(e => e.Id == id);
+            if (prescription == null)
+            {
+                return new ResultObject
+                {
+                    StatusCode = 404,
+                    Message = "Prescription not found.",
+                    Success = false
+                };
+            }
+
+            _repository.Prescriptions.Remove(prescription);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Prescription deleted successfully." : "An error occurred while deleting the prescription.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };

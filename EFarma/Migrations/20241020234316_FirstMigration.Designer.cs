@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFarma.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241019233100_FirstMigration")]
+    [Migration("20241020234316_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -117,11 +117,12 @@ namespace EFarma.Migrations
                     b.Property<int>("MedicamentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.Property<int>("StockRoomId")
                         .HasColumnType("int");
+
+                    b.Property<string>("TagCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 

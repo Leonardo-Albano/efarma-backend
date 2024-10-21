@@ -34,6 +34,7 @@ namespace EFarma.Config
             CreateMap<Permission, PermissionView>();
 
             CreateMap<StockRoomDTO, StockRoom>();
+            CreateMap<InStockItemDTO, InStockItem>();
         }
     }
 }

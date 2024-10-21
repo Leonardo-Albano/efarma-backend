@@ -44,6 +44,30 @@ namespace EFarma.Business
             };
         }
 
+        public async Task<ResultObject> DeleteRole(int id)
+        {
+            var role = await _repository.Roles.FirstOrDefault(e => e.Id == id);
+            if (role == null)
+            {
+                return new ResultObject
+                {
+                    StatusCode = 404,
+                    Message = "Role not found.",
+                    Success = false
+                };
+            }
+
+            _repository.Roles.Remove(role);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Role deleted successfully." : "An error occurred while deleting the role.",
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
+        }
+
         public async Task<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>> GetRoles()
         {
             var roles = await _repository.Roles.GetAll();

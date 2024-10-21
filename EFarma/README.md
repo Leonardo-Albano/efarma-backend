@@ -7,8 +7,8 @@ dotnet ef migrations remove
 
 Comandos para o docker:
 
-docker build -t efarma .
-docker run -p 5001:5001 --name efarma efarma
+docker build -t efarma .						# Builda a imagem docker
+docker run -p 5001:5001 --name efarma efarma	# Roda a imagem docker
 
-docker ps -a # Listar as imagens
-docker rm ecc779908211 # Remove o id escolhido
+docker ps -a									# Listar as imagens
+docker rm ecc779908211							# Remove o id escolhido

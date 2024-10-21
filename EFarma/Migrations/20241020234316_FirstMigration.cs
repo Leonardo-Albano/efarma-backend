@@ -195,8 +195,8 @@ namespace EFarma.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     StockRoomId = table.Column<int>(type: "int", nullable: false),
                     MedicamentId = table.Column<int>(type: "int", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
+                    TagCode = table.Column<string>(type: "longtext", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {

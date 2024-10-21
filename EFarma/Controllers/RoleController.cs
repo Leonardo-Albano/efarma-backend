@@ -44,5 +44,16 @@ namespace EFarma.Controllers
                 value: result
             );
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ResultObject>> DeleteRole(int id)
+        {
+            var result = await _business.DeleteRole(id);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
     }
 }

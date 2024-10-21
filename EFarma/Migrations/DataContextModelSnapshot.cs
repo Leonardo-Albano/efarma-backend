@@ -42,7 +42,7 @@ namespace EFarma.Migrations
 
                     b.HasIndex("StockRoomId");
 
-                    b.ToTable("AccessLogs", (string)null);
+                    b.ToTable("AccessLogs");
                 });
 
             modelBuilder.Entity("EFarma.Models.Employee", b =>
@@ -99,7 +99,7 @@ namespace EFarma.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("EFarma.Models.InStockItem", b =>
@@ -114,11 +114,12 @@ namespace EFarma.Migrations
                     b.Property<int>("MedicamentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.Property<int>("StockRoomId")
                         .HasColumnType("int");
+
+                    b.Property<string>("TagCode")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -126,7 +127,7 @@ namespace EFarma.Migrations
 
                     b.HasIndex("StockRoomId");
 
-                    b.ToTable("InStockItems", (string)null);
+                    b.ToTable("InStockItems");
                 });
 
             modelBuilder.Entity("EFarma.Models.Medicament", b =>
@@ -148,7 +149,7 @@ namespace EFarma.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Medicaments", (string)null);
+                    b.ToTable("Medicaments");
                 });
 
             modelBuilder.Entity("EFarma.Models.Page", b =>
@@ -167,7 +168,7 @@ namespace EFarma.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Page", (string)null);
+                    b.ToTable("Page");
                 });
 
             modelBuilder.Entity("EFarma.Models.Patient", b =>
@@ -198,7 +199,7 @@ namespace EFarma.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("EFarma.Models.Permission", b =>
@@ -217,7 +218,7 @@ namespace EFarma.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("EFarma.Models.Prescription", b =>
@@ -253,7 +254,7 @@ namespace EFarma.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Prescriptions", (string)null);
+                    b.ToTable("Prescriptions");
                 });
 
             modelBuilder.Entity("EFarma.Models.PrescriptionItem", b =>
@@ -277,7 +278,7 @@ namespace EFarma.Migrations
 
                     b.HasIndex("PrescriptionId");
 
-                    b.ToTable("PrescriptionItems", (string)null);
+                    b.ToTable("PrescriptionItems");
                 });
 
             modelBuilder.Entity("EFarma.Models.Role", b =>
@@ -296,7 +297,7 @@ namespace EFarma.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("EFarma.Models.StatusCode", b =>
@@ -315,7 +316,7 @@ namespace EFarma.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StatusCodes", (string)null);
+                    b.ToTable("StatusCodes");
                 });
 
             modelBuilder.Entity("EFarma.Models.StockRoom", b =>
@@ -334,7 +335,7 @@ namespace EFarma.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("StockRooms", (string)null);
+                    b.ToTable("StockRooms");
                 });
 
             modelBuilder.Entity("PagePermission", b =>
@@ -349,7 +350,7 @@ namespace EFarma.Migrations
 
                     b.HasIndex("PermissionsId");
 
-                    b.ToTable("PagePermission", (string)null);
+                    b.ToTable("PagePermission");
                 });
 
             modelBuilder.Entity("PermissionStockRoom", b =>
@@ -364,7 +365,7 @@ namespace EFarma.Migrations
 
                     b.HasIndex("StockRoomsId");
 
-                    b.ToTable("PermissionStockRoom", (string)null);
+                    b.ToTable("PermissionStockRoom");
                 });
 
             modelBuilder.Entity("EFarma.Models.AccessLog", b =>

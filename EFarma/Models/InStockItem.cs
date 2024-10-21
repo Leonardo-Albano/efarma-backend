@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace EFarma.Models
 {
@@ -14,11 +15,16 @@ namespace EFarma.Models
         [ForeignKey("Medicament")]
         public int MedicamentId { get; set; }
 
+        public required string TagCode { get; set; }
         public DateTime ExpirationDate { get; set; }
-        public int Quantity { get; set; }
 
-        public required StockRoom StockRoom { get; set; }
-        public required Medicament Medicament { get; set; }
+        [JsonIgnore]
+        public StockRoom StockRoom { get; set; }
+        public Medicament Medicament { get; set; }
 
+        public InStockItem Clone()
+        {
+            return (InStockItem)this.MemberwiseClone();
+        }
     }
 }

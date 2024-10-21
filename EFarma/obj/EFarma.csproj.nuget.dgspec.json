@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\source\\repos\\efarma-backend\\EFarma\\EFarma.csproj": {}
+    "C:\\Users\\User\\Source\\Repos\\efarma-backend\\EFarma\\EFarma.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\source\\repos\\efarma-backend\\EFarma\\EFarma.csproj": {
+    "C:\\Users\\User\\Source\\Repos\\efarma-backend\\EFarma\\EFarma.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\source\\repos\\efarma-backend\\EFarma\\EFarma.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Source\\Repos\\efarma-backend\\EFarma\\EFarma.csproj",
         "projectName": "EFarma",
-        "projectPath": "C:\\Users\\User\\source\\repos\\efarma-backend\\EFarma\\EFarma.csproj",
+        "projectPath": "C:\\Users\\User\\Source\\Repos\\efarma-backend\\EFarma\\EFarma.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\source\\repos\\efarma-backend\\EFarma\\obj\\",
+        "outputPath": "C:\\Users\\User\\Source\\Repos\\efarma-backend\\EFarma\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -67,6 +67,10 @@
             "MySql.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.5, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
