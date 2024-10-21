@@ -14,11 +14,14 @@ namespace EFarma.Config
 
             CreateMap<PatientDTO, Patient>();
             CreateMap<Patient, PersonView>()
-                .ForMember(pa => pa.Role, opt => opt.MapFrom(src => "patient"));
+                .ForMember(pa => pa.Role, opt => opt.MapFrom("patient"));
 
             CreateMap<EmployeeDTO, Employee>();
             CreateMap<Employee, PersonView>()
                 .ForMember(pa => pa.Role, opt => opt.MapFrom(src => src.Role.Name));
+
+            CreateMap<EntryLogDTO, AccessLog>()
+                .ForMember(el=>el.IsEntry, opt => opt.MapFrom(src => true));
 
             CreateMap<MedicamentDTO, Medicament>();
 

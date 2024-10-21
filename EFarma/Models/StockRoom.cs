@@ -10,6 +10,7 @@ namespace EFarma.Models
 
         public required string Name { get; set; }
         public required string Address { get; set; }
+        public required string UniqueId { get; set; }
 
         public required List<InStockItem> InStockItems { get; set; } = [];
         [JsonIgnore]

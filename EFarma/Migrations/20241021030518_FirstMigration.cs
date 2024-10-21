@@ -96,28 +96,14 @@ namespace EFarma.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "StatusCodes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Description = table.Column<string>(type: "longtext", nullable: false),
-                    ShortDescription = table.Column<string>(type: "longtext", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StatusCodes", x => x.Id);
-                })
-                .Annotation("MySQL:Charset", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "StockRooms",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false),
-                    Address = table.Column<string>(type: "longtext", nullable: false)
+                    Address = table.Column<string>(type: "longtext", nullable: false),
+                    UniqueId = table.Column<string>(type: "longtext", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -247,7 +233,6 @@ namespace EFarma.Migrations
                 {
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
                     StockRoomId = table.Column<int>(type: "int", nullable: false),
-                    StatusCodeId = table.Column<int>(type: "int", nullable: false),
                     DateTimeAccess = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsEntry = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
@@ -257,12 +242,6 @@ namespace EFarma.Migrations
                         name: "FK_AccessLogs_Employees_EmployeeId",
                         column: x => x.EmployeeId,
                         principalTable: "Employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AccessLogs_StatusCodes_StatusCodeId",
-                        column: x => x.StatusCodeId,
-                        principalTable: "StatusCodes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -339,11 +318,6 @@ namespace EFarma.Migrations
                 column: "EmployeeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AccessLogs_StatusCodeId",
-                table: "AccessLogs",
-                column: "StatusCodeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AccessLogs_StockRoomId",
                 table: "AccessLogs",
                 column: "StockRoomId");
@@ -416,9 +390,6 @@ namespace EFarma.Migrations
 
             migrationBuilder.DropTable(
                 name: "PrescriptionItems");
-
-            migrationBuilder.DropTable(
-                name: "StatusCodes");
 
             migrationBuilder.DropTable(
                 name: "Page");

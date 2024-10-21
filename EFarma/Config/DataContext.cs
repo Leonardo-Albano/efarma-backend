@@ -20,7 +20,6 @@ namespace EFarma.Data
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<StatusCode> StatusCodes { get; set; }
         public DbSet<StockRoom> StockRooms { get; set; }
 
     }

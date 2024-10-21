@@ -157,24 +157,63 @@ namespace EFarma.Business
 
         public async Task<ResultObject> RemoveItemsFromStock(IEnumerable<KeyValuePair<int, int>> medicamentIdList)
         {
-            List<KeyValuePair<int, int>> lackMedicines = [];
-            foreach (var medicament_kv in medicamentIdList)
-            {
-                var medicaments = await _repository.InStockItems.Find(item=>item.MedicamentId == medicament_kv.Key);
-                int lackMedicinesQtt = medicament_kv.Value - medicaments.Count();
+            //List<KeyValuePair<int, int>> lackMedicines = [];
+            //foreach (var medicament_kv in medicamentIdList)
+            //{
+            //    var medicaments = await _repository.InStockItems.Find(item=>item.MedicamentId == medicament_kv.Key);
+            //    int lackMedicinesQtt = medicament_kv.Value - medicaments.Count();
 
-                if (lackMedicinesQtt > 0)
-                {
-                    lackMedicines.Add(new KeyValuePair<int, int>(medicament_kv.Key, lackMedicinesQtt));
-                }
-                else
-                {
-                    var usedMedicaments = medicaments.Take(medicament_kv.Value).ToArray();
-                    _repository.InStockItems.RemoveRange(usedMedicaments);
-                }
-            }
+            //    if (lackMedicinesQtt > 0)
+            //    {
+            //        lackMedicines.Add(new KeyValuePair<int, int>(medicament_kv.Key, lackMedicinesQtt));
+            //    }
+            //    else
+            //    {
+            //        var usedMedicaments = medicaments.Take(medicament_kv.Value).ToArray();
+            //        _repository.InStockItems.RemoveRange(usedMedicaments);
+            //    }
+            //}
 
             return new();
+        }
+        public async Task<ResultObject> EntryStockRoom(EntryLogDTO entryLogDTO)
+        {
+            var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
+            var employee = await _repository.Employees.GetEmployeeByTagCode(entryLogDTO.TagCode);
+            if (employee != null)
+            {
+                return new ResultObject
+                {
+                    Message = "Employee not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+            accessLog.Employee = employee;
+
+            var stockRoom = employee.Permission.StockRooms.FirstOrDefault(sr=>sr.UniqueId == entryLogDTO.StockRoomUniqueId);
+            if (stockRoom == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Access not allowed.",
+                    StatusCode = 403,
+                    Success = false
+                };
+            }
+
+            accessLog.StockRoom = stockRoom;
+
+            _repository.AccessLogs.Add(accessLog);
+
+            await _repository.SaveChangesAsync();
+
+            return new ResultObject
+            {
+                Message = "Access allowed",
+                StatusCode = 200,
+                Success = true
+            };
         }
 
         private async Task<List<string>> GetNewTagCodes()
@@ -212,5 +251,6 @@ namespace EFarma.Business
                 return [];
             }
         }
+
     }
 }

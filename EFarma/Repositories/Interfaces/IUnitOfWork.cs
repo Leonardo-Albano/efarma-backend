@@ -12,7 +12,6 @@
         IPrescriptionRepository Prescriptions { get; }
         IPrescriptionItemRepository PrescriptionItems { get; }
         IRoleRepository Roles { get; }
-        IStatusCodeRepository StatusCodes { get; }
         IStockRoomRepository StockRooms { get; }
         Task<int> SaveChangesAsync();
     }

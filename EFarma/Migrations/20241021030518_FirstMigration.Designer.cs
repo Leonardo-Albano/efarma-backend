@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFarma.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241020234316_FirstMigration")]
+    [Migration("20241021030518_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -33,15 +33,10 @@ namespace EFarma.Migrations
                     b.Property<bool>("IsEntry")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("StatusCodeId")
-                        .HasColumnType("int");
-
                     b.Property<int>("StockRoomId")
                         .HasColumnType("int");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("StatusCodeId");
 
                     b.HasIndex("StockRoomId");
 
@@ -303,25 +298,6 @@ namespace EFarma.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("EFarma.Models.StatusCode", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ShortDescription")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("StatusCodes");
-                });
-
             modelBuilder.Entity("EFarma.Models.StockRoom", b =>
                 {
                     b.Property<int>("Id")
@@ -333,6 +309,10 @@ namespace EFarma.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UniqueId")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -379,12 +359,6 @@ namespace EFarma.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFarma.Models.StatusCode", "StatusCode")
-                        .WithMany()
-                        .HasForeignKey("StatusCodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EFarma.Models.StockRoom", "StockRoom")
                         .WithMany()
                         .HasForeignKey("StockRoomId")
@@ -392,8 +366,6 @@ namespace EFarma.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
-
-                    b.Navigation("StatusCode");
 
                     b.Navigation("StockRoom");
                 });

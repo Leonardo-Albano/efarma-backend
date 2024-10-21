@@ -29,20 +29,6 @@ namespace EFarma.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpPost("AddItem")]
-        public async Task<ActionResult<ResultObject>> InsertItemToStock([FromBody] InStockItemDTO inStockItemDTO)
-        {
-            var inStockItem = _mapper.Map<InStockItem>(inStockItemDTO);
-            var result = await _business.InsertItemToStock(inStockItem, inStockItemDTO.Quantity);
-            return StatusCode(result.StatusCode, result);
-        }
-
-        [HttpPost("RemoveItems")]
-        public async Task<ActionResult<ResultObject>> RemoveItemsFromStock([FromBody] IEnumerable<KeyValuePair<int, int>> medicamentIdList)
-        {
-            var result = await _business.RemoveItemsFromStock(medicamentIdList);
-            return StatusCode(result.StatusCode, result);
-        }
 
         [HttpGet]
         public async Task<ActionResult<ResultDataObject<IEnumerable<StockRoom>>>> GetAllStockRooms()
@@ -65,6 +51,27 @@ namespace EFarma.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
+        [HttpPost("AddItem")]
+        public async Task<ActionResult<ResultObject>> InsertItemToStock([FromBody] InStockItemDTO inStockItemDTO)
+        {
+            var inStockItem = _mapper.Map<InStockItem>(inStockItemDTO);
+            var result = await _business.InsertItemToStock(inStockItem, inStockItemDTO.Quantity);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPost("RemoveItems")]
+        public async Task<ActionResult<ResultObject>> RemoveItemsFromStock([FromBody] IEnumerable<KeyValuePair<int, int>> medicamentIdList)
+        {
+            var result = await _business.RemoveItemsFromStock(medicamentIdList);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPost("EntryLog")]
+        public async Task<ActionResult<ResultObject>> EntryStockRoom([FromBody] EntryLogDTO entryLogDTO)
+        {
+            var result = await _business.EntryStockRoom(entryLogDTO);
+            return StatusCode(result.StatusCode, result);
+        }
 
     }
 }

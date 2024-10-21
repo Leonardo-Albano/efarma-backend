@@ -22,7 +22,6 @@ namespace EFarma.Repositories
             Prescriptions = new PrescriptionRepository(_context);
             PrescriptionItems = new PrescriptionItemRepository(_context);
             Roles = new RoleRepository(_context);
-            StatusCodes = new StatusCodeRepository(_context);
             StockRooms = new StockRoomRepository(_context);
         }
 
@@ -36,7 +35,6 @@ namespace EFarma.Repositories
         public IPrescriptionRepository Prescriptions { get; private set; }
         public IPrescriptionItemRepository PrescriptionItems { get; private set; }
         public IRoleRepository Roles { get; private set; }
-        public IStatusCodeRepository StatusCodes { get; private set; }
         public IStockRoomRepository StockRooms { get; private set; }
 
         public void Dispose()
