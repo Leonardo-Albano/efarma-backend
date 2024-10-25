@@ -42,4 +42,6 @@ msbuild.log
 msbuild.err
 msbuild.wrn
 
-.vs/
+/.vs
+/EFarma/obj
+/EFarma/bin

@@ -51,7 +51,7 @@ namespace EFarma.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpPost("{stockRoomId}/AddItem")]
+        [HttpPost("AddItem")]
         public async Task<ActionResult<ResultObject>> InsertItemToStock([FromBody] InStockItemDTO inStockItemDTO)
         {
             var inStockItem = _mapper.Map<InStockItem>(inStockItemDTO);

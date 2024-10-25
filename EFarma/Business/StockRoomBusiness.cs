@@ -124,9 +124,9 @@ namespace EFarma.Business
             }
             inStockItem.Medicament = medicament;
 
-            var tagCodes = await GetNewTagCodes(inStockItem.StockRoom.UniqueId);
+            var newTagCodes = await GetNewTagCodes(inStockItem.StockRoom.UniqueId);
 
-            if (quantity != tagCodes.Count())
+            if (quantity != newTagCodes.Count())
             {
                 return new ResultObject
                 {
@@ -137,7 +137,7 @@ namespace EFarma.Business
             }
 
             var stockItemsToAdd = new List<InStockItem>();
-            foreach(var tagCode in tagCodes)
+            foreach(var tagCode in newTagCodes)
             {
                 var stockItem = inStockItem.Clone();
                 stockItem.TagCode = tagCode;
@@ -157,8 +157,8 @@ namespace EFarma.Business
 
         public async Task<ResultObject> RemoveItemsFromStock(RemovePrescriptionItemsDTO prescriptionItemsDTO)
         {
-            var prescriptions = _repository.Prescriptions.FirstOrDefault(p=>p.Id == prescriptionItemsDTO.PrescriptionId);
-            if (prescriptions != null)
+            var prescription = await _repository.Prescriptions.GetDetailedPrescriptionById(prescriptionItemsDTO.PrescriptionId);
+            if (prescription == null)
             {
                 return new ResultObject
                 {
@@ -168,8 +168,8 @@ namespace EFarma.Business
                 };
             }
 
-            var stockRoom = _repository.StockRooms.FirstOrDefault(p => p.Id == prescriptionItemsDTO.StockRoomId);
-            if (prescriptions != null)
+            var stockRoom = await _repository.StockRooms.FirstOrDefault(p => p.Id == prescriptionItemsDTO.StockRoomId);
+            if (stockRoom == null)
             {
                 return new ResultObject
                 {
@@ -179,9 +179,30 @@ namespace EFarma.Business
                 };
             }
 
+            var kvResult = await CompareWithActualMedicamentsAtStock(
+            prescription.Items
+                .SelectMany(i => Enumerable.Repeat(i.Medicament, i.PrescribedQuantity))
+                .ToList(),
+            stockRoom.UniqueId, stockRoom.Id);
 
+            if (!kvResult.Key)
+            {
+                return new()
+                {
+                    Message = kvResult.Value,
+                    StatusCode = 403,
+                    Success = kvResult.Key
+                };
+            }
 
-            return new();
+            prescription.Status = "Finalizado";
+            var success = await _repository.SaveChangesAsync() > 0;
+            return new()
+            {
+                Message = kvResult.Value,
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
         }
         public async Task<ResultObject> EntryStockRoom(EntryLogDTO entryLogDTO)
         {
@@ -232,7 +253,8 @@ namespace EFarma.Business
 
             foreach (var readTagCode in readTagCodes)
             {
-                if(await _repository.InStockItems.FirstOrDefault(i=>i.TagCode == readTagCode) == null)
+                var existentItemOnStock = await _repository.InStockItems.FirstOrDefault(i => i.TagCode == readTagCode);
+                if (existentItemOnStock == null)
                 {
                     unassignedTags.Add(readTagCode);
                 }
@@ -261,12 +283,31 @@ namespace EFarma.Business
             }
         }
 
-        private async Task<bool> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
+        private async Task<KeyValuePair<bool, string>> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
         {
-            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
-            var actualMedicaments = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
+            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId); // Pega os códigos lidos pelo leitor
+            var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
+            // pega os medicamentos que foram lidos pelo leitor
 
-            //Continuar implementando a comparação entre o estoque atual, e o estoque geral da sala
+            var allItemsOnStock = await _repository.InStockItems.GetAll();
+
+            var itemsTaken = allItemsOnStock.Except(actualItemsOnStock).ToList();
+            foreach (var itemOnStock in itemsTaken)
+            {
+                // Procura um item correspondente na lista de medicamentos da prescrição
+                var equivalentItem = prescriptionMedicaments.FirstOrDefault(m => m.Id == itemOnStock.MedicamentId);
+
+                // Se não houver equivalente, retorna false (itens a mais foram pegos)
+                if (equivalentItem == null)
+                {
+                    return new(false, "Os medicamentos retirados não estão de acordo com a receita.");
+                }
+
+                prescriptionMedicaments.Remove(equivalentItem);
+                _repository.InStockItems.Remove(itemOnStock);
+            }
+
+            return new(true, "Medicamentos retirados de acordo com a receita.");
         }
 
     }
