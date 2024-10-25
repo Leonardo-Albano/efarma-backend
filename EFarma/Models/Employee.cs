@@ -25,7 +25,6 @@ namespace EFarma.Models
         public string? CRM { get; set; }
         public required string TagCode { get; set; }
 
-        public required Permission Permission { get; set; }
         public required Role Role { get; set; }
     }
 }

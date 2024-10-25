@@ -21,8 +21,9 @@ namespace EFarma.Repositories
 
         public async Task<Employee?> GetEmployeeByTagCode(string code) 
             => await DataContext.Employees
-                .Include(e=>e.Permission)
-                    .ThenInclude(p=>p.StockRooms)
+                .Include(e=>e.Role)
+                    .ThenInclude(r=>r.Permissions)
+                        .ThenInclude(p => p.StockRooms)
                 .FirstOrDefaultAsync(e => e.TagCode == code);
         public DataContext DataContext
         {

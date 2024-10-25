@@ -191,7 +191,9 @@ namespace EFarma.Business
             }
             accessLog.Employee = employee;
 
-            var stockRoom = employee.Permission.StockRooms.FirstOrDefault(sr=>sr.UniqueId == entryLogDTO.StockRoomUniqueId);
+            var stockRoom = employee.Role.Permissions
+                .SelectMany(p => p.StockRooms) // Isso une todas as StockRooms de todas as permissões
+                .FirstOrDefault(sr => sr.UniqueId == entryLogDTO.StockRoomUniqueId);
             if (stockRoom == null)
             {
                 return new ResultObject
