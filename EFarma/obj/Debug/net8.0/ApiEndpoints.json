@@ -910,6 +910,32 @@
   },
   {
     "ContainingType": "EFarma.Controllers.StockRoomController",
+    "Method": "EntryStockRoom",
+    "RelativePath": "api/StockRoom/EntryLog",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "entryLogDTO",
+        "Type": "EFarma.Models.DTOs.EntryLogDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EFarma.Models.Response.ResultObject",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EFarma.Controllers.StockRoomController",
     "Method": "RemoveItemsFromStock",
     "RelativePath": "api/StockRoom/RemoveItems",
     "HttpMethod": "POST",

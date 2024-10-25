@@ -51,7 +51,7 @@ namespace EFarma.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpPost("AddItem")]
+        [HttpPost("{stockRoomId}/AddItem")]
         public async Task<ActionResult<ResultObject>> InsertItemToStock([FromBody] InStockItemDTO inStockItemDTO)
         {
             var inStockItem = _mapper.Map<InStockItem>(inStockItemDTO);
@@ -60,9 +60,9 @@ namespace EFarma.Controllers
         }
 
         [HttpPost("RemoveItems")]
-        public async Task<ActionResult<ResultObject>> RemoveItemsFromStock([FromBody] IEnumerable<KeyValuePair<int, int>> medicamentIdList)
+        public async Task<ActionResult<ResultObject>> RemoveItemsFromStock([FromBody] RemovePrescriptionItemsDTO prescriptionItemsDTO)
         {
-            var result = await _business.RemoveItemsFromStock(medicamentIdList);
+            var result = await _business.RemoveItemsFromStock(prescriptionItemsDTO);
             return StatusCode(result.StatusCode, result);
         }
 

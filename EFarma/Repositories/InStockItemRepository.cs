@@ -11,6 +11,14 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<List<InStockItem>> GetStockItemsByTagCodes(int stockRoomId, List<string> tagCodes)
+        {
+            return await DataContext.InStockItems
+                .Where(i=>i.StockRoomId == stockRoomId && tagCodes.Contains(i.TagCode))
+                .Include(i=>i.Medicament)
+                .ToListAsync();
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }

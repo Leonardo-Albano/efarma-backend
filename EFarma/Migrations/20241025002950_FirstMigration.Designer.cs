@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFarma.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241021030518_FirstMigration")]
+    [Migration("20241025002950_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -92,8 +92,6 @@ namespace EFarma.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PermissionId");
 
                     b.HasIndex("RoleId");
 
@@ -214,7 +212,12 @@ namespace EFarma.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("RoleId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Permissions");
                 });
@@ -372,19 +375,11 @@ namespace EFarma.Migrations
 
             modelBuilder.Entity("EFarma.Models.Employee", b =>
                 {
-                    b.HasOne("EFarma.Models.Permission", "Permission")
-                        .WithMany()
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EFarma.Models.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Permission");
 
                     b.Navigation("Role");
                 });
@@ -406,6 +401,13 @@ namespace EFarma.Migrations
                     b.Navigation("Medicament");
 
                     b.Navigation("StockRoom");
+                });
+
+            modelBuilder.Entity("EFarma.Models.Permission", b =>
+                {
+                    b.HasOne("EFarma.Models.Role", null)
+                        .WithMany("Permissions")
+                        .HasForeignKey("RoleId");
                 });
 
             modelBuilder.Entity("EFarma.Models.Prescription", b =>
@@ -479,6 +481,11 @@ namespace EFarma.Migrations
             modelBuilder.Entity("EFarma.Models.Prescription", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("EFarma.Models.Role", b =>
+                {
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("EFarma.Models.StockRoom", b =>

@@ -155,24 +155,31 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultObject> RemoveItemsFromStock(IEnumerable<KeyValuePair<int, int>> medicamentIdList)
+        public async Task<ResultObject> RemoveItemsFromStock(RemovePrescriptionItemsDTO prescriptionItemsDTO)
         {
-            //List<KeyValuePair<int, int>> lackMedicines = [];
-            //foreach (var medicament_kv in medicamentIdList)
-            //{
-            //    var medicaments = await _repository.InStockItems.Find(item=>item.MedicamentId == medicament_kv.Key);
-            //    int lackMedicinesQtt = medicament_kv.Value - medicaments.Count();
+            var prescriptions = _repository.Prescriptions.FirstOrDefault(p=>p.Id == prescriptionItemsDTO.PrescriptionId);
+            if (prescriptions != null)
+            {
+                return new ResultObject
+                {
+                    Message = "Prescription not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
 
-            //    if (lackMedicinesQtt > 0)
-            //    {
-            //        lackMedicines.Add(new KeyValuePair<int, int>(medicament_kv.Key, lackMedicinesQtt));
-            //    }
-            //    else
-            //    {
-            //        var usedMedicaments = medicaments.Take(medicament_kv.Value).ToArray();
-            //        _repository.InStockItems.RemoveRange(usedMedicaments);
-            //    }
-            //}
+            var stockRoom = _repository.StockRooms.FirstOrDefault(p => p.Id == prescriptionItemsDTO.StockRoomId);
+            if (prescriptions != null)
+            {
+                return new ResultObject
+                {
+                    Message = "Stock room not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+
 
             return new();
         }
@@ -252,6 +259,14 @@ namespace EFarma.Business
             {
                 return [];
             }
+        }
+
+        private async Task<bool> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
+        {
+            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
+            var actualMedicaments = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
+
+            //Continuar implementando a comparação entre o estoque atual, e o estoque geral da sala
         }
 
     }
