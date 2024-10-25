@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "x6mqLpAJh7w=",
+  "dgSpecHash": "h6lF5sM9sNM=",
   "success": true,
   "projectFilePath": "C:\\Users\\User\\source\\repos\\efarma-backend\\EFarma\\EFarma.csproj",
   "expectedPackageFiles": [
@@ -78,5 +78,12 @@
     "C:\\Users\\User\\.nuget\\packages\\system.windows.extensions\\8.0.0\\system.windows.extensions.8.0.0.nupkg.sha512",
     "C:\\Users\\User\\.nuget\\packages\\zstdsharp.port\\0.8.0\\zstdsharp.port.0.8.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problema ao ler o arquivo de cache C:\\Users\\User\\source\\repos\\efarma-backend\\EFarma\\obj\\project.nuget.cache: Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }
