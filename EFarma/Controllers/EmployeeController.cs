@@ -24,6 +24,14 @@ namespace EFarma.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Cria um novo funcionário no sistema após validar o CPF e o código de identificação (TagCode) para evitar duplicidades.
+        /// </summary>
+        /// <param name="employee">Objeto contendo as informações do funcionário a ser criado.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> contendo o status da operação, uma mensagem de sucesso ou erro, e o código de status HTTP.</returns>
+        /// <response code="200">Funcionário criado com sucesso.</response>
+        /// <response code="409">CPF ou código de identificação (TagCode) já estão cadastrados para outro funcionário.</response>
+        /// <response code="500">Erro interno ao tentar criar o funcionário.</response>
         [HttpPost]
         public async Task<ActionResult<ResultObject>> CreateEmployee([FromBody] EmployeeDTO employeeDto)
         {
@@ -35,6 +43,13 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Obtém as informações de um funcionário com base no CPF fornecido.
+        /// </summary>
+        /// <param name="cpf">O CPF do funcionário que deseja consultar.</param>
+        /// <returns>Objeto <see cref="ResultDataObject{Employee}"/> contendo as informações do funcionário, uma mensagem de sucesso ou erro, e o código de status HTTP.</returns>
+        /// <response code="200">Funcionário encontrado com sucesso.</response>
+        /// <response code="404">Nenhum funcionário encontrado com o CPF fornecido.</response>
         [HttpGet("{cpf}")]
         public async Task<ActionResult<ResultDataObject<Employee>>> GetEmployee(string cpf)
         {
@@ -46,6 +61,14 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Endpoint para obter uma lista de pessoas (pacientes e funcionários) com base no nome ou CPF.
+        /// </summary>
+        /// <param name="name">Nome da pessoa a ser consultada (opcional).</param>
+        /// <param name="cpf">CPF da pessoa a ser consultada (opcional).</param>
+        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{PersonView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Pessoas encontradas com base nos critérios fornecidos.</response>
+        /// <response code="404">Nenhuma pessoa encontrada com o nome ou CPF fornecido.</response>
         [HttpGet("GetPersons")]
         public async Task<ActionResult<ResultDataObject<IEnumerable<PersonView>>>> GetPersonList(string? name, string? cpf)
         {
@@ -57,6 +80,15 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Endpoint para atualizar as informações de um funcionário existente no sistema.
+        /// Valida se o funcionário existe antes de realizar a atualização.
+        /// </summary>
+        /// <param name="employeeDto">Objeto <see cref="EmployeeDTO"/> contendo as novas informações do funcionário a ser atualizado.</param>
+        /// <returns>Objeto <see cref="ResultDataObject{Employee?}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Funcionário atualizado com sucesso.</response>
+        /// <response code="404">Funcionário não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar atualizar o funcionário.</response>
         [HttpPut]
         public async Task<ActionResult<ResultDataObject<Employee?>>> UpdateEmployee([FromBody] EmployeeDTO employeeDto)
         {
@@ -83,6 +115,14 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Endpoint para deletar um funcionário existente no sistema com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID do funcionário a ser deletado.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Funcionário deletado com sucesso.</response>
+        /// <response code="404">Funcionário não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar deletar o funcionário.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult<ResultObject>> DeleteEmployee(int id)
         {
