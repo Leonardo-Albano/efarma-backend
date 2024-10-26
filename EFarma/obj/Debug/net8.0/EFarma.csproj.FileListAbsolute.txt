@@ -488,3 +488,4 @@ C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.pdb
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.genruntimeconfig.cache
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\ref\EFarma.dll
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\EFarma.xml

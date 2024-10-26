@@ -21,6 +21,11 @@ namespace EFarma.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Método para realizar o login do usuário.
+        /// </summary>
+        /// <param name="loginDTO">Objeto contendo o email do funcionário e a senha.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o resultado do login.</returns>
         [HttpPost("Login")]
         public async Task<ActionResult<ResultObject>> Login([FromBody] LoginDTO loginDTO)
         {
