@@ -181,13 +181,17 @@ namespace EFarma.Migrations
                 name: "AccessLogs",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
                     StockRoomId = table.Column<int>(type: "int", nullable: false),
-                    DateTimeAccess = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Time = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Message = table.Column<string>(type: "longtext", nullable: false),
                     IsEntry = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_AccessLogs", x => x.Id);
                     table.ForeignKey(
                         name: "FK_AccessLogs_Employees_EmployeeId",
                         column: x => x.EmployeeId,

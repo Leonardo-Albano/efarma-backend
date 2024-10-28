@@ -20,7 +20,7 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<ResultDataObject<IEnumerable<PersonView>>> GetPersonList(string? name, string? cpf)
+        public async Task<ResultDataObject<List<PersonView>>> GetPersonList(string? name, string? cpf)
         {
             var patients = await _repository.Patients
                 .Find(p =>
@@ -31,8 +31,8 @@ namespace EFarma.Business
             var employees = await _repository.Employees.GetEmployeeByCpfOrName(cpf, name);
 
 
-            var people = _mapper.Map<IEnumerable<PersonView>>(patients)
-                            .Concat(_mapper.Map<IEnumerable<PersonView>>(employees));
+            var people = _mapper.Map<List<PersonView>>(patients)
+                            .Concat(_mapper.Map<List<PersonView>>(employees)).ToList();
 
             bool success = people.Any();
 

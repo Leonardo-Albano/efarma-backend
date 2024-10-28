@@ -41,11 +41,11 @@ namespace EFarma.Controllers
         /// <summary>
         /// Endpoint para obter todas as salas de estoque (StockRooms) cadastradas no sistema.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{StockRoom}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{StockRoom}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Salas de estoque recuperadas com sucesso.</response>
         /// <response code="404">Nenhuma sala de estoque encontrada.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<StockRoom>>>> GetAllStockRooms()
+        public async Task<ActionResult<ResultDataObject<List<StockRoom>>>> GetAllStockRooms()
         {
             var result = await _business.GetAllStockRooms();
             return StatusCode(result.StatusCode, result);
@@ -128,12 +128,18 @@ namespace EFarma.Controllers
         /// <response code="403">Acesso não permitido para a sala de estoque especificada.</response>
         /// <response code="404">Funcionário não encontrado.</response>
         /// <response code="500">Erro interno ao tentar registrar a entrada na sala de estoque.</response>
-        [HttpPost("EntryLog")]
+        [HttpPost("Entry")]
         public async Task<ActionResult<ResultObject>> EntryStockRoom([FromBody] EntryLogDTO entryLogDTO)
         {
             var result = await _business.EntryStockRoom(entryLogDTO);
             return StatusCode(result.StatusCode, result);
         }
 
+        [HttpPost("Exit")]
+        public async Task<ActionResult<ResultObject>> ExitStockRoom(string stockRoomUniqueId)
+        {
+            var result = await _business.ExitStockRoom(stockRoomUniqueId);
+            return StatusCode(result.StatusCode, result);
+        }
     }
 }

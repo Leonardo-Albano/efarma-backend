@@ -50,11 +50,11 @@ namespace EFarma.Controllers
         /// </summary>
         /// <param name="cpf">CPF do paciente a ser consultado (opcional).</param>
         /// <param name="date">Data da prescrição a ser consultada (opcional).</param>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{PrescriptionView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{PrescriptionView}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Prescrições encontradas com sucesso.</response>
         /// <response code="404">Nenhuma prescrição encontrada com os critérios fornecidos.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<PrescriptionView>>>> GetPrescriptions(string? cpf, DateTime? date)
+        public async Task<ActionResult<ResultDataObject<List<PrescriptionView>>>> GetPrescriptions(string? cpf, DateTime? date)
         {
             var result = await _business.GetPrescriptions(cpf, date);
 
@@ -68,11 +68,11 @@ namespace EFarma.Controllers
         /// Endpoint para obter os itens de uma prescrição específica com base no ID da prescrição fornecido.
         /// </summary>
         /// <param name="prescriptionId">ID da prescrição cujos itens serão consultados.</param>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{PrescriptionItemView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{PrescriptionItemView}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Itens da prescrição encontrados com sucesso.</response>
         /// <response code="404">Nenhum item encontrado para a prescrição fornecida.</response>
         [HttpGet("{prescriptionId}")]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<PrescriptionItemView>>>> GetPrescriptionItems(int prescriptionId)
+        public async Task<ActionResult<ResultDataObject<List<PrescriptionItemView>>>> GetPrescriptionItems(int prescriptionId)
         {
             var result = await _business.GetPrescriptionItems(prescriptionId);
 

@@ -18,11 +18,11 @@ namespace EFarma.Repositories
             return await _context.Set<TEntity>().FindAsync(id);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAll()
+        public async Task<List<TEntity>> GetAll()
         {
             return await _context.Set<TEntity>().ToListAsync();
         }
-        public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate, int? take = null)
+        public async Task<List<TEntity>> Find(Expression<Func<TEntity, bool>> predicate, int? take = null)
         {
             var query = _context.Set<TEntity>().Where(predicate);
 
@@ -44,7 +44,7 @@ namespace EFarma.Repositories
             await _context.Set<TEntity>().AddAsync(entity);
         }
 
-        public async void AddRange(IEnumerable<TEntity> entities)
+        public async void AddRange(List<TEntity> entities)
         {
             await _context.Set<TEntity>().AddRangeAsync(entities);
         }
@@ -54,7 +54,7 @@ namespace EFarma.Repositories
             _context.Set<TEntity>().Remove(entity);
         }
 
-        public void RemoveRange(IEnumerable<TEntity> entities)
+        public void RemoveRange(List<TEntity> entities)
         {
             _context.Set<TEntity>().RemoveRange(entities);
         }

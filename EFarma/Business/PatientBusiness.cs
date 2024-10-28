@@ -68,7 +68,7 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<IEnumerable<Patient>>> GetAllPatients()
+        public async Task<ResultDataObject<List<Patient>>> GetAllPatients()
         {
             var patients = await _repository.Patients.GetAll();
 

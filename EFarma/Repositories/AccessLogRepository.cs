@@ -11,6 +11,25 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<AccessLog?> GetDetailedLastEntryByStockRoomUniqueId(string stockRoomUniqueId)
+        {
+            return await DataContext.AccessLogs
+                    .Include(a => a.Employee)
+                    .Include(a => a.StockRoom)
+                    .Where(a => a.StockRoom.UniqueId == stockRoomUniqueId && a.IsEntry)
+                    .OrderByDescending(a => a.Time)
+                    .FirstOrDefaultAsync();
+        }
+
+        public async Task<AccessLog?> GetDetailedLastExitByStockRoomUniqueId(string stockRoomUniqueId)
+        {
+            return await DataContext.AccessLogs
+                    .Include(a => a.Employee)
+                    .Include(a => a.StockRoom)
+                    .Where(a => a.StockRoom.UniqueId == stockRoomUniqueId && !a.IsEntry)
+                    .OrderByDescending(a => a.Time)
+                    .FirstOrDefaultAsync();
+        }
         public DataContext DataContext
         {
             get { return _context as DataContext; }

@@ -35,7 +35,7 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultObject>> CreateRole([FromBody] RoleDTO roleDto)
         {
             var role = _mapper.Map<Role>(roleDto);
-            var result = await _business.CreateRole(role);
+            var result = await _business.CreateRole(role, roleDto.PermissionIds);
 
             return StatusCode(
                 statusCode: result.StatusCode,
@@ -47,11 +47,11 @@ namespace EFarma.Controllers
         /// Endpoint para obter todas as funções (roles) cadastradas no sistema.
         /// Retorna uma lista de pares chave-valor contendo o ID da função e seu nome.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{KeyValuePair{int, string}}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{KeyValuePair{int, string}}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Funções encontradas com sucesso.</response>
         /// <response code="400">Nenhuma função encontrada.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>>> GetRoles()
+        public async Task<ActionResult<ResultDataObject<List<KeyValuePair<int, string>>>>> GetRoles()
         {
             var result = await _business.GetRoles();
 

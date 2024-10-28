@@ -19,7 +19,7 @@ namespace EFarma.Repositories
                     .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Prescription>> GetDetailedPrescriptions(string? cpf = null, DateTime? date = null)
+        public async Task<List<Prescription>> GetDetailedPrescriptions(string? cpf = null, DateTime? date = null)
         {
             var query = DataContext.Prescriptions
                 .Include(p => p.Items)
@@ -37,7 +37,7 @@ namespace EFarma.Repositories
                 query = query.Where(p => p.Date == date.Value);
             }
 
-            return await query.Take(500).ToArrayAsync();
+            return await query.Take(500).ToListAsync();
         }
 
         public DataContext DataContext

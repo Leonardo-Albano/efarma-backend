@@ -46,13 +46,13 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<IEnumerable<StockRoom>>> GetAllStockRooms()
+        public async Task<ResultDataObject<List<StockRoom>>> GetAllStockRooms()
         {
             var stockRooms = await _repository.StockRooms.GetAll();
-            var result = _mapper.Map<IEnumerable<StockRoom>>(stockRooms);
+            var result = _mapper.Map<List<StockRoom>>(stockRooms);
 
             bool success = result.Any();
-            return new ResultDataObject<IEnumerable<StockRoom>>
+            return new ResultDataObject<List<StockRoom>>
             {
                 Message = success ? "StockRooms retrieved successfully." : "No StockRooms found.",
                 Data = result,
@@ -208,41 +208,79 @@ namespace EFarma.Business
         {
             var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
             var employee = await _repository.Employees.GetEmployeeByTagCode(entryLogDTO.TagCode);
-            if (employee != null)
+            if (employee == null)
             {
                 return new ResultObject
                 {
-                    Message = "Employee not found.",
+                    Message = "Tag não cadastrada.",
                     StatusCode = 404,
                     Success = false
                 };
             }
             accessLog.Employee = employee;
 
-            var stockRoom = employee.Role.Permissions
-                .SelectMany(p => p.StockRooms) // Isso une todas as StockRooms de todas as permissões
-                .FirstOrDefault(sr => sr.UniqueId == entryLogDTO.StockRoomUniqueId);
+
+            var stockRoom = await _repository.StockRooms.FirstOrDefault(s => s.UniqueId == entryLogDTO.StockRoomUniqueId);
+
             if (stockRoom == null)
             {
                 return new ResultObject
                 {
-                    Message = "Access not allowed.",
-                    StatusCode = 403,
+                    Message = "Sala não encontrada.",
+                    StatusCode = 404,
                     Success = false
                 };
             }
-
             accessLog.StockRoom = stockRoom;
 
+            var employeeStockRoom = employee.Role.Permissions
+                .SelectMany(p => p.StockRooms) // Une todas as StockRooms de todas as permissões
+                .FirstOrDefault(sr=>sr == stockRoom);
+
+            bool hasAccess = employeeStockRoom != null;
+
+            accessLog.Message = hasAccess ? "Funcionário entrou na sala.": "Funcionário tentou acessar a sala, porém não possui acesso.";
             _repository.AccessLogs.Add(accessLog);
 
             await _repository.SaveChangesAsync();
 
             return new ResultObject
             {
-                Message = "Access allowed",
-                StatusCode = 200,
-                Success = true
+                Message = hasAccess ? "Acesso permitido." : "Acesso não permitido, contate o RH.",
+                StatusCode = hasAccess ? 200 : 403,
+                Success = hasAccess
+            };
+        }
+
+        public async Task<ResultObject> ExitStockRoom(string stockRoomUniqueId)
+        {
+            var entryAccessLog = await _repository.AccessLogs.GetDetailedLastEntryByStockRoomUniqueId(stockRoomUniqueId);
+            if (entryAccessLog == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Nenhuma entrada foi identificada na sala.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            var newAccessLog = entryAccessLog.Clone();
+            newAccessLog.Message = "Funcionário saiu da sala.";
+            
+            var lastExit = await _repository.AccessLogs.GetDetailedLastExitByStockRoomUniqueId(stockRoomUniqueId);
+            if (lastExit.Time > entryAccessLog.Time)
+            {
+                newAccessLog.Message = "Funcionário saiu da sala. (Havia mais de um funcionário na sala.)";
+            }
+
+            _repository.AccessLogs.Add(newAccessLog);
+            var success = await _repository.SaveChangesAsync() > 0;
+            return new()
+            {
+                Message = success ? "Log de saída registrado com sucesso" : "Log de saída falhou ao ser armazenado.",
+                StatusCode = success ? 200 : 500,
+                Success = success
             };
         }
 
@@ -309,6 +347,5 @@ namespace EFarma.Business
 
             return new(true, "Medicamentos retirados de acordo com a receita.");
         }
-
     }
 }

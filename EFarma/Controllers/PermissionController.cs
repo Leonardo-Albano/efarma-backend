@@ -47,11 +47,11 @@ namespace EFarma.Controllers
         /// Endpoint para obter todas as permissões cadastradas no sistema.
         /// Retorna uma lista de pares chave-valor contendo o ID da permissão e seu nome.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{KeyValuePair{int, string}}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{KeyValuePair{int, string}}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Permissões encontradas com sucesso.</response>
         /// <response code="404">Nenhuma permissão encontrada.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>>> GetPermissions()
+        public async Task<ActionResult<ResultDataObject<List<KeyValuePair<int, string>>>>> GetPermissions()
         {
             var result = await _business.GetPermissions();
 

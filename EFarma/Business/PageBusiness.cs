@@ -44,13 +44,13 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<IEnumerable<Page>>> GetAllPages()
+        public async Task<ResultDataObject<List<Page>>> GetAllPages()
         {
             var pages = await _repository.Pages.GetAll();
-            var result = _mapper.Map<IEnumerable<Page>>(pages);
+            var result = _mapper.Map<List<Page>>(pages);
 
             bool success = result.Any();
-            return new ResultDataObject<IEnumerable<Page>>
+            return new ResultDataObject<List<Page>>
             {
                 Message = success ? "Pages retrieved successfully." : "No pages found.",
                 Data = result,

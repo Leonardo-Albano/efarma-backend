@@ -7,7 +7,7 @@ namespace EFarma.Business.Interfaces
     {
         Task<ResultObject> CreatePatient(Patient patient);
         Task<ResultObject> DeletePatient(int id);
-        Task<ResultDataObject<IEnumerable<Patient>>> GetAllPatients();
+        Task<ResultDataObject<List<Patient>>> GetAllPatients();
         Task<ResultDataObject<Patient>> GetPatient(string cpf);
         Task<ResultDataObject<Patient?>> UpdatePatient(Patient patient);
     }

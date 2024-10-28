@@ -8,6 +8,6 @@ namespace EFarma.Business.Interfaces
     {
         Task<ResultObject> CreatePage(PageDTO pageDTO);
         Task<ResultObject> DeletePage(int id);
-        Task<ResultDataObject<IEnumerable<Page>>> GetAllPages();
+        Task<ResultDataObject<List<Page>>> GetAllPages();
     }
 }

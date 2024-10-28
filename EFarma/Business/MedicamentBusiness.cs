@@ -76,13 +76,13 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<IEnumerable<Dictionary<int, string>>>> GetAllMedicaments()
+        public async Task<ResultDataObject<List<Dictionary<int, string>>>> GetAllMedicaments()
         {
             var medicaments = await _repository.Medicaments.GetAll();
             var result = medicaments.Select(m => new Dictionary<int, string>
             {
                 { m.Id, $"{m.Description} {(int)m.Dosage}{m.Measure}" }
-            });
+            }).ToList();
 
             bool success = result.Any();
             

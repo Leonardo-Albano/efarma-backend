@@ -11,12 +11,12 @@ namespace EFarma.Repositories
         {
         }
 
-        public async Task<IEnumerable<PrescriptionItem>> GetPrescriptionItems(int prescriptionId)
+        public async Task<List<PrescriptionItem>> GetPrescriptionItems(int prescriptionId)
         {
             return await DataContext.PrescriptionItems
                 .Include(p => p.Medicament)
                 .Where(p => p.PrescriptionId == prescriptionId)
-                .ToArrayAsync();
+                .ToListAsync();
         }
 
         public DataContext DataContext

@@ -67,11 +67,11 @@ namespace EFarma.Controllers
         /// <summary>
         /// Endpoint para obter todos os pacientes cadastrados no sistema.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{Patient}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{Patient}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Pacientes encontrados com sucesso.</response>
         /// <response code="404">Nenhum paciente encontrado.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<Patient>>>> GetAllPatients()
+        public async Task<ActionResult<ResultDataObject<List<Patient>>>> GetAllPatients()
         {
             var result = await _business.GetAllPatients();
 

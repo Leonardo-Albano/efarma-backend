@@ -4,6 +4,6 @@ namespace EFarma.Repositories.Interfaces
 {
     public interface IPrescriptionItemRepository : IRepository<PrescriptionItem>
     {
-        Task<IEnumerable<PrescriptionItem>> GetPrescriptionItems(int prescriptionId);
+        Task<List<PrescriptionItem>> GetPrescriptionItems(int prescriptionId);
     }
 }

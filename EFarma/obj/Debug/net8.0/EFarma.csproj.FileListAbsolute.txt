@@ -365,9 +365,18 @@ C:\Users\User\Source\Repos\efarma-backend\EFarma\obj\Debug\net8.0\refint\EFarma.
 C:\Users\User\Source\Repos\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.pdb
 C:\Users\User\Source\Repos\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.genruntimeconfig.cache
 C:\Users\User\Source\Repos\efarma-backend\EFarma\obj\Debug\net8.0\ref\EFarma.dll
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.csproj.AssemblyReference.cache
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.AssemblyInfoInputs.cache
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.AssemblyInfo.cs
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.csproj.CoreCompileInputs.cache
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.sourcelink.json
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\appsettings.json
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\EFarma.exe
+C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\EFarma.xml
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\EFarma.deps.json
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\EFarma.runtimeconfig.json
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\EFarma.dll
@@ -466,14 +475,6 @@ C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\runtimes\win-x64\native\krb5_64.dll
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\runtimes\win-x64\native\krbcc64.dll
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.csproj.AssemblyReference.cache
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.AssemblyInfoInputs.cache
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.AssemblyInfo.cs
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.csproj.CoreCompileInputs.cache
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.MvcApplicationPartsAssemblyInfo.cs
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.MvcApplicationPartsAssemblyInfo.cache
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.sourcelink.json
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\staticwebassets\msbuild.EFarma.Microsoft.AspNetCore.StaticWebAssets.props
@@ -488,4 +489,3 @@ C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.pdb
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\EFarma.genruntimeconfig.cache
 C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\obj\Debug\net8.0\ref\EFarma.dll
-C:\Users\776553\OneDrive - BRF S.A\Documents\Workspace\Educational\Faculdade\TCC\efarma-backend\EFarma\bin\Debug\net8.0\EFarma.xml

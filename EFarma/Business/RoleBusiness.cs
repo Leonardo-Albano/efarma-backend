@@ -20,7 +20,7 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<ResultObject> CreateRole(Role role)
+        public async Task<ResultObject> CreateRole(Role role, List<int> permissionIds)
         {
             var existent_roles = await _repository.Roles.Find(r => r.Name == role.Name);
             if (existent_roles.Any())
@@ -33,6 +33,19 @@ namespace EFarma.Business
                 };
             }
 
+            var permissions = await _repository.Permissions.Find(p => permissionIds.Contains(p.Id));
+            if (permissions.Count() != permissionIds.Count)
+            {
+                var missingPermissions = permissionIds.Except(permissions.Select(p => p.Id)).ToList();
+                return new ResultObject
+                {
+                    Message = $"Algumas permissões não foram encontradas: {string.Join(", ", missingPermissions)}",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            role.Permissions = permissions;
             _repository.Roles.Add(role);
 
             bool success = await _repository.SaveChangesAsync() > 0;
@@ -68,7 +81,7 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<IEnumerable<KeyValuePair<int, string>>>> GetRoles()
+        public async Task<ResultDataObject<List<KeyValuePair<int, string>>>> GetRoles()
         {
             var roles = await _repository.Roles.GetAll();
             var result = roles.Select(r => new KeyValuePair<int, string>(r.Id, r.Name)).ToList();

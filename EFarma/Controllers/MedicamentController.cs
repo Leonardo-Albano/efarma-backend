@@ -44,11 +44,11 @@ namespace EFarma.Controllers
         /// Endpoint para obter uma lista de todos os medicamentos no sistema.
         /// Retorna um dicionário contendo o ID do medicamento e sua descrição formatada (descrição, dosagem e medida).
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{Dictionary{int, string}}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{Dictionary{int, string}}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Medicamentos encontrados com sucesso.</response>
         /// <response code="400">Nenhum medicamento encontrado.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<Dictionary<int, string>>>>> GetAllMedicaments()
+        public async Task<ActionResult<ResultDataObject<List<Dictionary<int, string>>>>> GetAllMedicaments()
         {
             var result = await _business.GetAllMedicaments();
   

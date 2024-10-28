@@ -21,7 +21,7 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<ResultObject> CreatePermission(Permission permission, IEnumerable<int>? stockRoomIds, IEnumerable<int>? pageIds)
+        public async Task<ResultObject> CreatePermission(Permission permission, List<int>? stockRoomIds, List<int>? pageIds)
         {
             if (stockRoomIds != null && stockRoomIds.Any())
             {
@@ -66,10 +66,10 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<IEnumerable<PermissionView>>> GetPermissions()
+        public async Task<ResultDataObject<List<PermissionView>>> GetPermissions()
         {
             var permissions = await _repository.Permissions.GetAll();
-            var permissionsView = _mapper.Map<IEnumerable<PermissionView>>(permissions);
+            var permissionsView = _mapper.Map<List<PermissionView>>(permissions);
 
             bool success = permissionsView.Any();
 
@@ -97,7 +97,7 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultObject> UpdatePermission(int id, Permission updatedPermission, IEnumerable<int>? stockRoomIds, IEnumerable<int>? pageIds)
+        public async Task<ResultObject> UpdatePermission(int id, Permission updatedPermission, List<int>? stockRoomIds, List<int>? pageIds)
         {
             var existingPermission = await _repository.Permissions.FirstOrDefault(p => p.Id == id);
 

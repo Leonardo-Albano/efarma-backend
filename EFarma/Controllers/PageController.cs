@@ -41,11 +41,11 @@ namespace EFarma.Controllers
         /// <summary>
         /// Endpoint para obter todas as páginas cadastradas no sistema.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{Page}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{Page}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Páginas recuperadas com sucesso.</response>
         /// <response code="404">Nenhuma página encontrada.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<Page>>>> GetAllPages()
+        public async Task<ActionResult<ResultDataObject<List<Page>>>> GetAllPages()
         {
             var result = await _business.GetAllPages();
             return StatusCode(result.StatusCode, result);

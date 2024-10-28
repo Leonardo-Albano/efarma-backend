@@ -110,7 +110,7 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<IEnumerable<PrescriptionItemView>>> GetPrescriptionItems(int prescriptionId)
+        public async Task<ResultDataObject<List<PrescriptionItemView>>> GetPrescriptionItems(int prescriptionId)
         {
             var items = await _repository.PrescriptionItems.GetPrescriptionItems(prescriptionId);
             
@@ -119,9 +119,9 @@ namespace EFarma.Business
                 Name = item.Medicament.Description,
                 Dosage = $"{item.Medicament.Dosage} {item.Medicament.Measure}",
                 Quantity = item.PrescribedQuantity
-            }).ToArray();
+            }).ToList();
 
-            bool has_items = prescriptionItemsView.Length != 0;
+            bool has_items = prescriptionItemsView.Count != 0;
             return new()
             {
                 Data = prescriptionItemsView,
@@ -131,10 +131,10 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<IEnumerable<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date)
+        public async Task<ResultDataObject<List<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date)
         {
             var detailedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions(cpf, date);
-            var prescriptions = _mapper.Map<IEnumerable<PrescriptionView>>(detailedPrescriptions);
+            var prescriptions = _mapper.Map<List<PrescriptionView>>(detailedPrescriptions);
 
             bool success = prescriptions.Any();
 

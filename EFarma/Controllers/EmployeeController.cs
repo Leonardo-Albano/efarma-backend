@@ -66,11 +66,11 @@ namespace EFarma.Controllers
         /// </summary>
         /// <param name="name">Nome da pessoa a ser consultada (opcional).</param>
         /// <param name="cpf">CPF da pessoa a ser consultada (opcional).</param>
-        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{PersonView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{PersonView}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Pessoas encontradas com base nos critérios fornecidos.</response>
         /// <response code="404">Nenhuma pessoa encontrada com o nome ou CPF fornecido.</response>
         [HttpGet("GetPersons")]
-        public async Task<ActionResult<ResultDataObject<IEnumerable<PersonView>>>> GetPersonList(string? name, string? cpf)
+        public async Task<ActionResult<ResultDataObject<List<PersonView>>>> GetPersonList(string? name, string? cpf)
         {
             var result = await _business.GetPersonList(name, cpf);
             

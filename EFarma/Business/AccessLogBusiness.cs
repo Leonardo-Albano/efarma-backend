@@ -20,14 +20,14 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
-        public async Task<ResultDataObject<IEnumerable<AccessLog>>> GetAllAccessLogs()
+        public async Task<ResultDataObject<List<AccessLog>>> GetAllAccessLogs()
         {
             try
             {
                 var access_logs = await _repository.AccessLogs.GetAll();
                 var hasLogs = access_logs.Any();
 
-                return new ResultDataObject<IEnumerable<AccessLog>>()
+                return new ResultDataObject<List<AccessLog>>()
                 {
                     Data = access_logs,
                     Message = hasLogs ? "Access logs retrieved successfully." : "No access logs found.",
@@ -37,7 +37,7 @@ namespace EFarma.Business
             }
             catch (Exception ex)
             {
-                return new ResultDataObject<IEnumerable<AccessLog>>()
+                return new ResultDataObject<List<AccessLog>>()
                 {
                     Data = [],
                     Message = $"Error: {ex.Message}",
