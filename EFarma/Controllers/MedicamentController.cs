@@ -20,6 +20,15 @@ namespace EFarma.Controllers
             _business = business;
         }
 
+        /// <summary>
+        /// Endpoint para criar um novo medicamento no sistema.
+        /// Verifica se um medicamento com a mesma descrição, dosagem e medida já existe antes de realizar a criação.
+        /// </summary>
+        /// <param name="medicamentDTO">Objeto <see cref="MedicamentDTO"/> contendo as informações do medicamento a ser criado.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Medicamento criado com sucesso.</response>
+        /// <response code="409">O medicamento já existe no sistema.</response>
+        /// <response code="500">Erro interno ao tentar criar o medicamento.</response>
         [HttpPost]
         public async Task<ActionResult<ResultObject>> CreateMedicament(MedicamentDTO medicamentDTO)
         {
@@ -31,6 +40,13 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Endpoint para obter uma lista de todos os medicamentos no sistema.
+        /// Retorna um dicionário contendo o ID do medicamento e sua descrição formatada (descrição, dosagem e medida).
+        /// </summary>
+        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{Dictionary{int, string}}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Medicamentos encontrados com sucesso.</response>
+        /// <response code="400">Nenhum medicamento encontrado.</response>
         [HttpGet]
         public async Task<ActionResult<ResultDataObject<IEnumerable<Dictionary<int, string>>>>> GetAllMedicaments()
         {
@@ -42,6 +58,14 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Endpoint para deletar um medicamento existente no sistema com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID do medicamento a ser deletado.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Medicamento deletado com sucesso.</response>
+        /// <response code="404">Medicamento não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar deletar o medicamento.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult<ResultObject>> DeleteMedicament(int id)
         {

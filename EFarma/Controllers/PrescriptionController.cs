@@ -23,6 +23,16 @@ namespace EFarma.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Endpoint para criar uma nova prescrição no sistema.
+        /// Valida se os medicamentos, funcionário (com CRM registrado) e o paciente existem antes de realizar a criação.
+        /// </summary>
+        /// <param name="prescriptionDTO">Objeto <see cref="PrescriptionDTO"/> contendo as informações da prescrição a ser criada.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Prescrição criada com sucesso.</response>
+        /// <response code="403">Funcionário não tem permissão para prescrever (CRM não registrado).</response>
+        /// <response code="404">Medicamento, funcionário ou paciente não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar criar a prescrição.</response>
         [HttpPost]
         public async Task<ActionResult<ResultObject>> CreatePrescription([FromBody] PrescriptionDTO prescriptionDTO)
         {
@@ -35,6 +45,14 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Endpoint para obter uma lista de prescrições filtradas por CPF do paciente e/ou data da prescrição.
+        /// </summary>
+        /// <param name="cpf">CPF do paciente a ser consultado (opcional).</param>
+        /// <param name="date">Data da prescrição a ser consultada (opcional).</param>
+        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{PrescriptionView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Prescrições encontradas com sucesso.</response>
+        /// <response code="404">Nenhuma prescrição encontrada com os critérios fornecidos.</response>
         [HttpGet]
         public async Task<ActionResult<ResultDataObject<IEnumerable<PrescriptionView>>>> GetPrescriptions(string? cpf, DateTime? date)
         {
@@ -46,6 +64,13 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Endpoint para obter os itens de uma prescrição específica com base no ID da prescrição fornecido.
+        /// </summary>
+        /// <param name="prescriptionId">ID da prescrição cujos itens serão consultados.</param>
+        /// <returns>Objeto <see cref="ResultDataObject{IEnumerable{PrescriptionItemView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Itens da prescrição encontrados com sucesso.</response>
+        /// <response code="404">Nenhum item encontrado para a prescrição fornecida.</response>
         [HttpGet("{prescriptionId}")]
         public async Task<ActionResult<ResultDataObject<IEnumerable<PrescriptionItemView>>>> GetPrescriptionItems(int prescriptionId)
         {
@@ -57,6 +82,14 @@ namespace EFarma.Controllers
             );
         }
 
+        /// <summary>
+        /// Endpoint para deletar uma prescrição existente no sistema com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID da prescrição a ser deletada.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Prescrição deletada com sucesso.</response>
+        /// <response code="404">Prescrição não encontrada.</response>
+        /// <response code="500">Erro interno ao tentar deletar a prescrição.</response>
         [HttpDelete("{id}")]
         public async Task<ActionResult<ResultObject>> DeletePrescription(int id)
         {
