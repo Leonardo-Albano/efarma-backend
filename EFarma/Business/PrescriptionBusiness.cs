@@ -23,7 +23,7 @@ namespace EFarma.Business
 
         public async Task<ResultObject> CreatePrescription(Prescription prescription)
         {
-            prescription.Status = "Pendente";
+            prescription.Status = Prescription.CreatedMessage;
 
             foreach (var item in prescription.Items)
             {

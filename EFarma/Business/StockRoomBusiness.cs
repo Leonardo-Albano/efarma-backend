@@ -5,6 +5,7 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
 using Newtonsoft.Json;
+using System.Net.Mail;
 
 namespace EFarma.Business
 {
@@ -179,13 +180,37 @@ namespace EFarma.Business
                 };
             }
 
+            var responsible = await _repository.Employees.FirstOrDefault(p => p.Id == prescriptionItemsDTO.TakeOutResponsibleId);
+            if (responsible == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Funcionário não foi encontrado.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            prescription.TakeOutResponsible = responsible;
+            var log = new AccessLog()
+            {
+                Employee = responsible,
+                IsEntry = false,
+                StockRoom = stockRoom,
+                Time = DateTime.Now
+            };
+
+
             var kvResult = await CompareWithActualMedicamentsAtStock(
             prescription.Items
                 .SelectMany(i => Enumerable.Repeat(i.Medicament, i.PrescribedQuantity))
                 .ToList(),
             stockRoom.UniqueId, stockRoom.Id);
 
-            if (!kvResult.Key)
+            bool success = kvResult.Key;
+            string message = kvResult.Value;
+
+            if (!success)
             {
                 return new()
                 {
@@ -195,15 +220,20 @@ namespace EFarma.Business
                 };
             }
 
-            prescription.Status = "Finalizado";
-            var success = await _repository.SaveChangesAsync() > 0;
+            log.Message = message;
+            prescription.Status = success ? Prescription.ConcludedMessage: Prescription.PendentMessage;
+
+            _repository.AccessLogs.Add(log);
+            _repository.Prescriptions.Update(prescription);
+            success = await _repository.SaveChangesAsync() > 0;
             return new()
             {
-                Message = kvResult.Value,
+                Message = message,
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
         }
+        
         public async Task<ResultObject> EntryStockRoom(EntryLogDTO entryLogDTO)
         {
             var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
@@ -244,9 +274,12 @@ namespace EFarma.Business
 
             await _repository.SaveChangesAsync();
 
+            string[] splittedName = employee.Name.Split(' ');
+            string formattedName = $"{splittedName.First()} {splittedName.Last()}";
+
             return new ResultObject
             {
-                Message = hasAccess ? "Acesso permitido." : "Acesso não permitido, contate o RH.",
+                Message = hasAccess ? $"{employee.Name}. Acesso permitido." : $"{employee.Name}. Acesso não permitido, contate o RH.",
                 StatusCode = hasAccess ? 200 : 403,
                 Success = hasAccess
             };
@@ -323,29 +356,93 @@ namespace EFarma.Business
 
         private async Task<KeyValuePair<bool, string>> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
         {
-            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId); // Pega os códigos lidos pelo leitor
+            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
             var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
-            // pega os medicamentos que foram lidos pelo leitor
-
             var allItemsOnStock = await _repository.InStockItems.GetAll();
 
             var itemsTaken = allItemsOnStock.Except(actualItemsOnStock).ToList();
+            int extraItemsCount = 0;
+            int missingItemsCount = 0;
+
             foreach (var itemOnStock in itemsTaken)
             {
                 // Procura um item correspondente na lista de medicamentos da prescrição
                 var equivalentItem = prescriptionMedicaments.FirstOrDefault(m => m.Id == itemOnStock.MedicamentId);
 
-                // Se não houver equivalente, retorna false (itens a mais foram pegos)
+                // Se não houver equivalente, conta como item extra
                 if (equivalentItem == null)
                 {
-                    return new(false, "Os medicamentos retirados não estão de acordo com a receita.");
+                    extraItemsCount++;
                 }
+                else
+                {
+                    prescriptionMedicaments.Remove(equivalentItem);
+                    _repository.InStockItems.Remove(itemOnStock);
+                }
+            }
 
-                prescriptionMedicaments.Remove(equivalentItem);
-                _repository.InStockItems.Remove(itemOnStock);
+            // Contabiliza medicamentos restantes na prescrição como itens faltando
+            missingItemsCount = prescriptionMedicaments.Count;
+
+            // Monta a mensagem de retorno com as quantidades de medicamentos a mais e a menos
+            if (extraItemsCount > 0 || missingItemsCount > 0)
+            {
+                var message = $"Os medicamentos retirados não estão de acordo com a receita. ";
+                if (extraItemsCount > 0)
+                    message += $"{extraItemsCount} medicamento(s) a mais.";
+                if (missingItemsCount > 0)
+                    message += $"{missingItemsCount} medicamento(s) a menos.";
+
+                return new(false, message);
             }
 
             return new(true, "Medicamentos retirados de acordo com a receita.");
+        }
+
+        private async Task<bool> ValidateExitWithPendentPrescriptions(Employee employee, StockRoom stockRoom)
+        {
+            var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
+            if(prescriptions.Count == 0)
+            {
+                return true;
+            }
+
+            MailMessage mail = new();
+
+            mail.From = new MailAddress("efarma@avisos.com");
+            mail.To.Add(employee.Mail);
+            mail.To.Add(employee.ResponsibleMail);
+            mail.Subject = $"Retirada indevida da sala de estoque: {stockRoom.Name}";
+
+            string message = $"Uma retirada indevida foi feita pelo seguinte funcionário: " +
+                           $"Nome: {employee.Name}" +
+                           $"Email: {employee.Mail}" +
+                           $"Telefone: {employee.Phone}\n";
+
+            if (!string.IsNullOrEmpty(employee.EmployeeId))
+                message += $"Id de funcionário: {employee.EmployeeId}";
+
+            message += "Sala de estoque: " +
+                      $"Nome: {stockRoom.Name}" +
+                      $"Endereço: {stockRoom.Address}\n";
+
+            foreach (var prescription in prescriptions)
+            {
+                message += "Receita(s): " +
+                          $"Id: {prescription.Id}" +
+                          $"Data de Criação: {prescription.Date}" +
+                           "Itens:\n";
+                foreach (var item in prescription.Items)
+                {
+                    string medicamentName = $"{item.Medicament.Description} {item.Medicament.Dosage}{item.Medicament.Measure}";
+                    message += $"   {medicamentName}\n";
+                }
+            }
+
+            mail.Body = message;
+
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
+            smtp.Send(mail);
         }
     }
 }

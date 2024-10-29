@@ -40,6 +40,15 @@ namespace EFarma.Repositories
             return await query.Take(500).ToListAsync();
         }
 
+        public async Task<List<Prescription>> GetPendentPrescriptionsByTakeOutResponsibleId(int takeOutResponsibleId)
+        {
+            return await DataContext.Prescriptions
+                    .Include(p=>p.Items)
+                        .ThenInclude(i=>i.Medicament)
+                    .Where(p=>p.TakeOutResponsibleId == takeOutResponsibleId && p.Status == Prescription.PendentMessage)
+                    .ToListAsync();
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }
