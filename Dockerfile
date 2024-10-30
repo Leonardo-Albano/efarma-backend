@@ -15,7 +15,7 @@ RUN dotnet build 'EFarma/EFarma.csproj' -c Release -o /app/build
 
 # Stage 2: Publish Stage
 
-FROM build as publish
+FROM build AS publish
 RUN dotnet publish 'EFarma/EFarma.csproj' -c Release -o /app/publish
 
 # Stage 3: Run Stage
