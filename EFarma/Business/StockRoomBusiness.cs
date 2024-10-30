@@ -4,8 +4,11 @@ using EFarma.Models;
 using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
+//using MimeKit;
 using Newtonsoft.Json;
+using System.Net;
 using System.Net.Mail;
+using System.Text;
 
 namespace EFarma.Business
 {
@@ -191,7 +194,6 @@ namespace EFarma.Business
                 };
             }
 
-            prescription.TakeOutResponsible = responsible;
             var log = new AccessLog()
             {
                 Employee = responsible,
@@ -200,37 +202,32 @@ namespace EFarma.Business
                 Time = DateTime.Now
             };
 
+            prescription.TakeOutResponsible = responsible;
 
             var kvResult = await CompareWithActualMedicamentsAtStock(
-            prescription.Items
-                .SelectMany(i => Enumerable.Repeat(i.Medicament, i.PrescribedQuantity))
-                .ToList(),
-            stockRoom.UniqueId, stockRoom.Id);
+                prescription.Items
+                    .SelectMany(i => Enumerable.Repeat(i.Medicament, i.PrescribedQuantity))
+                    .ToList(),
+                stockRoom.UniqueId, stockRoom.Id
+            );
 
-            bool success = kvResult.Key;
-            string message = kvResult.Value;
-
-            if (!success)
-            {
-                return new()
-                {
-                    Message = kvResult.Value,
-                    StatusCode = 403,
-                    Success = kvResult.Key
-                };
-            }
+            bool success = kvResult.Key; 
+            string message = kvResult.Value; 
+            bool storeSuccess = await _repository.SaveChangesAsync() > 0;
 
             log.Message = message;
-            prescription.Status = success ? Prescription.ConcludedMessage: Prescription.PendentMessage;
+            prescription.Status = success ? Prescription.ConcludedMessage : Prescription.PendentMessage;
 
             _repository.AccessLogs.Add(log);
             _repository.Prescriptions.Update(prescription);
-            success = await _repository.SaveChangesAsync() > 0;
+
+            int statusCode = !storeSuccess ? 500 : (success ? 200 : 403);
+
             return new()
             {
                 Message = message,
-                StatusCode = success ? 200 : 500,
-                Success = success
+                StatusCode = statusCode,
+                Success = success || storeSuccess // Success is true if either is true
             };
         }
         
@@ -262,6 +259,7 @@ namespace EFarma.Business
                 };
             }
             accessLog.StockRoom = stockRoom;
+            accessLog.IsEntry = true;
 
             var employeeStockRoom = employee.Role.Permissions
                 .SelectMany(p => p.StockRooms) // Une todas as StockRooms de todas as permissões
@@ -297,6 +295,10 @@ namespace EFarma.Business
                     Success = false
                 };
             }
+            var employee = entryAccessLog.Employee;
+            var stockRoom = entryAccessLog.StockRoom;
+
+            var result = await ValidateExitWithPendentPrescriptions(employee, stockRoom);
 
             var newAccessLog = entryAccessLog.Clone();
             newAccessLog.Message = "Funcionário saiu da sala.";
@@ -384,65 +386,100 @@ namespace EFarma.Business
             // Contabiliza medicamentos restantes na prescrição como itens faltando
             missingItemsCount = prescriptionMedicaments.Count;
 
-            // Monta a mensagem de retorno com as quantidades de medicamentos a mais e a menos
-            if (extraItemsCount > 0 || missingItemsCount > 0)
+            if (extraItemsCount > 0)
             {
-                var message = $"Os medicamentos retirados não estão de acordo com a receita. ";
-                if (extraItemsCount > 0)
-                    message += $"{extraItemsCount} medicamento(s) a mais.";
-                if (missingItemsCount > 0)
-                    message += $"{missingItemsCount} medicamento(s) a menos.";
-
-                return new(false, message);
+                return new(false, $"Os medicamentos retirados não estão de acordo com a receita. {extraItemsCount} medicamento(s) a mais.");
             }
 
-            return new(true, "Medicamentos retirados de acordo com a receita.");
+            var message = "Medicamentos retirados de acordo com a receita. ";
+            if (missingItemsCount > 0)
+                message += $"{missingItemsCount} medicamento(s) a menos.";
+
+            return new(true, message);
         }
 
         private async Task<bool> ValidateExitWithPendentPrescriptions(Employee employee, StockRoom stockRoom)
         {
             var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
-            if(prescriptions.Count == 0)
+            if (prescriptions.Count == 0)
             {
-                return true;
+                return true; // No pending prescriptions, exit is valid
             }
 
-            MailMessage mail = new();
+            // Construct the email message using StringBuilder
+            var messageBuilder = new StringBuilder();
 
-            mail.From = new MailAddress("efarma@avisos.com");
-            mail.To.Add(employee.Mail);
-            mail.To.Add(employee.ResponsibleMail);
-            mail.Subject = $"Retirada indevida da sala de estoque: {stockRoom.Name}";
-
-            string message = $"Uma retirada indevida foi feita pelo seguinte funcionário: " +
-                           $"Nome: {employee.Name}" +
-                           $"Email: {employee.Mail}" +
-                           $"Telefone: {employee.Phone}\n";
+            messageBuilder.AppendLine($"Uma retirada indevida foi feita pelo seguinte funcionário:");
+            messageBuilder.AppendLine($"Nome: {employee.Name}");
+            messageBuilder.AppendLine($"Email: {employee.Mail}");
+            messageBuilder.AppendLine($"Telefone: {employee.Phone}");
 
             if (!string.IsNullOrEmpty(employee.EmployeeId))
-                message += $"Id de funcionário: {employee.EmployeeId}";
+            {
+                messageBuilder.AppendLine($"Id de funcionário: {employee.EmployeeId}");
+            }
 
-            message += "Sala de estoque: " +
-                      $"Nome: {stockRoom.Name}" +
-                      $"Endereço: {stockRoom.Address}\n";
+            messageBuilder.AppendLine($"Sala de estoque:");
+            messageBuilder.AppendLine($"Nome: {stockRoom.Name}");
+            messageBuilder.AppendLine($"Endereço: {stockRoom.Address}");
 
+            messageBuilder.AppendLine("Receita(s):");
             foreach (var prescription in prescriptions)
             {
-                message += "Receita(s): " +
-                          $"Id: {prescription.Id}" +
-                          $"Data de Criação: {prescription.Date}" +
-                           "Itens:\n";
+                messageBuilder.AppendLine($"Id: {prescription.Id}");
+                messageBuilder.AppendLine($"Data de Criação: {prescription.Date}");
+                messageBuilder.AppendLine("Itens:");
+
                 foreach (var item in prescription.Items)
                 {
                     string medicamentName = $"{item.Medicament.Description} {item.Medicament.Dosage}{item.Medicament.Measure}";
-                    message += $"   {medicamentName}\n";
+                    messageBuilder.AppendLine($"   {medicamentName}");
                 }
             }
 
-            mail.Body = message;
+            // Prepare the email
+            using (var mail = new MailMessage())
+            {
+                mail.From = new MailAddress("efarma@avisos.com");
+                mail.To.Add(employee.Mail);
+                mail.To.Add(employee.ResponsibleMail);
+                mail.Subject = $"Retirada indevida da sala de estoque: {stockRoom.Name}";
+                mail.Body = messageBuilder.ToString();
 
-            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
-            smtp.Send(mail);
+                // Configure the SMTP client
+                using (var smtp = new SmtpClient("smtp.gmail.com")
+                {
+                    Port = 587,
+                    Credentials = new NetworkCredential("your_email@gmail.com", "your_password"),
+                    EnableSsl = true,
+                })
+                {
+                    int retries = 3; // Set number of retries
+                    while (retries > 0)
+                    {
+                        try
+                        {
+                            await smtp.SendMailAsync(mail);
+                            break; // Exit loop on successful send
+                        }
+                        catch (SmtpException ex)
+                        {
+                            retries--;
+                            if (retries == 0)
+                            {
+                                // Log the exception details
+                                Console.WriteLine($"Failed to send email: {ex.Message}");
+                                throw; // Rethrow the exception after retries
+                            }
+                            // Optionally: log the error and wait before retrying
+                        }
+                    }
+                }
+            }
+
+            return false; // Indicate that there are pending prescriptions
         }
+
+
     }
 }

@@ -7,9 +7,6 @@ namespace EFarma.Models
     {
         [Key]
         public int Id { get; set; }
-
-        [ForeignKey("Permission")]
-        public int PermissionId { get; set; }
         
         [ForeignKey("Role")]
         public int RoleId { get; set; }

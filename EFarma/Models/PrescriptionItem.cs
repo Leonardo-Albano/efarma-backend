@@ -14,6 +14,7 @@ namespace EFarma.Models
         [ForeignKey("Medicament")]
         public int MedicamentId { get; set; }
 
+        public string Observation { get; set; }
         public int PrescribedQuantity { get; set; }
 
         public required Prescription Prescription { get; set; }

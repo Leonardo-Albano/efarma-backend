@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFarma.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241028193009_FirstMigration")]
+    [Migration("20241029175434_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -83,9 +83,6 @@ namespace EFarma.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Phone")
                         .HasColumnType("longtext");
@@ -259,11 +256,16 @@ namespace EFarma.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("TakeOutResponsibleId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
 
                     b.HasIndex("PatientId");
+
+                    b.HasIndex("TakeOutResponsibleId");
 
                     b.ToTable("Prescriptions");
                 });
@@ -434,9 +436,15 @@ namespace EFarma.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EFarma.Models.Employee", "TakeOutResponsible")
+                        .WithMany()
+                        .HasForeignKey("TakeOutResponsibleId");
+
                     b.Navigation("Employee");
 
                     b.Navigation("Patient");
+
+                    b.Navigation("TakeOutResponsible");
                 });
 
             modelBuilder.Entity("EFarma.Models.PrescriptionItem", b =>
