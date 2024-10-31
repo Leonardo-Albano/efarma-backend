@@ -10,26 +10,26 @@ Comandos para o Docker:
 Subir:
 
 docker login							# Login
-docker build -t efarmatcc/efarma .		# Builda a imagem docker
-docker push efarmatcc/efarma			# Sobe a imagem pro Docker Hub
+docker build -t efarmatcc/efarmaback .	# Builda a imagem docker
+docker push efarmatcc/efarmaback		# Sobe a imagem pro Docker Hub
 
 Baixar:
 
 docker login							# Login
-docker pull efarmatcc/efarma			# Baixa a imagem do Docker Hub
+docker pull efarmatcc/efarmaback		# Baixa a imagem do Docker Hub
 
 Atualizar:
 
-docker stop efarma						# Para a execução do container
-docker rm efarma						# Remove o container anterior
-docker pull efarmatcc/efarma			# Baixa a última versão da imagem (se atualizada remotamente)
-docker run -d -p 5001:5001 --name efarma efarmatcc/efarmaback	# Inicia um novo container com a imagem atualizada
+docker stop efarmaback					# Para a execução do container
+docker rm efarmaback					# Remove o container anterior
+docker pull efarmatcc/efarmaback		# Baixa a última versão da imagem (se atualizada remotamente)
+docker run -d -p 5001:5001 --name efarmaback efarmatcc/efarmaback	# Inicia um novo container com a imagem atualizada
 
 Run:
 
 docker ps								# Lista os containers em execução
-docker logs efarma						# Printa os logs de execução
-docker exec -it efarma /bin/bash		# Entra no container em execução para debugging (opcional)
+docker logs efarmaback					# Printa os logs de execução
+docker exec -it efarmaback /bin/bash	# Entra no container em execução para debugging (opcional)
 
 Comandos adicionais:
 docker ps -a							# Lista todos os containers (em execução e parados)

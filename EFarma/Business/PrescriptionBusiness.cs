@@ -2,6 +2,7 @@
 using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
+using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
@@ -144,6 +145,78 @@ namespace EFarma.Business
                 Data = prescriptions,
                 StatusCode = success ? 200 : 404,
                 Success = success
+            };
+        }
+
+        public async Task<ResultObject> RemoveItemsFromStock(RemovePrescriptionItemsDTO prescriptionItemsDTO)
+        {
+            var prescription = await _repository.Prescriptions.GetDetailedPrescriptionById(prescriptionItemsDTO.PrescriptionId);
+            if (prescription == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Prescription not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            var stockRoom = await _repository.StockRooms.FirstOrDefault(p => p.Id == prescriptionItemsDTO.StockRoomId);
+            if (stockRoom == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Stock room not found.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            var responsible = await _repository.Employees.FirstOrDefault(p => p.Id == prescriptionItemsDTO.TakeOutResponsibleId);
+            if (responsible == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Funcionário não foi encontrado.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            var log = new AccessLog()
+            {
+                Employee = responsible,
+                IsEntry = false,
+                StockRoom = stockRoom,
+                Time = DateTime.Now
+            };
+
+            prescription.TakeOutResponsible = responsible;
+
+            var kvResult = await CompareWithActualMedicamentsAtStock(
+                prescription.Items
+                    .SelectMany(i => Enumerable.Repeat(i.Medicament, i.PrescribedQuantity))
+                    .ToList(),
+                stockRoom.UniqueId, stockRoom.Id
+            );
+
+            bool success = kvResult.Key;
+            string message = kvResult.Value;
+            bool storeSuccess = await _repository.SaveChangesAsync() > 0;
+
+            log.Message = message;
+            prescription.Status = success ? Prescription.ConcludedMessage : Prescription.PendentMessage;
+
+            _repository.AccessLogs.Add(log);
+            _repository.Prescriptions.Update(prescription);
+
+            int statusCode = !storeSuccess ? 500 : (success ? 200 : 403);
+
+            return new()
+            {
+                Message = message,
+                StatusCode = statusCode,
+                Success = success || storeSuccess // Success is true if either is true
             };
         }
     }

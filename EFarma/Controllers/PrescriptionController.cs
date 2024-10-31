@@ -46,6 +46,25 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
+        /// Endpoint para remover itens do estoque com base em uma prescrição.
+        /// Valida se a prescrição e a sala de estoque existem e verifica se os medicamentos no estoque correspondem aos itens prescritos.
+        /// Caso sejam retirados mais medicamentos do que os prescritos na receita, o sistema não permitirá.
+        /// Caso sejam retirados menos medicamentos do que os prescritos na receita, o sistema permitirá.
+        /// </summary>
+        /// <param name="prescriptionItemsDTO">Objeto <see cref="RemovePrescriptionItemsDTO"/> contendo as informações da prescrição e da sala de estoque.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Itens removidos do estoque com sucesso e prescrição finalizada.</response>
+        /// <response code="403">Os medicamentos no estoque não correspondem aos itens prescritos.</response>
+        /// <response code="404">Prescrição ou sala de estoque não encontrada.</response>
+        /// <response code="500">Erro interno ao tentar remover os itens do estoque.</response>
+        [HttpPost("RemoveItems")]
+        public async Task<ActionResult<ResultObject>> RemoveItemsFromStock([FromBody] RemovePrescriptionItemsDTO prescriptionItemsDTO)
+        {
+            var result = await _business.RemoveItemsFromStock(prescriptionItemsDTO);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        /// <summary>
         /// Endpoint para obter uma lista de prescrições filtradas por CPF do paciente e/ou data da prescrição.
         /// </summary>
         /// <param name="cpf">CPF do paciente a ser consultado (opcional).</param>

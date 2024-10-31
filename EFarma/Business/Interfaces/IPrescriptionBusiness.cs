@@ -1,4 +1,5 @@
 ﻿using EFarma.Models;
+using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 
@@ -10,5 +11,6 @@ namespace EFarma.Business.Interfaces
         Task<ResultObject> DeletePrescription(int id);
         Task<ResultDataObject<List<PrescriptionItemView>>> GetPrescriptionItems(int prescriptionId);
         Task<ResultDataObject<List<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date);
+        Task<ResultObject> RemoveItemsFromStock(RemovePrescriptionItemsDTO prescriptionItemsDTO);
     }
 }
