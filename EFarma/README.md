@@ -17,20 +17,19 @@ Baixar:
 
 docker login							# Login
 docker pull efarmatcc/efarma			# Baixa a imagem do Docker Hub
-docker run -d -p 5001:5001 --name efarma efarmatcc/efarma	# Roda a imagem Docker
-
-Run:
-
-docker ps								# Lista os containers em execução
-docker logs efarma						# Printa os logs de execução
-docker exec -it efarma /bin/bash		# Entra no container em execução para debugging (opcional)
 
 Atualizar:
 
 docker stop efarma						# Para a execução do container
 docker rm efarma						# Remove o container anterior
 docker pull efarmatcc/efarma			# Baixa a última versão da imagem (se atualizada remotamente)
-docker run -d -p 5001:5001 --name efarma efarmatcc/efarma	# Inicia um novo container com a imagem atualizada
+docker run -d -p 5001:5001 --name efarma efarmatcc/efarmaback	# Inicia um novo container com a imagem atualizada
+
+Run:
+
+docker ps								# Lista os containers em execução
+docker logs efarma						# Printa os logs de execução
+docker exec -it efarma /bin/bash		# Entra no container em execução para debugging (opcional)
 
 Comandos adicionais:
 docker ps -a							# Lista todos os containers (em execução e parados)
