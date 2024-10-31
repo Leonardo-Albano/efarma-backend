@@ -331,6 +331,7 @@ namespace EFarma.Business
                 .GroupBy(item => new { item.MedicamentId, item.StockRoomId })
                 .Select(group => new InStockItemView
                 {
+                    Id = Guid.NewGuid().ToString(),
                     MedicamentId = group.Key.MedicamentId,
                     StockRoomId = group.Key.StockRoomId,
                     StockRoomName = group.First().StockRoomName,

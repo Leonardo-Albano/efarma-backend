@@ -186,7 +186,7 @@ namespace EFarma.Migrations
                     StockRoomId = table.Column<int>(type: "int", nullable: false),
                     Time = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Message = table.Column<string>(type: "longtext", nullable: false),
-                    IsEntry = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    IsEntry = table.Column<bool>(type: "tinyint(1)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -301,6 +301,7 @@ namespace EFarma.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     PrescriptionId = table.Column<int>(type: "int", nullable: false),
                     MedicamentId = table.Column<int>(type: "int", nullable: false),
+                    Observation = table.Column<string>(type: "longtext", nullable: false),
                     PrescribedQuantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

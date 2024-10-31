@@ -4,6 +4,7 @@ namespace EFarma.Models.Views
 {
     public class InStockItemView
     {
+        public string Id { get; set; }
         public string StockRoomName { get; set; }
         public int Quantity { get; set; }
         public string MedicamentName { get; set; }  
