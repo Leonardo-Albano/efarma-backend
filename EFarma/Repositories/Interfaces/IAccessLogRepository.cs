@@ -6,5 +6,6 @@ namespace EFarma.Repositories.Interfaces
     {
         Task<AccessLog?> GetDetailedLastEntryByStockRoomUniqueId(string stockRoomUniqueId);
         Task<AccessLog?> GetDetailedLastExitByStockRoomUniqueId(string stockRoomUniqueId);
+        Task<List<AccessLog>> GetLogsByEmployeeAndStockRoom(int employeeId, int stockRoomId);
     }
 }

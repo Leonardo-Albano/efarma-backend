@@ -10,5 +10,10 @@ namespace EFarma.Models
         public required string Description { get; set; }
         public decimal Dosage { get; set; }
         public required string Measure { get; set; }
+
+        public string GetMedicamentName()
+        {
+            return $"{this.Description} {this.Dosage}{this.Measure}";
+        }
     }
 }

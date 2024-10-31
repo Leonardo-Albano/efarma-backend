@@ -14,11 +14,13 @@ namespace EFarma.Config
 
             CreateMap<PatientDTO, Patient>();
             CreateMap<Patient, PersonView>()
-                .ForMember(pa => pa.Role, opt => opt.MapFrom(src => "patient"));
+                .ForMember(pa => pa.Role, 
+                            opt => opt.MapFrom(src => "patient"));
 
             CreateMap<EmployeeDTO, Employee>();
             CreateMap<Employee, PersonView>()
-                .ForMember(pa => pa.Role, opt => opt.MapFrom(src => src.Role.Name));
+                .ForMember(pa => pa.Role, 
+                            opt => opt.MapFrom(src => src.Role.Name));
 
             CreateMap<EntryLogDTO, AccessLog>();
 
@@ -29,14 +31,23 @@ namespace EFarma.Config
             CreateMap<PrescriptionDTO,  Prescription>();
             CreateMap<PrescriptionItemDTO,  PrescriptionItem>();
             CreateMap<Prescription, PrescriptionView>()
-                .ForMember(pa => pa.PatientName, opt => opt.MapFrom(src => src.Patient.Name))
-                .ForMember(pa => pa.DoctorName, opt => opt.MapFrom(src => src.Employee.Name));
+                .ForMember(pa => pa.PatientName, 
+                            opt => opt.MapFrom(src => src.Patient.Name))
+                .ForMember(pa => pa.DoctorName, 
+                            opt => opt.MapFrom(src => src.Employee.Name));
 
             CreateMap<PermissionDTO, Permission>();
             CreateMap<Permission, PermissionView>();
 
             CreateMap<StockRoomDTO, StockRoom>();
             CreateMap<InStockItemDTO, InStockItem>();
+            CreateMap<InStockItem, InStockItemView>()
+                .ForMember(isi => isi.StockRoomName, 
+                            opt => opt.MapFrom(src => src.StockRoom.Name))
+                .ForMember(isi => isi.MedicamentDosage, 
+                            opt => opt.MapFrom(src => $"{src.Medicament.Dosage}{src.Medicament.Measure}"))
+                .ForMember(isi => isi.MedicamentName, 
+                            opt => opt.MapFrom(src => src.Medicament.Description));
         }
     }
 }

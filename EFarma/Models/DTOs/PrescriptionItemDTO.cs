@@ -5,6 +5,5 @@
         public int MedicamentId { get; set; }
         public int PrescribedQuantity { get; set; }
         public string Observation { get; set; }
-
     }
 }

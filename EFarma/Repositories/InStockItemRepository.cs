@@ -11,6 +11,14 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<List<InStockItem>> GetDetailedStockItems()
+        {
+            return await DataContext.InStockItems
+                .Include(i=>i.StockRoom)
+                .Include(i=>i.Medicament)
+                .ToListAsync();
+        }
+
         public async Task<List<InStockItem>> GetStockItemsByTagCodes(int stockRoomId, List<string> tagCodes)
         {
             return await DataContext.InStockItems

@@ -4,6 +4,7 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models;
 using Microsoft.AspNetCore.Mvc;
+using EFarma.Models.Views;
 
 namespace EFarma.Controllers
 {
@@ -77,6 +78,12 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultObject>> DeleteStockRoom(int id)
         {
             var result = await _business.DeleteStockRoom(id);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpGet("AvailableMedicaments")]
+        public async Task<ActionResult<ResultDataObject<List<InStockItemView>>>> GetAvailableMedicaments(){
+            var result = await _business.GetAvailableMedicaments();
             return StatusCode(result.StatusCode, result);
         }
 

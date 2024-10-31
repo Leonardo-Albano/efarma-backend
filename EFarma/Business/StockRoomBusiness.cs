@@ -3,6 +3,7 @@ using EFarma.Business.Interfaces;
 using EFarma.Models;
 using EFarma.Models.DTOs;
 using EFarma.Models.Response;
+using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
 //using MimeKit;
 using Newtonsoft.Json;
@@ -248,7 +249,6 @@ namespace EFarma.Business
 
 
             var stockRoom = await _repository.StockRooms.FirstOrDefault(s => s.UniqueId == entryLogDTO.StockRoomUniqueId);
-
             if (stockRoom == null)
             {
                 return new ResultObject
@@ -259,7 +259,6 @@ namespace EFarma.Business
                 };
             }
             accessLog.StockRoom = stockRoom;
-            accessLog.IsEntry = true;
 
             var employeeStockRoom = employee.Role.Permissions
                 .SelectMany(p => p.StockRooms) // Une todas as StockRooms de todas as permissões
@@ -267,7 +266,11 @@ namespace EFarma.Business
 
             bool hasAccess = employeeStockRoom != null;
 
-            accessLog.Message = hasAccess ? "Funcionário entrou na sala.": "Funcionário tentou acessar a sala, porém não possui acesso.";
+            bool isUserAlreadyInside = hasAccess && await IsUserAlreadyOnStockRoom(employee.Id, stockRoom.Id);
+            accessLog.Message = isUserAlreadyInside ? "Cartão foi lido com o funcionário já dentro da sala." : "Funcionário entrou na sala.";
+
+            accessLog.IsEntry = isUserAlreadyInside ? null : true;
+            accessLog.Message = hasAccess ? accessLog.Message: "Funcionário tentou acessar a sala, porém não possui acesso.";
             _repository.AccessLogs.Add(accessLog);
 
             await _repository.SaveChangesAsync();
@@ -316,6 +319,35 @@ namespace EFarma.Business
                 Message = success ? "Log de saída registrado com sucesso" : "Log de saída falhou ao ser armazenado.",
                 StatusCode = success ? 200 : 500,
                 Success = success
+            };
+        }
+
+        public async Task<ResultDataObject<List<InStockItemView>>> GetAvailableMedicaments()
+        {
+            var inStockItems = await _repository.InStockItems.GetDetailedStockItems();
+            var medicamentsDto = _mapper.Map<List<InStockItemView>>(inStockItems);
+
+            var groupedItems = medicamentsDto
+                .GroupBy(item => new { item.MedicamentId, item.StockRoomId })
+                .Select(group => new InStockItemView
+                {
+                    MedicamentId = group.Key.MedicamentId,
+                    StockRoomId = group.Key.StockRoomId,
+                    StockRoomName = group.First().StockRoomName,
+                    MedicamentName = group.First().MedicamentName,
+                    MedicamentDosage = group.First().MedicamentDosage,
+                    Quantity = group.Count()
+                })
+                .ToList();
+
+            bool hasAnyItems = groupedItems.Count > 0;
+
+            return new()
+            {
+                Message = hasAnyItems ? "Medicaments found." : "No Medicaments found.",
+                Data = groupedItems,
+                Success = hasAnyItems,
+                StatusCode = hasAnyItems ? 200 : 404
             };
         }
 
@@ -480,6 +512,18 @@ namespace EFarma.Business
             return false; // Indicate that there are pending prescriptions
         }
 
+        private async Task<bool> IsUserAlreadyOnStockRoom(int employeeId, int stockRoomId)
+        {
+            var logs = await _repository.AccessLogs.GetLogsByEmployeeAndStockRoom(employeeId, stockRoomId);
+            if (logs.Count == 0)
+            {
+                return true;
+            }
 
+            var entries = logs.Where(l => l.IsEntry.HasValue && l.IsEntry.Value).ToList();
+            var exits = logs.Where(l => l.IsEntry.HasValue && !l.IsEntry.Value).ToList();
+
+            return entries.Count != exits.Count;
+        }
     }
 }

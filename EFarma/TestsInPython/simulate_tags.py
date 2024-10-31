@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # Define o tamanho padrão dos códigos e a quantidade mínima necessária
 DEFAULT_CODE_LENGTH = 10
-REQUIRED_CODE_COUNT = 9
+REQUIRED_CODE_COUNT = 13
 CODES_FILE_PATH = 'tag_codes.txt'
 
 def generate_random_string(length=DEFAULT_CODE_LENGTH):

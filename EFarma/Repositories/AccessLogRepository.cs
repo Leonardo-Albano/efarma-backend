@@ -16,7 +16,7 @@ namespace EFarma.Repositories
             return await DataContext.AccessLogs
                     .Include(a => a.Employee)
                     .Include(a => a.StockRoom)
-                    .Where(a => a.StockRoom.UniqueId == stockRoomUniqueId && a.IsEntry)
+                    .Where(a => a.StockRoom.UniqueId == stockRoomUniqueId && a.IsEntry.HasValue && a.IsEntry.Value)
                     .OrderByDescending(a => a.Time)
                     .FirstOrDefaultAsync();
         }
@@ -26,10 +26,19 @@ namespace EFarma.Repositories
             return await DataContext.AccessLogs
                     .Include(a => a.Employee)
                     .Include(a => a.StockRoom)
-                    .Where(a => a.StockRoom.UniqueId == stockRoomUniqueId && !a.IsEntry)
+                    .Where(a => a.StockRoom.UniqueId == stockRoomUniqueId && a.IsEntry.HasValue && !a.IsEntry.Value)
                     .OrderByDescending(a => a.Time)
                     .FirstOrDefaultAsync();
         }
+
+        public async Task<List<AccessLog>> GetLogsByEmployeeAndStockRoom(int employeeId, int stockRoomId)
+        {
+            return await DataContext.AccessLogs
+                    .Where(a => a.StockRoomId == stockRoomId &&
+                            a.EmployeeId == employeeId)
+                    .ToListAsync();
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }
