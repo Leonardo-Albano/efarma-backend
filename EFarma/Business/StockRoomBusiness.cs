@@ -317,48 +317,6 @@ namespace EFarma.Business
             }
         }
 
-        private async Task<KeyValuePair<bool, string>> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
-        {
-            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
-            var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
-            var allItemsOnStock = await _repository.InStockItems.GetAll();
-
-            var itemsTaken = allItemsOnStock.Except(actualItemsOnStock).ToList();
-            int extraItemsCount = 0;
-            int missingItemsCount = 0;
-
-            foreach (var itemOnStock in itemsTaken)
-            {
-                // Procura um item correspondente na lista de medicamentos da prescrição
-                var equivalentItem = prescriptionMedicaments.FirstOrDefault(m => m.Id == itemOnStock.MedicamentId);
-
-                // Se não houver equivalente, conta como item extra
-                if (equivalentItem == null)
-                {
-                    extraItemsCount++;
-                }
-                else
-                {
-                    prescriptionMedicaments.Remove(equivalentItem);
-                    _repository.InStockItems.Remove(itemOnStock);
-                }
-            }
-
-            // Contabiliza medicamentos restantes na prescrição como itens faltando
-            missingItemsCount = prescriptionMedicaments.Count;
-
-            if (extraItemsCount > 0)
-            {
-                return new(false, $"Os medicamentos retirados não estão de acordo com a receita. {extraItemsCount} medicamento(s) a mais.");
-            }
-
-            var message = "Medicamentos retirados de acordo com a receita. ";
-            if (missingItemsCount > 0)
-                message += $"{missingItemsCount} medicamento(s) a menos.";
-
-            return new(true, message);
-        }
-
         private async Task<bool> ValidateExitWithPendentPrescriptions(Employee employee, StockRoom stockRoom)
         {
             var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);

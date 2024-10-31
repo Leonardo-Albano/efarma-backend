@@ -6,6 +6,8 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
+using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace EFarma.Business
 {
@@ -14,12 +16,15 @@ namespace EFarma.Business
         private readonly ILogger<PrescriptionController> _logger;
         private readonly IUnitOfWork _repository;
         private readonly IMapper _mapper;
+        private readonly HttpClient _httpClient;
 
-        public PrescriptionBusiness(ILogger<PrescriptionController> logger, IUnitOfWork repository, IMapper mapper)
+
+        public PrescriptionBusiness(ILogger<PrescriptionController> logger, IUnitOfWork repository, IMapper mapper, HttpClient httpClient)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+            _httpClient = httpClient;
         }
 
         public async Task<ResultObject> CreatePrescription(Prescription prescription)
@@ -218,6 +223,68 @@ namespace EFarma.Business
                 StatusCode = statusCode,
                 Success = success || storeSuccess // Success is true if either is true
             };
+        }
+
+        private async Task<List<string>> GetReadTagCodes(string uniqueId)
+        {
+            try
+            {
+                var requestUrl = $"http://127.0.0.1:5000/TagCodes?code={uniqueId}";
+
+                var response = await _httpClient.GetAsync(requestUrl);
+                response.EnsureSuccessStatusCode();
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var tagCodeResponse = JsonConvert.DeserializeObject<List<string>>(responseBody);
+
+                return tagCodeResponse ?? [];
+            }
+            catch (Exception ex)
+            {
+                return [];
+            }
+        }
+
+        private async Task<KeyValuePair<bool, string>> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
+        {
+            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
+            var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
+            var allItemsOnStock = await _repository.InStockItems.GetAll();
+
+            var itemsTaken = allItemsOnStock.Except(actualItemsOnStock).ToList();
+            int extraItemsCount = 0;
+            int missingItemsCount = 0;
+
+            foreach (var itemOnStock in itemsTaken)
+            {
+                // Procura um item correspondente na lista de medicamentos da prescrição
+                var equivalentItem = prescriptionMedicaments.FirstOrDefault(m => m.Id == itemOnStock.MedicamentId);
+
+                // Se não houver equivalente, conta como item extra
+                if (equivalentItem == null)
+                {
+                    extraItemsCount++;
+                }
+                else
+                {
+                    prescriptionMedicaments.Remove(equivalentItem);
+                    _repository.InStockItems.Remove(itemOnStock);
+                }
+            }
+
+            // Contabiliza medicamentos restantes na prescrição como itens faltando
+            missingItemsCount = prescriptionMedicaments.Count;
+
+            if (extraItemsCount > 0)
+            {
+                return new(false, $"Os medicamentos retirados não estão de acordo com a receita. {extraItemsCount} medicamento(s) a mais.");
+            }
+
+            var message = "Medicamentos retirados de acordo com a receita. ";
+            if (missingItemsCount > 0)
+                message += $"{missingItemsCount} medicamento(s) a menos.";
+
+            return new(true, message);
         }
     }
 }
