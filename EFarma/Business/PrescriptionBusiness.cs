@@ -153,6 +153,32 @@ namespace EFarma.Business
             };
         }
 
+        public async Task<ResultDataObject<PrescriptionViewDetailed?>> GetPrescriptionDetailed(int id)
+        {
+            var detailedPrescription = await _repository.Prescriptions.GetDetailedPrescriptionById(id);
+            if (detailedPrescription == null)
+            {
+                return new ResultDataObject<PrescriptionViewDetailed?>
+                {
+                    Data = null,
+                    StatusCode = 404,
+                    Message = "Receita não encontrada.",
+                    Success = false
+                };
+            }
+
+            var prescriptionView = _mapper.Map<PrescriptionViewDetailed>(detailedPrescription);
+
+            bool success = prescriptionView != null;
+            return new()
+            {
+                Message = success ? "Receita encontrada." : "Erro ao converter receita.",
+                Data = prescriptionView,
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
+        }
+
         public async Task<ResultObject> RemoveItemsFromStock(RemovePrescriptionItemsDTO prescriptionItemsDTO)
         {
             var prescription = await _repository.Prescriptions.GetDetailedPrescriptionById(prescriptionItemsDTO.PrescriptionId);
@@ -257,7 +283,7 @@ namespace EFarma.Business
 
             foreach (var itemOnStock in itemsTaken)
             {
-                // Procura um item correspondente na lista de medicamentos da prescrição
+                // Procura um item correspondente na lista de medicamentos da receita
                 var equivalentItem = prescriptionMedicaments.FirstOrDefault(m => m.Id == itemOnStock.MedicamentId);
 
                 // Se não houver equivalente, conta como item extra
@@ -272,7 +298,7 @@ namespace EFarma.Business
                 }
             }
 
-            // Contabiliza medicamentos restantes na prescrição como itens faltando
+            // Contabiliza medicamentos restantes na receita como itens faltando
             missingItemsCount = prescriptionMedicaments.Count;
 
             if (extraItemsCount > 0)

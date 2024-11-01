@@ -26,7 +26,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
-        policy.WithOrigins("http://157.230.224.194:5001")
+        policy.WithOrigins("http://157.230.224.194:", "http://localhost:5174")
         .AllowAnyMethod()
         .AllowAnyHeader());
 });

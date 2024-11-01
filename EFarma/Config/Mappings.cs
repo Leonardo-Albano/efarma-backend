@@ -42,6 +42,10 @@ namespace EFarma.Config
                             opt => opt.MapFrom(src => src.Employee.Name))
                 .ForMember(p => p.PatientName,
                             opt => opt.MapFrom(src => src.Patient.Name));
+            CreateMap<PrescriptionItem, PrescriptionItemViewDetailed>()
+                .ForMember(pi => pi.MedicamentName,
+                            opt => opt.MapFrom(src => src.Medicament.GetMedicamentName()));
+
 
 
             CreateMap<PermissionDTO, Permission>();

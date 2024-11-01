@@ -7,7 +7,7 @@
         public required string DoctorName { get; set; }
         public required string CRM { get; set; }
         public required string CPF { get; set; }
-        public DateTime Data { get; set; }
+        public DateTime Date { get; set; }
         public string Local { get; set; }
 
         public List<PrescriptionItemViewDetailed> Items { get; set; }

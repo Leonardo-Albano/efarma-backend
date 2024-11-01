@@ -13,7 +13,7 @@ namespace EFarma.Models
 
         public string GetMedicamentName()
         {
-            return $"{this.Description} {this.Dosage}{this.Measure}";
+            return $"{this.Description} {Convert.ToInt16(this.Dosage)}{this.Measure}";
         }
     }
 }

@@ -14,7 +14,9 @@ namespace EFarma.Repositories
         public async Task<Prescription?> GetDetailedPrescriptionById(int id)
         {
             return await DataContext.Prescriptions
-                    .Include(p=> p.Items)
+                    .Include(p => p.Employee)
+                    .Include(p => p.Patient)
+                    .Include(p => p.Items)
                         .ThenInclude(i=>i.Medicament)
                     .FirstOrDefaultAsync(p => p.Id == id);
         }
