@@ -4,7 +4,7 @@ namespace EFarma.Models.Views
 {
     public class InStockItemView
     {
-        public string Id { get; set; }
+        public string Id { get; } = Guid.NewGuid().ToString()[..8];
         public string StockRoomName { get; set; }
         public int Quantity { get; set; }
         public string MedicamentName { get; set; }  

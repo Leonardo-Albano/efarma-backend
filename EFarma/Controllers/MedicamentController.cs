@@ -42,13 +42,13 @@ namespace EFarma.Controllers
 
         /// <summary>
         /// Endpoint para obter uma lista de todos os medicamentos no sistema.
-        /// Retorna um dicionário contendo o ID do medicamento e sua descrição formatada (descrição, dosagem e medida).
+        /// Retorna o objeto completo do medicamento.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{List{Dictionary{int, string}}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultDataObject{List{Medicament}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Medicamentos encontrados com sucesso.</response>
         /// <response code="400">Nenhum medicamento encontrado.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<List<Dictionary<int, string>>>>> GetAllMedicaments()
+        public async Task<ActionResult<ResultDataObject<List<Medicament>>>> GetAllMedicaments()
         {
             var result = await _business.GetAllMedicaments();
   
@@ -70,6 +70,26 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultObject>> DeleteMedicament(int id)
         {
             var result = await _business.DeleteMedicament(id);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        /// <summary>
+        /// Endpoint para atualizar as informações de um medicamento específico com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID do medicamento a ser atualizado.</param>
+        /// <param name="medicamentDto">Objeto <see cref="MedicamentDTO"/> contendo as novas informações do medicamento.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Medicamento atualizado com sucesso.</response>
+        /// <response code="404">Medicamento não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar atualizar o medicamento.</response>
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ResultObject>> UpdateMedicament(int id, [FromBody] MedicamentDTO medicamentDto)
+        {
+            var result = await _business.UpdateMedicament(id, medicamentDto);
 
             return StatusCode(
                 statusCode: result.StatusCode,

@@ -62,6 +62,23 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
+        /// Endpoint para obter uma lista de todos os funcionários cadastrados no sistema.
+        /// </summary>
+        /// <returns>Objeto <see cref="ResultDataObject{List{PersonView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Funcionários encontrados com sucesso.</response>
+        /// <response code="404">Nenhum funcionário encontrado.</response>
+        [HttpGet]
+        public async Task<ActionResult<ResultDataObject<List<PersonView>>>> GetEmployees()
+        {
+            var result = await _business.GetEmployees();
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        /// <summary>
         /// Endpoint para obter uma lista de pessoas (pacientes e funcionários) com base no nome ou CPF.
         /// </summary>
         /// <param name="name">Nome da pessoa a ser consultada (opcional).</param>

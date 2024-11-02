@@ -76,21 +76,46 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<List<Dictionary<int, string>>>> GetAllMedicaments()
+        public async Task<ResultDataObject<List<Medicament>>> GetAllMedicaments()
         {
             var medicaments = await _repository.Medicaments.GetAll();
-            var result = medicaments.Select(m => new Dictionary<int, string>
-            {
-                { m.Id, $"{m.Description} {(int)m.Dosage}{m.Measure}" }
-            }).ToList();
 
-            bool success = result.Any();
+            bool success = medicaments.Any();
             
             return new()
             {
                 Message = success ? "Medicaments found" : "No medicaments found.",
-                Data = result,
+                Data = medicaments,
                 StatusCode = success ? 200 : 400,
+                Success = success
+            };
+        }
+
+        public async Task<ResultObject> UpdateMedicament(int id, MedicamentDTO medicamentDto)
+        {
+            var existingMedicament = await _repository.Medicaments.FirstOrDefault(p => p.Id == id);
+
+            if (existingMedicament == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Medicamento não foi encontrado.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            existingMedicament.Description = medicamentDto.Description;
+            existingMedicament.Dosage = medicamentDto.Dosage;
+            existingMedicament.Measure = medicamentDto.Measure;
+
+            _repository.Medicaments.Update(existingMedicament);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Medicamento atualizado com sucesso." : "Um erro ocorreu durante a atualização do medicamento.",
+                StatusCode = success ? 200 : 500,
                 Success = success
             };
         }

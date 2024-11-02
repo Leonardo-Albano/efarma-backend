@@ -99,6 +99,21 @@ namespace EFarma.Business
             };
         }
 
+        public async Task<ResultDataObject<List<Employee>>> GetEmployees()
+        {
+            var employees = await _repository.Employees.GetAll();
+
+            bool success = employees.Any();
+
+            return new()
+            {
+                Message = success ? "Employees found" : "No employees found.",
+                Data = employees,
+                StatusCode = success ? 200 : 404,
+                Success = success
+            };
+        }
+
         public async Task<ResultObject> Login(LoginDTO loginDTO)
         {
             var employee = await _repository.Employees.FirstOrDefault(e => e.Mail == loginDTO.Mail);
