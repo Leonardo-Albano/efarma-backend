@@ -18,7 +18,6 @@ namespace EFarma.Business
         private readonly IMapper _mapper;
         private readonly HttpClient _httpClient;
 
-
         public PrescriptionBusiness(ILogger<PrescriptionController> logger, IUnitOfWork repository, IMapper mapper, HttpClient httpClient)
         {
             _logger = logger;
@@ -38,7 +37,7 @@ namespace EFarma.Business
                 {
                     return new ResultObject
                     {
-                        Message = $"Medicament with ID {item.MedicamentId} is not registered.",
+                        Message = $"Medicamento com ID {item.MedicamentId} não está registrado.",
                         StatusCode = 404,
                         Success = false
                     };
@@ -53,7 +52,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = $"Employee not found.",
+                    Message = "Funcionário não encontrado.",
                     StatusCode = 404,
                     Success = false
                 };
@@ -62,7 +61,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = $"Employee not allowed to prescript (CRM not registered).",
+                    Message = "Funcionário não está autorizado a prescrever (CRM não registrado).",
                     StatusCode = 403,
                     Success = false
                 };
@@ -74,7 +73,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = $"Patient not found.",
+                    Message = "Paciente não encontrado.",
                     StatusCode = 404,
                     Success = false
                 };
@@ -86,7 +85,7 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Prescription created successfully." : "An error occurred while creating the prescription.",
+                Message = success ? "Receita criada com sucesso." : "Ocorreu um erro ao criar a receita.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -100,7 +99,7 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "Prescription not found.",
+                    Message = "Receita não encontrada.",
                     Success = false
                 };
             }
@@ -110,7 +109,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Prescription deleted successfully." : "An error occurred while deleting the prescription.",
+                Message = success ? "Receita excluída com sucesso." : "Ocorreu um erro ao excluir a receita.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -119,7 +118,7 @@ namespace EFarma.Business
         public async Task<ResultDataObject<List<PrescriptionItemView>>> GetPrescriptionItems(int prescriptionId)
         {
             var items = await _repository.PrescriptionItems.GetPrescriptionItems(prescriptionId);
-            
+
             var prescriptionItemsView = items.Select(item => new PrescriptionItemView
             {
                 Name = item.Medicament.Description,
@@ -131,7 +130,7 @@ namespace EFarma.Business
             return new()
             {
                 Data = prescriptionItemsView,
-                Message = has_items ? "Found prescription items" : "No items found for this prescription",
+                Message = has_items ? "Itens da receita encontrados." : "Nenhum item encontrado para esta receita.",
                 StatusCode = has_items ? 200 : 404,
                 Success = has_items
             };
@@ -146,7 +145,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Found prescriptions." : "No prescriptions found.",
+                Message = success ? "Receitas encontradas." : "Nenhuma receita encontrada.",
                 Data = prescriptions,
                 StatusCode = success ? 200 : 404,
                 Success = success
@@ -186,7 +185,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = "Prescription not found.",
+                    Message = "Receita não encontrada.",
                     StatusCode = 404,
                     Success = false
                 };
@@ -197,7 +196,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = "Stock room not found.",
+                    Message = "Sala de estoque não encontrada.",
                     StatusCode = 404,
                     Success = false
                 };
@@ -283,10 +282,8 @@ namespace EFarma.Business
 
             foreach (var itemOnStock in itemsTaken)
             {
-                // Procura um item correspondente na lista de medicamentos da receita
                 var equivalentItem = prescriptionMedicaments.FirstOrDefault(m => m.Id == itemOnStock.MedicamentId);
 
-                // Se não houver equivalente, conta como item extra
                 if (equivalentItem == null)
                 {
                     extraItemsCount++;
@@ -298,7 +295,6 @@ namespace EFarma.Business
                 }
             }
 
-            // Contabiliza medicamentos restantes na receita como itens faltando
             missingItemsCount = prescriptionMedicaments.Count;
 
             if (extraItemsCount > 0)

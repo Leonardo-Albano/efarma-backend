@@ -28,7 +28,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = "Page with the same name already exists.",
+                    Message = "Uma página com o mesmo nome já existe.",
                     StatusCode = 409,
                     Success = false
                 };
@@ -38,7 +38,7 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Page created successfully." : "Error creating the page.",
+                Message = success ? "Página criada com sucesso." : "Erro ao criar a página.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -52,7 +52,7 @@ namespace EFarma.Business
             bool success = result.Any();
             return new ResultDataObject<List<Page>>
             {
-                Message = success ? "Pages retrieved successfully." : "No pages found.",
+                Message = success ? "Páginas recuperadas com sucesso." : "Nenhuma página encontrada.",
                 Data = result,
                 StatusCode = success ? 200 : 404,
                 Success = success
@@ -67,7 +67,7 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "Page not found.",
+                    Message = "Página não encontrada.",
                     Success = false
                 };
             }
@@ -76,7 +76,7 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Page deleted successfully." : "Error deleting the page.",
+                Message = success ? "Página excluída com sucesso." : "Erro ao excluir a página.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };

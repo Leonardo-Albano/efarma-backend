@@ -5,7 +5,6 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
-//using MimeKit;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Mail;
@@ -35,7 +34,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = "StockRoom with the same name already exists.",
+                    Message = "Uma Sala de Estoque com o mesmo nome já existe.",
                     StatusCode = 409,
                     Success = false
                 };
@@ -45,7 +44,7 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "StockRoom created successfully." : "Error creating the StockRoom.",
+                Message = success ? "Sala de Estoque criada com sucesso." : "Erro ao criar a Sala de Estoque.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -59,7 +58,7 @@ namespace EFarma.Business
             bool success = result.Any();
             return new ResultDataObject<List<StockRoom>>
             {
-                Message = success ? "StockRooms retrieved successfully." : "No StockRooms found.",
+                Message = success ? "Salas de Estoque recuperadas com sucesso." : "Nenhuma Sala de Estoque encontrada.",
                 Data = result,
                 StatusCode = success ? 200 : 404,
                 Success = success
@@ -74,7 +73,7 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "StockRoom not found.",
+                    Message = "Sala de Estoque não encontrada.",
                     Success = false
                 };
             }
@@ -83,7 +82,7 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "StockRoom deleted successfully." : "Error deleting the StockRoom.",
+                Message = success ? "Sala de Estoque excluída com sucesso." : "Erro ao excluir a Sala de Estoque.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -96,7 +95,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Stock Room found." : "No Stock Room found.",
+                Message = success ? "Sala de Estoque encontrada." : "Nenhuma Sala de Estoque encontrada.",
                 Data = stockRoom,
                 Success = success,
                 StatusCode = success ? 200 : 404
@@ -111,19 +110,19 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "StockRoom not found.",
+                    Message = "Sala de Estoque não encontrada.",
                     Success = false
                 };
             }
             inStockItem.StockRoom = stockRoom;
 
-            var medicament = await _repository.Medicaments.FirstOrDefault(m=>m.Id == inStockItem.MedicamentId);
+            var medicament = await _repository.Medicaments.FirstOrDefault(m => m.Id == inStockItem.MedicamentId);
             if (medicament == null)
             {
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "Medicament not found.",
+                    Message = "Medicamento não encontrado.",
                     Success = false
                 };
             }
@@ -136,13 +135,13 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     StatusCode = 400,
-                    Message = "The amount of medicines indicated does not match those read on the shelves",
+                    Message = "A quantidade de medicamentos indicada não corresponde aos lidos nas prateleiras.",
                     Success = false
                 };
             }
 
             var stockItemsToAdd = new List<InStockItem>();
-            foreach(var tagCode in newTagCodes)
+            foreach (var tagCode in newTagCodes)
             {
                 var stockItem = inStockItem.Clone();
                 stockItem.TagCode = tagCode;
@@ -154,12 +153,12 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Item added on stock successfully." : "Error adding item.",
+                Message = success ? "Item adicionado ao estoque com sucesso." : "Erro ao adicionar o item.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
         }
-        
+
         public async Task<ResultObject> EntryStockRoom(EntryLogDTO entryLogDTO)
         {
             var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
@@ -175,7 +174,6 @@ namespace EFarma.Business
             }
             accessLog.Employee = employee;
 
-
             var stockRoom = await _repository.StockRooms.FirstOrDefault(s => s.UniqueId == entryLogDTO.StockRoomUniqueId);
             if (stockRoom == null)
             {
@@ -189,8 +187,8 @@ namespace EFarma.Business
             accessLog.StockRoom = stockRoom;
 
             var employeeStockRoom = employee.Role.Permissions
-                .SelectMany(p => p.StockRooms) // Une todas as StockRooms de todas as permissões
-                .FirstOrDefault(sr=>sr == stockRoom);
+                .SelectMany(p => p.StockRooms)
+                .FirstOrDefault(sr => sr == stockRoom);
 
             bool hasAccess = employeeStockRoom != null;
 
@@ -198,7 +196,7 @@ namespace EFarma.Business
             accessLog.Message = isUserAlreadyInside ? "Cartão foi lido com o funcionário já dentro da sala." : "Funcionário entrou na sala.";
 
             accessLog.IsEntry = isUserAlreadyInside ? null : true;
-            accessLog.Message = hasAccess ? accessLog.Message: "Funcionário tentou acessar a sala, porém não possui acesso.";
+            accessLog.Message = hasAccess ? accessLog.Message : "Funcionário tentou acessar a sala, porém não possui acesso.";
             _repository.AccessLogs.Add(accessLog);
 
             await _repository.SaveChangesAsync();
@@ -233,7 +231,7 @@ namespace EFarma.Business
 
             var newAccessLog = entryAccessLog.Clone();
             newAccessLog.Message = "Funcionário saiu da sala.";
-            
+
             var lastExit = await _repository.AccessLogs.GetDetailedLastExitByStockRoomUniqueId(stockRoomUniqueId);
             if (lastExit.Time > entryAccessLog.Time)
             {
@@ -244,7 +242,7 @@ namespace EFarma.Business
             var success = await _repository.SaveChangesAsync() > 0;
             return new()
             {
-                Message = success ? "Log de saída registrado com sucesso" : "Log de saída falhou ao ser armazenado.",
+                Message = success ? "Log de saída registrado com sucesso." : "Log de saída falhou ao ser armazenado.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -272,7 +270,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = hasAnyItems ? "Medicaments found." : "No Medicaments found.",
+                Message = hasAnyItems ? "Medicamentos encontrados." : "Nenhum medicamento encontrado.",
                 Data = groupedItems,
                 Success = hasAnyItems,
                 StatusCode = hasAnyItems ? 200 : 404
@@ -321,10 +319,9 @@ namespace EFarma.Business
             var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
             if (prescriptions.Count == 0)
             {
-                return true; // No pending prescriptions, exit is valid
+                return true;
             }
 
-            // Construct the email message using StringBuilder
             var messageBuilder = new StringBuilder();
 
             messageBuilder.AppendLine($"Uma retirada indevida foi feita pelo seguinte funcionário:");
@@ -355,7 +352,6 @@ namespace EFarma.Business
                 }
             }
 
-            // Prepare the email
             using (var mail = new MailMessage())
             {
                 mail.From = new MailAddress("efarma@avisos.com");
@@ -364,7 +360,6 @@ namespace EFarma.Business
                 mail.Subject = $"Retirada indevida da sala de estoque: {stockRoom.Name}";
                 mail.Body = messageBuilder.ToString();
 
-                // Configure the SMTP client
                 using (var smtp = new SmtpClient("smtp.gmail.com")
                 {
                     Port = 587,
@@ -372,30 +367,28 @@ namespace EFarma.Business
                     EnableSsl = true,
                 })
                 {
-                    int retries = 3; // Set number of retries
+                    int retries = 3;
                     while (retries > 0)
                     {
                         try
                         {
                             await smtp.SendMailAsync(mail);
-                            break; // Exit loop on successful send
+                            break;
                         }
                         catch (SmtpException ex)
                         {
                             retries--;
                             if (retries == 0)
                             {
-                                // Log the exception details
                                 Console.WriteLine($"Failed to send email: {ex.Message}");
-                                throw; // Rethrow the exception after retries
+                                throw;
                             }
-                            // Optionally: log the error and wait before retrying
                         }
                     }
                 }
             }
 
-            return false; // Indicate that there are pending prescriptions
+            return false;
         }
 
         private async Task<bool> IsUserAlreadyOnStockRoom(int employeeId, int stockRoomId)

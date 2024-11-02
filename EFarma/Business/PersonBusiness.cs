@@ -7,7 +7,7 @@ using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
 {
-    public class PersonBusiness : IPersonBusiness 
+    public class PersonBusiness : IPersonBusiness
     {
         private readonly ILogger<EmployeeController> _logger;
         private readonly IUnitOfWork _repository;
@@ -30,7 +30,6 @@ namespace EFarma.Business
 
             var employees = await _repository.Employees.GetEmployeeByCpfOrName(cpf, name);
 
-
             var people = _mapper.Map<List<PersonView>>(patients)
                             .Concat(_mapper.Map<List<PersonView>>(employees)).ToList();
 
@@ -38,7 +37,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Found people." : "No people found.",
+                Message = success ? "Pessoas encontradas." : "Nenhuma pessoa encontrada.",
                 Data = people,
                 StatusCode = success ? 200 : 404,
                 Success = success

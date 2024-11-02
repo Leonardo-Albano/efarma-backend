@@ -27,7 +27,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = $"Role with the name '{role.Name}' already exists in the system.",
+                    Message = $"A função com o nome '{role.Name}' já existe no sistema.",
                     StatusCode = 409,
                     Success = false
                 };
@@ -51,7 +51,7 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Role created successfully." : "An error occurred while creating the role.",
+                Message = success ? "Função criada com sucesso." : "Ocorreu um erro ao criar a função.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -65,7 +65,7 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "Role not found.",
+                    Message = "Função não encontrada.",
                     Success = false
                 };
             }
@@ -75,7 +75,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Role deleted successfully." : "An error occurred while deleting the role.",
+                Message = success ? "Função excluída com sucesso." : "Ocorreu um erro ao excluir a função.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -85,12 +85,12 @@ namespace EFarma.Business
         {
             var roles = await _repository.Roles.GetAll();
             var result = roles.Select(r => new KeyValuePair<int, string>(r.Id, r.Name)).ToList();
-            
+
             bool success = result.Any();
 
             return new()
             {
-                Message = success ? "Roles found" : "No roles found.",
+                Message = success ? "Funções encontradas." : "Nenhuma função encontrada.",
                 Data = result,
                 StatusCode = success ? 200 : 400,
                 Success = success

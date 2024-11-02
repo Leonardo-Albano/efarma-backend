@@ -30,7 +30,7 @@ namespace EFarma.Business
                 return new ResultDataObject<List<AccessLog>>()
                 {
                     Data = access_logs,
-                    Message = hasLogs ? "Access logs retrieved successfully." : "No access logs found.",
+                    Message = hasLogs ? "Logs de acesso obtidos com sucesso." : "Nenhum log de acesso encontrado.",
                     Success = hasLogs,
                     StatusCode = hasLogs ? 200 : 404
                 };
@@ -40,7 +40,7 @@ namespace EFarma.Business
                 return new ResultDataObject<List<AccessLog>>()
                 {
                     Data = [],
-                    Message = $"Error: {ex.Message}",
+                    Message = $"Erro: {ex.Message}",
                     Success = false,
                     StatusCode = 500
                 };

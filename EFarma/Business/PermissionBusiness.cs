@@ -31,7 +31,7 @@ namespace EFarma.Business
                 {
                     return new ResultObject
                     {
-                        Message = "One or more Stock Rooms don't exist.",
+                        Message = "Uma ou mais Salas de Estoque não existem.",
                         StatusCode = 404,
                         Success = false
                     };
@@ -47,7 +47,7 @@ namespace EFarma.Business
                 {
                     return new ResultObject
                     {
-                        Message = "One or more Pages don't exist.",
+                        Message = "Uma ou mais Páginas não existem.",
                         StatusCode = 404,
                         Success = false
                     };
@@ -60,7 +60,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Permission created successfully." : "An error occurred while creating the permission.",
+                Message = success ? "Permissão criada com sucesso." : "Ocorreu um erro ao criar a permissão.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -75,7 +75,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Found permissions." : "No permissions found.",
+                Message = success ? "Permissões encontradas." : "Nenhuma permissão encontrada.",
                 Data = permissionsView,
                 StatusCode = success ? 200 : 404,
                 Success = success
@@ -90,7 +90,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Found permission." : "Permission not found.",
+                Message = success ? "Permissão encontrada." : "Permissão não encontrada.",
                 Data = permission,
                 StatusCode = success ? 200 : 404,
                 Success = success
@@ -105,7 +105,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = "Permission not found.",
+                    Message = "Permissão não encontrada.",
                     StatusCode = 404,
                     Success = false
                 };
@@ -122,7 +122,7 @@ namespace EFarma.Business
                 {
                     return new ResultObject
                     {
-                        Message = "One or more Stock Rooms don't exist.",
+                        Message = "Uma ou mais Salas de Estoque não existem.",
                         StatusCode = 404,
                         Success = false
                     };
@@ -139,7 +139,7 @@ namespace EFarma.Business
                 {
                     return new ResultObject
                     {
-                        Message = "One or more Pages don't exist.",
+                        Message = "Uma ou mais Páginas não existem.",
                         StatusCode = 404,
                         Success = false
                     };
@@ -152,7 +152,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Permission updated successfully." : "An error occurred while updating the permission.",
+                Message = success ? "Permissão atualizada com sucesso." : "Ocorreu um erro ao atualizar a permissão.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -166,7 +166,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = "Permission not found.",
+                    Message = "Permissão não encontrada.",
                     StatusCode = 404,
                     Success = false
                 };
@@ -177,7 +177,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Permission deleted successfully." : "An error occurred while deleting the permission.",
+                Message = success ? "Permissão excluída com sucesso." : "Ocorreu um erro ao excluir a permissão.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };

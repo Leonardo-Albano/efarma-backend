@@ -24,18 +24,18 @@ namespace EFarma.Business
         public async Task<ResultObject> CreateMedicament(MedicamentDTO medicamentDTO)
         {
             var medicament = _mapper.Map<Medicament>(medicamentDTO);
-            
-            var existant_medicament = await _repository.Medicaments.FirstOrDefault(m => 
+
+            var existant_medicament = await _repository.Medicaments.FirstOrDefault(m =>
                 m.Description == medicamentDTO.Description &&
                 m.Dosage == medicamentDTO.Dosage &&
                 m.Measure == medicamentDTO.Measure
             );
 
-            if(existant_medicament != null)
+            if (existant_medicament != null)
             {
                 return new ResultObject
                 {
-                    Message = "This medicament already exists in the system.",
+                    Message = "Este medicamento já existe no sistema.",
                     StatusCode = 409,
                     Success = false
                 };
@@ -46,7 +46,7 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Medicament created successfully." : "An error occurred while creating the medicament.",
+                Message = success ? "Medicamento criado com sucesso." : "Ocorreu um erro ao criar o medicamento.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -60,7 +60,7 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "Medicament not found.",
+                    Message = "Medicamento não encontrado.",
                     Success = false
                 };
             }
@@ -70,7 +70,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Medicament deleted successfully." : "An error occurred while deleting the medicament.",
+                Message = success ? "Medicamento excluído com sucesso." : "Ocorreu um erro ao excluir o medicamento.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -81,10 +81,10 @@ namespace EFarma.Business
             var medicaments = await _repository.Medicaments.GetAll();
 
             bool success = medicaments.Any();
-            
+
             return new()
             {
-                Message = success ? "Medicaments found" : "No medicaments found.",
+                Message = success ? "Medicamentos encontrados." : "Nenhum medicamento encontrado.",
                 Data = medicaments,
                 StatusCode = success ? 200 : 400,
                 Success = success

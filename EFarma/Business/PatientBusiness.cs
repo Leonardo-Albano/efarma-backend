@@ -13,8 +13,8 @@ namespace EFarma.Business
         private readonly IUnitOfWork _repository;
         private readonly IMapper _mapper;
 
-        public PatientBusiness(ILogger<PatientController> logger, IUnitOfWork repository, IMapper mapper) 
-        { 
+        public PatientBusiness(ILogger<PatientController> logger, IUnitOfWork repository, IMapper mapper)
+        {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
@@ -22,23 +22,23 @@ namespace EFarma.Business
 
         public async Task<ResultObject> CreatePatient(Patient patient)
         {
-            var existent_patients = await _repository.Patients.FirstOrDefault(p=>p.CPF == patient.CPF);
-            if(existent_patients != null)
+            var existent_patients = await _repository.Patients.FirstOrDefault(p => p.CPF == patient.CPF);
+            if (existent_patients != null)
             {
                 return new ResultObject
                 {
-                    Message = "CPF already exists in the system.",
+                    Message = "CPF já existe no sistema.",
                     StatusCode = 409,
                     Success = false
                 };
-            } 
+            }
 
             _repository.Patients.Add(patient);
 
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Patient created successfully." : "An error occurred while creating the patient.",
+                Message = success ? "Paciente criado com sucesso." : "Ocorreu um erro ao criar o paciente.",
                 Success = success,
                 StatusCode = success ? 200 : 500
             };
@@ -52,7 +52,7 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "Patient not found.",
+                    Message = "Paciente não encontrado.",
                     Success = false
                 };
             }
@@ -62,7 +62,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Patient deleted successfully." : "An error occurred while deleting the patient.",
+                Message = success ? "Paciente excluído com sucesso." : "Ocorreu um erro ao excluir o paciente.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -76,7 +76,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Patients found." : "No patients found.",
+                Message = success ? "Pacientes encontrados." : "Nenhum paciente encontrado.",
                 Data = patients,
                 Success = success,
                 StatusCode = success ? 200 : 404
@@ -90,7 +90,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Patient found." : "No patient found.",
+                Message = success ? "Paciente encontrado." : "Nenhum paciente encontrado.",
                 Data = patient,
                 Success = success,
                 StatusCode = success ? 200 : 404
@@ -104,7 +104,7 @@ namespace EFarma.Business
 
             return new ResultDataObject<Patient?>
             {
-                Message = success ? "Patient updated successfully." : "An error occurred while updating the patient.",
+                Message = success ? "Paciente atualizado com sucesso." : "Ocorreu um erro ao atualizar o paciente.",
                 Data = success ? patient : null,
                 StatusCode = success ? 200 : 500,
                 Success = success

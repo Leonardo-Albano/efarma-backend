@@ -32,7 +32,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = "CPF already exists in the system.",
+                    Message = "CPF já existe no sistema.",
                     StatusCode = 409,
                     Success = false
                 };
@@ -43,7 +43,7 @@ namespace EFarma.Business
             {
                 return new ResultObject
                 {
-                    Message = "This tag code belong to another employee.",
+                    Message = "Este código de tag pertence a outro funcionário.",
                     StatusCode = 409,
                     Success = false
                 };
@@ -55,7 +55,7 @@ namespace EFarma.Business
             bool success = await _repository.SaveChangesAsync() > 0;
             return new ResultObject
             {
-                Message = success ? "Employee created successfully." : "An error occurred while creating the employee.",
+                Message = success ? "Funcionário criado com sucesso." : "Ocorreu um erro ao criar o funcionário.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -63,13 +63,13 @@ namespace EFarma.Business
 
         public async Task<ResultObject> DeleteEmployee(int id)
         {
-            var employee = await _repository.Employees.FirstOrDefault(e=>e.Id == id);
+            var employee = await _repository.Employees.FirstOrDefault(e => e.Id == id);
             if (employee == null)
             {
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "Employee not found.",
+                    Message = "Funcionário não encontrado.",
                     Success = false
                 };
             }
@@ -79,7 +79,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Employee deleted successfully." : "An error occurred while deleting the employee.",
+                Message = success ? "Funcionário excluído com sucesso." : "Ocorreu um erro ao excluir o funcionário.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
@@ -92,7 +92,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Employee found." : "No employee found.",
+                Message = success ? "Funcionário encontrado." : "Nenhum funcionário encontrado.",
                 Data = employee,
                 Success = success,
                 StatusCode = success ? 200 : 404
@@ -107,7 +107,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = success ? "Employees found" : "No employees found.",
+                Message = success ? "Funcionários encontrados." : "Nenhum funcionário encontrado.",
                 Data = employees,
                 StatusCode = success ? 200 : 404,
                 Success = success
@@ -121,7 +121,7 @@ namespace EFarma.Business
             {
                 return new()
                 {
-                    Message = "Employee not found.",
+                    Message = "Funcionário não encontrado.",
                     StatusCode = 404,
                     Success = false
                 };
@@ -131,7 +131,7 @@ namespace EFarma.Business
 
             return new()
             {
-                Message = result ? "Access allowed." : "Access denied.",
+                Message = result ? "Acesso permitido." : "Acesso negado.",
                 StatusCode = result ? 200 : 403,
                 Success = result
             };
@@ -144,7 +144,7 @@ namespace EFarma.Business
 
             return new ResultDataObject<Employee?>
             {
-                Message = success ? "Employee updated successfully." : "An error occurred while updating the employee.",
+                Message = success ? "Funcionário atualizado com sucesso." : "Ocorreu um erro ao atualizar o funcionário.",
                 Data = success ? employee : null,
                 StatusCode = success ? 200 : 500,
                 Success = success
@@ -158,7 +158,7 @@ namespace EFarma.Business
             {
                 return new()
                 {
-                    Message = "Employee not found.",
+                    Message = "Funcionário não encontrado.",
                     StatusCode = 404,
                     Success = false
                 };
@@ -170,21 +170,21 @@ namespace EFarma.Business
                 Password = updatePasswordDTO.OldPassword
             });
 
-            if(!tryLogin.Success)
+            if (!tryLogin.Success)
             {
                 return new()
                 {
-                    Message = "Incorrect password.",
+                    Message = "Senha incorreta.",
                     StatusCode = 403,
                     Success = false
                 };
             }
 
-            if(string.IsNullOrEmpty(updatePasswordDTO.NewPassword))
+            if (string.IsNullOrEmpty(updatePasswordDTO.NewPassword))
             {
                 return new()
                 {
-                    Message = "Invalid password.",
+                    Message = "Senha inválida.",
                     StatusCode = 403,
                     Success = false
                 };
@@ -196,7 +196,7 @@ namespace EFarma.Business
 
             return new ResultObject
             {
-                Message = success ? "Password updated successfully." : "An error occurred while updating the password.",
+                Message = success ? "Senha atualizada com sucesso." : "Ocorreu um erro ao atualizar a senha.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
