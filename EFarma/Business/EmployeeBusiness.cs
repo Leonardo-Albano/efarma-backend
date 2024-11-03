@@ -85,6 +85,20 @@ namespace EFarma.Business
             };
         }
 
+        public async Task<ResultDataObject<Employee?>> GetDoctorByCrm(string crm)
+        {
+            var doctor = await _repository.Employees.FirstOrDefault(e => e.CRM == crm);
+            bool success = doctor != null;
+
+            return new()
+            {
+                Message = success ? "Médico encontrado." : "Nenhum médico encontrado.",
+                Data = doctor,
+                Success = success,
+                StatusCode = success ? 200 : 404
+            };
+        }
+
         public async Task<ResultDataObject<Employee>> GetEmployee(string cpf)
         {
             var employee = await _repository.Employees.FirstOrDefault(e => e.CPF == cpf);

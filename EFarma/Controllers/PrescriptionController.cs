@@ -91,7 +91,7 @@ namespace EFarma.Controllers
         /// <response code="200">Receita encontrada com sucesso.</response>
         /// <response code="404">Receita não encontrada.</response>
         /// <response code="500">Erro interno ao tentar converter ou obter os detalhes da receita.</response>
-        [HttpGet("GetPrescriptionDetailed/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<ResultDataObject<List<PrescriptionView>>>> GetPrescriptionDetailed(int id)
         {
             var result = await _business.GetPrescriptionDetailed(id);
@@ -109,7 +109,7 @@ namespace EFarma.Controllers
         /// <returns>Objeto <see cref="ResultDataObject{List{PrescriptionItemView}}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Itens da receita encontrados com sucesso.</response>
         /// <response code="404">Nenhum item encontrado para a receita fornecida.</response>
-        [HttpGet("{prescriptionId}")]
+        [HttpGet("GetPrescriptionItems/{prescriptionId}")]
         public async Task<ActionResult<ResultDataObject<List<PrescriptionItemView>>>> GetPrescriptionItems(int prescriptionId)
         {
             var result = await _business.GetPrescriptionItems(prescriptionId);

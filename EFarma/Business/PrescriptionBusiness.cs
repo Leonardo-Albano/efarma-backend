@@ -122,7 +122,8 @@ namespace EFarma.Business
             var prescriptionItemsView = items.Select(item => new PrescriptionItemView
             {
                 Name = item.Medicament.Description,
-                Dosage = $"{item.Medicament.Dosage} {item.Medicament.Measure}",
+                Dosage = item.Medicament.Dosage,
+                Measure = item.Medicament.Measure,
                 Quantity = item.PrescribedQuantity
             }).ToList();
 

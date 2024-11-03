@@ -47,7 +47,7 @@ namespace EFarma.Config
                             opt => opt.MapFrom(src => src.Medicament.Description))
                 .ForMember(pi => pi.MedicamentDosage,
                             opt => opt.MapFrom(src => src.Medicament.Dosage))
-                .ForMember(pi => pi.MedicamentName,
+                .ForMember(pi => pi.MedicamentMeasure,
                             opt => opt.MapFrom(src => src.Medicament.Measure));
 
             CreateMap<PermissionDTO, Permission>();

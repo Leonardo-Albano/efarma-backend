@@ -62,6 +62,24 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
+        /// Endpoint para obter as informações de um médico específico com base no CRM fornecido.
+        /// </summary>
+        /// <param name="crm">CRM do médico a ser consultado.</param>
+        /// <returns>Objeto <see cref="ResultDataObject{Employee}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Médico encontrado com sucesso.</response>
+        /// <response code="404">Nenhum médico encontrado com o CRM fornecido.</response>
+        [HttpGet("GetDoctor/{crm}")]
+        public async Task<ActionResult<ResultDataObject<Employee>>> GetDoctorByCrm(string crm)
+        {
+            var result = await _business.GetDoctorByCrm(crm);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        /// <summary>
         /// Endpoint para obter uma lista de todos os funcionários cadastrados no sistema.
         /// </summary>
         /// <returns>Objeto <see cref="ResultDataObject{List{PersonView}}"/> com o status da operação e o código HTTP correspondente.</returns>

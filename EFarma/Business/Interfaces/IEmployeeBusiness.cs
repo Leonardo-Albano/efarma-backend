@@ -8,6 +8,7 @@ namespace EFarma.Business.Interfaces
     {
         Task<ResultObject> CreateEmployee(Employee employee);
         Task<ResultObject> DeleteEmployee(int id);
+        Task<ResultDataObject<Employee?>> GetDoctorByCrm(string crm);
         Task<ResultDataObject<Employee>> GetEmployee(string cpf);
         Task<ResultDataObject<List<Employee>>> GetEmployees();
         Task<ResultObject> Login(LoginDTO loginDTO);
