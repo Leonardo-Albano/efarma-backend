@@ -81,6 +81,12 @@ namespace EFarma.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
+        /// <summary>
+        /// Endpoint para obter a lista de medicamentos disponíveis em estoque, agrupados por sala de estoque e medicamento.
+        /// </summary>
+        /// <returns>Objeto <see cref="ResultDataObject{List{InStockItemView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Medicamentos encontrados com sucesso.</response>
+        /// <response code="404">Nenhum medicamento encontrado em estoque.</response>
         [HttpGet("AvailableMedicaments")]
         public async Task<ActionResult<ResultDataObject<List<InStockItemView>>>> GetAvailableMedicaments(){
             var result = await _business.GetAvailableMedicaments();

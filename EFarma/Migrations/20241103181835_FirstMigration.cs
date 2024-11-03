@@ -184,7 +184,7 @@ namespace EFarma.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     EmployeeId = table.Column<int>(type: "int", nullable: false),
                     StockRoomId = table.Column<int>(type: "int", nullable: false),
-                    Time = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     Message = table.Column<string>(type: "longtext", nullable: false),
                     IsEntry = table.Column<bool>(type: "tinyint(1)", nullable: true)
                 },

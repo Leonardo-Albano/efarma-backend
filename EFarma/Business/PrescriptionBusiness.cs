@@ -219,7 +219,7 @@ namespace EFarma.Business
                 Employee = responsible,
                 IsEntry = false,
                 StockRoom = stockRoom,
-                Time = DateTime.Now
+                Date = DateTime.Now
             };
 
             prescription.TakeOutResponsible = responsible;

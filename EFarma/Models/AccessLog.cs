@@ -16,7 +16,7 @@ namespace EFarma.Models
         public int StockRoomId { get; set; }
 
 
-        public DateTime Time { get; set; }
+        public DateTime Date { get; set; }
         public string Message { get; set; }
         public bool? IsEntry { get; set; }
 

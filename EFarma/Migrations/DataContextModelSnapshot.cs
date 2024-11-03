@@ -25,6 +25,9 @@ namespace EFarma.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
@@ -37,9 +40,6 @@ namespace EFarma.Migrations
 
                     b.Property<int>("StockRoomId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 

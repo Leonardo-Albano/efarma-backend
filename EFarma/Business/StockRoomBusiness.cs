@@ -186,35 +186,53 @@ namespace EFarma.Business
             }
             accessLog.StockRoom = stockRoom;
 
-            var employeeStockRoom = employee.Role.Permissions
+            var hasAccess = employee.Role.Permissions
                 .SelectMany(p => p.StockRooms)
-                .FirstOrDefault(sr => sr == stockRoom);
-
-            bool hasAccess = employeeStockRoom != null;
-
-            bool isUserAlreadyInside = hasAccess && await IsUserAlreadyOnStockRoom(employee.Id, stockRoom.Id);
-            accessLog.Message = isUserAlreadyInside ? "Cartão foi lido com o funcionário já dentro da sala." : "Funcionário entrou na sala.";
-
-            accessLog.IsEntry = isUserAlreadyInside ? null : true;
-            accessLog.Message = hasAccess ? accessLog.Message : "Funcionário tentou acessar a sala, porém não possui acesso.";
-            _repository.AccessLogs.Add(accessLog);
-
-            await _repository.SaveChangesAsync();
+                .Any(sr => sr == stockRoom);
 
             string[] splittedName = employee.Name.Split(' ');
             string formattedName = $"{splittedName.First()} {splittedName.Last()}";
 
+            bool isUserAlreadyInside = hasAccess && await IsUserAlreadyOnStockRoom(employee.Id, stockRoom.Id);
+
+            if (hasAccess)
+            {
+                if (isUserAlreadyInside)
+                {
+                    accessLog.Message = "Cartão foi lido com o funcionário já dentro da sala.";
+                    accessLog.IsEntry = null;
+                }
+                else
+                {
+                    accessLog.Message = "Funcionário entrou na sala.";
+                    accessLog.IsEntry = true;
+                }
+            }
+            else
+            {
+                accessLog.Message = "Funcionário tentou acessar a sala, porém não possui acesso.";
+                accessLog.IsEntry = null;
+            }
+
+            string responseMessage = hasAccess
+                ? (isUserAlreadyInside ? $"{formattedName} já está dentro da sala." : $"Acesso liberado à {formattedName}.")
+                : $"Acesso negado à {formattedName}. Favor contate o RH.";
+
+            _repository.AccessLogs.Add(accessLog);
+            await _repository.SaveChangesAsync();
+
             return new ResultObject
             {
-                Message = hasAccess ? $"{employee.Name}. Acesso permitido." : $"{employee.Name}. Acesso não permitido, contate o RH.",
-                StatusCode = hasAccess ? 200 : 403,
-                Success = hasAccess
+                Message = responseMessage,
+                StatusCode = hasAccess && !isUserAlreadyInside ? 200 : 403,
+                Success = hasAccess && !isUserAlreadyInside
             };
         }
 
+
         public async Task<ResultObject> ExitStockRoom(string stockRoomUniqueId)
         {
-            var entryAccessLog = await _repository.AccessLogs.GetDetailedLastEntryByStockRoomUniqueId(stockRoomUniqueId);
+            var entryAccessLog = await _repository.AccessLogs.GetFirstUnmatchedEntry(stockRoomUniqueId);
             if (entryAccessLog == null)
             {
                 return new ResultObject
@@ -224,23 +242,38 @@ namespace EFarma.Business
                     Success = false
                 };
             }
+
             var employee = entryAccessLog.Employee;
             var stockRoom = entryAccessLog.StockRoom;
 
-            var result = await ValidateExitWithPendentPrescriptions(employee, stockRoom);
+            var hasNoPendencies = await HasNoPendentPrescriptions(employee);
+            if (!hasNoPendencies)
+            {
+                var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
+                await NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
+
+                return new ResultObject
+                {
+                    Message = "Saída bloqueada devido a prescrições pendentes.",
+                    StatusCode = 403,
+                    Success = false
+                };
+            }
 
             var newAccessLog = entryAccessLog.Clone();
+            newAccessLog.Id = 0;
             newAccessLog.Message = "Funcionário saiu da sala.";
+            newAccessLog.IsEntry = false;
 
             var lastExit = await _repository.AccessLogs.GetDetailedLastExitByStockRoomUniqueId(stockRoomUniqueId);
-            if (lastExit.Time > entryAccessLog.Time)
+            if (lastExit != null && lastExit.Date > entryAccessLog.Date)
             {
                 newAccessLog.Message = "Funcionário saiu da sala. (Havia mais de um funcionário na sala.)";
             }
 
             _repository.AccessLogs.Add(newAccessLog);
             var success = await _repository.SaveChangesAsync() > 0;
-            return new()
+            return new ResultObject
             {
                 Message = success ? "Log de saída registrado com sucesso." : "Log de saída falhou ao ser armazenado.",
                 StatusCode = success ? 200 : 500,
@@ -314,16 +347,29 @@ namespace EFarma.Business
             }
         }
 
-        private async Task<bool> ValidateExitWithPendentPrescriptions(Employee employee, StockRoom stockRoom)
+        private async Task<bool> HasNoPendentPrescriptions(Employee employee)
         {
             var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
-            if (prescriptions.Count == 0)
+            return prescriptions.Count == 0;
+        }
+
+        private async Task<bool> IsUserAlreadyOnStockRoom(int employeeId, int stockRoomId)
+        {
+            var logs = await _repository.AccessLogs.GetLogsByEmployeeAndStockRoom(employeeId, stockRoomId);
+            if (logs.Count == 0)
             {
-                return true;
+                return false;
             }
 
-            var messageBuilder = new StringBuilder();
+            var entries = logs.Where(l => l.IsEntry.HasValue && l.IsEntry.Value).ToList();
+            var exits = logs.Where(l => l.IsEntry.HasValue && !l.IsEntry.Value).ToList();
 
+            return entries.Count != exits.Count;
+        }
+
+        private async Task NotifyPendentPrescriptions(Employee employee, StockRoom stockRoom, List<Prescription> prescriptions)
+        {
+            var messageBuilder = new StringBuilder();
             messageBuilder.AppendLine($"Uma retirada indevida foi feita pelo seguinte funcionário:");
             messageBuilder.AppendLine($"Nome: {employee.Name}");
             messageBuilder.AppendLine($"Email: {employee.Mail}");
@@ -387,22 +433,7 @@ namespace EFarma.Business
                     }
                 }
             }
-
-            return false;
         }
 
-        private async Task<bool> IsUserAlreadyOnStockRoom(int employeeId, int stockRoomId)
-        {
-            var logs = await _repository.AccessLogs.GetLogsByEmployeeAndStockRoom(employeeId, stockRoomId);
-            if (logs.Count == 0)
-            {
-                return true;
-            }
-
-            var entries = logs.Where(l => l.IsEntry.HasValue && l.IsEntry.Value).ToList();
-            var exits = logs.Where(l => l.IsEntry.HasValue && !l.IsEntry.Value).ToList();
-
-            return entries.Count != exits.Count;
-        }
     }
 }
