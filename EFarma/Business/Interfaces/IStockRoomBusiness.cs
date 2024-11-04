@@ -7,6 +7,7 @@ namespace EFarma.Business.Interfaces
 {
     public interface IStockRoomBusiness
     {
+        Task<ResultObject> CorrectAccess(EntryLogDTO entryLogDTO);
         Task<ResultObject> CreateStockRoom(StockRoomDTO stockRoomDTO);
         Task<ResultObject> DeleteStockRoom(int id);
         Task<ResultObject> EntryStockRoom(EntryLogDTO entryLogDTO);

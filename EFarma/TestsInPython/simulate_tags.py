@@ -11,7 +11,7 @@ app = Flask(__name__)
 # Define default values
 DEFAULT_CODE_LENGTH = 10
 CODES_FILE_PATH = 'tag_codes.txt'
-REQUIRED_CODE_COUNT = 13  # Default required code count (can be updated in Streamlit)
+REQUIRED_CODE_COUNT = 5  # Default required code count (can be updated in Streamlit)
 
 # Function to generate a random code string
 def generate_random_string(length=DEFAULT_CODE_LENGTH):

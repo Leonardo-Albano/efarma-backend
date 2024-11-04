@@ -229,7 +229,6 @@ namespace EFarma.Business
             };
         }
 
-
         public async Task<ResultObject> ExitStockRoom(string stockRoomUniqueId)
         {
             var entryAccessLog = await _repository.AccessLogs.GetFirstUnmatchedEntry(stockRoomUniqueId);
@@ -307,6 +306,66 @@ namespace EFarma.Business
                 Data = groupedItems,
                 Success = hasAnyItems,
                 StatusCode = hasAnyItems ? 200 : 404
+            };
+        }
+
+        public async Task<ResultObject> CorrectAccess(EntryLogDTO entryLogDTO)
+        {
+            var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
+            var employee = await _repository.Employees.GetEmployeeByTagCode(entryLogDTO.TagCode);
+            if (employee == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Tag não cadastrada.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+            accessLog.Employee = employee;
+
+            var stockRoom = await _repository.StockRooms.FirstOrDefault(s => s.UniqueId == entryLogDTO.StockRoomUniqueId);
+            if (stockRoom == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Sala não encontrada.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+            accessLog.StockRoom = stockRoom;
+
+            var hasAccess = employee.Role.Permissions
+                .SelectMany(p => p.StockRooms)
+                .Any(sr => sr == stockRoom);
+
+            string[] splittedName = employee.Name.Split(' ');
+            string formattedName = $"{splittedName.First()} {splittedName.Last()}";
+
+            bool isUserAlreadyInside = hasAccess && await IsUserAlreadyOnStockRoom(employee.Id, stockRoom.Id);
+
+            if(!isUserAlreadyInside)
+            {
+                return new ResultObject
+                {
+                    Message = "Usuário não tem entradas pendentes.",
+                    StatusCode = 403,
+                    Success = false
+                };
+            }
+
+            accessLog.Message = "Corrigido o acesso do funcionário à sala.";
+            accessLog.IsEntry = false;
+
+            _repository.AccessLogs.Add(accessLog);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Acesso corrigido com sucesso." : "Erro ao salvar correção de acesso.",
+                StatusCode = success ? 200 : 500,
+                Success = success
             };
         }
 
@@ -434,6 +493,5 @@ namespace EFarma.Business
                 }
             }
         }
-
     }
 }

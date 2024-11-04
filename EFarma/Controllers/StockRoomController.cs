@@ -129,10 +129,37 @@ namespace EFarma.Controllers
             return StatusCode(result.StatusCode, result);
         }
 
+        /// <summary>
+        /// Endpoint para registrar a saída de um funcionário de uma sala de estoque (StockRoom) com base no ID único da sala.
+        /// Valida se houve uma entrada registrada e verifica pendências de prescrições antes de permitir a saída.
+        /// </summary>
+        /// <param name="stockRoomUniqueId">ID único da sala de estoque.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Saída registrada com sucesso.</response>
+        /// <response code="403">Saída bloqueada devido a prescrições pendentes.</response>
+        /// <response code="404">Nenhuma entrada foi identificada na sala.</response>
+        /// <response code="500">Erro interno ao tentar registrar a saída.</response>
         [HttpPost("Exit")]
         public async Task<ActionResult<ResultObject>> ExitStockRoom(string stockRoomUniqueId)
         {
             var result = await _business.ExitStockRoom(stockRoomUniqueId);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        /// <summary>
+        /// Endpoint para corrigir o registro de acesso de um funcionário a uma sala de estoque (StockRoom).
+        /// Valida se o funcionário possui permissão de acesso e se ele possui uma entrada pendente na sala.
+        /// </summary>
+        /// <param name="entryLogDTO">Objeto <see cref="EntryLogDTO"/> contendo as informações para corrigir o acesso, incluindo o código de identificação do funcionário e o ID único da sala de estoque.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Correção de acesso registrada com sucesso.</response>
+        /// <response code="403">Usuário não tem entradas pendentes ou não possui permissão de acesso.</response>
+        /// <response code="404">Tag do funcionário ou sala de estoque não encontrada.</response>
+        /// <response code="500">Erro interno ao tentar salvar a correção de acesso.</response>
+        [HttpPost("CorrectAccess")]
+        public async Task<ActionResult<ResultObject>> CorrectAccess([FromBody] EntryLogDTO entryLogDTO)
+        {
+            var result = await _business.CorrectAccess(entryLogDTO);
             return StatusCode(result.StatusCode, result);
         }
     }
