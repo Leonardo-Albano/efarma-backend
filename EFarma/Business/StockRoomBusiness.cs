@@ -245,8 +245,8 @@ namespace EFarma.Business
             var employee = entryAccessLog.Employee;
             var stockRoom = entryAccessLog.StockRoom;
 
-            var hasNoPendencies = await HasNoPendentPrescriptions(employee);
-            if (!hasNoPendencies)
+            var hasPendencies = await HasPendentPrescriptions(employee);
+            if (hasPendencies)
             {
                 var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
                 await NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
@@ -254,6 +254,19 @@ namespace EFarma.Business
                 return new ResultObject
                 {
                     Message = "Saída bloqueada devido a prescrições pendentes.",
+                    StatusCode = 403,
+                    Success = false
+                };
+            }
+
+            var medicamentHasBeenTaken = await AnyMedicamentHasBeenTaken(stockRoom.UniqueId, stockRoom.Id);
+            if (medicamentHasBeenTaken)
+            {
+                await NotifyPendentPrescriptions(employee, stockRoom, []);
+
+                return new ResultObject
+                {
+                    Message = "Saída bloqueada. Medicamentos faltantes no armário.",
                     StatusCode = 403,
                     Success = false
                 };
@@ -406,10 +419,10 @@ namespace EFarma.Business
             }
         }
 
-        private async Task<bool> HasNoPendentPrescriptions(Employee employee)
+        private async Task<bool> HasPendentPrescriptions(Employee employee)
         {
             var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
-            return prescriptions.Count == 0;
+            return prescriptions.Count > 0;
         }
 
         private async Task<bool> IsUserAlreadyOnStockRoom(int employeeId, int stockRoomId)
@@ -443,7 +456,8 @@ namespace EFarma.Business
             messageBuilder.AppendLine($"Nome: {stockRoom.Name}");
             messageBuilder.AppendLine($"Endereço: {stockRoom.Address}");
 
-            messageBuilder.AppendLine("Receita(s):");
+            if(prescriptions.Count > 0)
+                messageBuilder.AppendLine("Receita(s):");
             foreach (var prescription in prescriptions)
             {
                 messageBuilder.AppendLine($"Id: {prescription.Id}");
@@ -492,6 +506,17 @@ namespace EFarma.Business
                     }
                 }
             }
+        }
+
+        private async Task<bool> AnyMedicamentHasBeenTaken(string stockRoomUniqueId, int stockRoomId)
+        {
+            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
+            var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
+            var allItemsOnStock = await _repository.InStockItems.GetAll();
+
+            var itemsTaken = allItemsOnStock.Except(actualItemsOnStock).ToList();
+
+            return itemsTaken.Count > 0;
         }
     }
 }
