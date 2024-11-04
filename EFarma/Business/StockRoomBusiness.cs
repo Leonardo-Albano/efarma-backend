@@ -259,10 +259,19 @@ namespace EFarma.Business
                 };
             }
 
+            var newAccessLog = entryAccessLog.Clone();
+            newAccessLog.Id = 0;
+            newAccessLog.Date = DateTime.Now;
+
             var medicamentHasBeenTaken = await AnyMedicamentHasBeenTaken(stockRoom.UniqueId, stockRoom.Id);
             if (medicamentHasBeenTaken)
             {
-                await NotifyPendentPrescriptions(employee, stockRoom, []);
+                newAccessLog.Message = "Tentativa de saída bloqueada. Medicamentos faltantes no armário.";
+                newAccessLog.IsEntry = null;
+                _repository.AccessLogs.Add(newAccessLog);
+                await _repository.SaveChangesAsync();
+
+                await NotifyPendentPrescriptions(employee, stockRoom, new List<Prescription>());
 
                 return new ResultObject
                 {
@@ -272,8 +281,6 @@ namespace EFarma.Business
                 };
             }
 
-            var newAccessLog = entryAccessLog.Clone();
-            newAccessLog.Id = 0;
             newAccessLog.Message = "Funcionário saiu da sala.";
             newAccessLog.IsEntry = false;
 

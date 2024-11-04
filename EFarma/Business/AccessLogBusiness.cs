@@ -29,7 +29,7 @@ namespace EFarma.Business
 
                 return new ResultDataObject<List<AccessLog>>()
                 {
-                    Data = access_logs,
+                    Data = access_logs.OrderByDescending(a=>a.Date).ToList(),
                     Message = hasLogs ? "Logs de acesso obtidos com sucesso." : "Nenhum log de acesso encontrado.",
                     Success = hasLogs,
                     StatusCode = hasLogs ? 200 : 404
