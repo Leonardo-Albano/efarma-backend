@@ -249,7 +249,7 @@ namespace EFarma.Business
             if (hasPendencies)
             {
                 var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
-                await NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
+                //await NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
 
                 return new ResultObject
                 {

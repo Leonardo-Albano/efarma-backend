@@ -2,89 +2,105 @@ import streamlit as st
 import random
 import string
 import os
+import json
 from flask import Flask, jsonify, request
 from threading import Thread
 
-# Set up Flask app
+# Configurações de caminhos
+CODES_FILE_PATH = 'tag_codes.txt'
+CONFIG_FILE_PATH = 'config.json'
+
+# Inicialização do Flask
 app = Flask(__name__)
 
-# Define default values
-DEFAULT_CODE_LENGTH = 10
-CODES_FILE_PATH = 'tag_codes.txt'
-REQUIRED_CODE_COUNT = 5  # Default required code count (can be updated in Streamlit)
-
-# Function to generate a random code string
-def generate_random_string(length=DEFAULT_CODE_LENGTH):
+# Função para gerar uma string de código aleatória
+def generate_random_string(length=10):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
-# Function to get or generate the necessary tag codes
-def get_or_generate_tag_codes(required_code_count):
-    # Ensure the file exists
+# Função para carregar ou criar o arquivo de configuração
+def load_or_initialize_config():
+    if os.path.exists(CONFIG_FILE_PATH):
+        with open(CONFIG_FILE_PATH, 'r') as f:
+            config = json.load(f)
+    else:
+        config = {"required_code_count": 5}
+        with open(CONFIG_FILE_PATH, 'w') as f:
+            json.dump(config, f)
+    return config
+
+# Função para salvar a configuração
+def save_config(config):
+    with open(CONFIG_FILE_PATH, 'w') as f:
+        json.dump(config, f)
+
+# Função para carregar, gerar e ajustar os códigos conforme necessário
+def load_or_generate_codes(required_code_count):
     if not os.path.exists(CODES_FILE_PATH):
         with open(CODES_FILE_PATH, 'w') as f:
             pass
 
-    # Read the existing codes from the file
     with open(CODES_FILE_PATH, 'r') as f:
-        tag_codes = [line.strip() for line in f.readlines()]
+        tag_codes = [line.strip() for line in f.readlines() if line.strip()]
 
-    # Generate additional codes if the total is less than required
+    # Ajusta a quantidade de códigos conforme o valor desejado
     if len(tag_codes) < required_code_count:
-        additional_codes = [generate_random_string() for _ in range(required_code_count - len(tag_codes))]
-        tag_codes.extend(additional_codes)
-        
-        # Save new codes to the file
-        with open(CODES_FILE_PATH, 'a') as f:
-            for code in additional_codes:
-                f.write(code + '\n')
-    
-    return tag_codes[:required_code_count]
+        tag_codes.extend(generate_random_string() for _ in range(required_code_count - len(tag_codes)))
+    elif len(tag_codes) > required_code_count:
+        tag_codes = tag_codes[:required_code_count]
 
-# Flask endpoint for external requests
+    with open(CODES_FILE_PATH, 'w') as f:
+        f.write('\n'.join(tag_codes) + '\n')
+    
+    return tag_codes
+
+# Rota Flask para obter os códigos via API
 @app.route('/TagCodes', methods=['GET'])
 def get_tag_codes():
-    code = request.args.get('code')
-    print(f"Received string: {code}")
-    
-    # Use the global REQUIRED_CODE_COUNT from Streamlit input
-    tag_codes = get_or_generate_tag_codes(REQUIRED_CODE_COUNT)
+    config = load_or_initialize_config()
+    tag_codes = load_or_generate_codes(config["required_code_count"])
     return jsonify(tag_codes)
 
-# Function to run Flask in a separate thread
+# Função para iniciar o servidor Flask em um thread separado
 def run_flask():
     app.run(host='0.0.0.0', port=5000)
 
-# Start Flask in a separate thread
+# Inicializar o Flask em um thread separado
 flask_thread = Thread(target=run_flask)
 flask_thread.daemon = True
 flask_thread.start()
 
-# Streamlit app interface
-st.title("Tag Code Generator and Editor")
+# Interface Streamlit
+st.title("Simulação de Armário RFID")
 
-# Input for configuring the required code count
-REQUIRED_CODE_COUNT = st.number_input("Set the number of required tag codes", min_value=1, value=REQUIRED_CODE_COUNT, step=1)
+# Carregar ou inicializar a configuração
+config = load_or_initialize_config()
 
-# Button to generate or read codes
-if st.button("Generate/View Tag Codes"):
-    # Get or generate the codes using the updated REQUIRED_CODE_COUNT
-    tag_codes = get_or_generate_tag_codes(REQUIRED_CODE_COUNT)
-    st.write("Generated Tag Codes:")
+# Controle para definir a quantidade de códigos
+required_code_count = st.number_input("Número de códigos RFID necessários", min_value=1, value=config["required_code_count"], step=1)
+
+# Salvar alterações na quantidade de códigos
+if required_code_count != config["required_code_count"]:
+    config["required_code_count"] = required_code_count
+    save_config(config)
+
+# Botão para exibir os códigos gerados
+if st.button("Gerar/Visualizar Códigos RFID"):
+    tag_codes = load_or_generate_codes(config["required_code_count"])
+    st.write("Códigos RFID Gerados:")
     st.write(tag_codes)
 
-# Text area for editing tag_codes.txt
-st.write("Edit tag_codes.txt")
+# Área de texto para editar diretamente o conteúdo do arquivo tag_codes.txt
+st.write("Editar tag_codes.txt")
 if os.path.exists(CODES_FILE_PATH):
     with open(CODES_FILE_PATH, 'r') as f:
         file_content = f.read()
 else:
     file_content = ""
 
-# Text area for displaying and editing file content
-edited_content = st.text_area("File Content", file_content, height=200)
+edited_content = st.text_area("Conteúdo do Arquivo", file_content, height=200)
 
-# Save button to update the file content
-if st.button("Save Changes"):
+# Botão para salvar as alterações feitas manualmente no arquivo
+if st.button("Salvar Alterações"):
     with open(CODES_FILE_PATH, 'w') as f:
         f.write(edited_content)
-    st.success("Changes saved to tag_codes.txt")
+    st.success("Alterações salvas em tag_codes.txt")
