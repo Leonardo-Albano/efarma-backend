@@ -255,7 +255,7 @@ namespace EFarma.Business
         {
             try
             {
-                var requestUrl = $"http://127.0.0.1:5000/TagCodes?code={uniqueId}";
+                var requestUrl = $"http://http://157.230.224.194:8501/TagCodes?code={uniqueId}";
 
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
