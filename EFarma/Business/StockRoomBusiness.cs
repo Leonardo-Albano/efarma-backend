@@ -300,9 +300,9 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<List<InStockItemView>>> GetAvailableMedicaments()
+        public async Task<ResultDataObject<List<InStockItemView>>> GetAvailableMedicaments(string? medicamentName)
         {
-            var inStockItems = await _repository.InStockItems.GetDetailedStockItems();
+            var inStockItems = await _repository.InStockItems.GetDetailedStockItems(medicamentName);
             var medicamentsDto = _mapper.Map<List<InStockItemView>>(inStockItems);
 
             var groupedItems = medicamentsDto

@@ -6,5 +6,6 @@
         public required string PatientName { get; set; }
         public required string DoctorName { get; set; }
         public required string CPF { get; set; }
+        public required DateTime Date { get; set; }
     }
 }

@@ -4,6 +4,5 @@
     {
         public required string StockRoomUniqueId { get; set; }
         public required string TagCode { get; set; }
-        public DateTime Date { get; set; }
     }
 }

@@ -11,13 +11,21 @@ namespace EFarma.Repositories
         {
         }
 
-        public async Task<List<InStockItem>> GetDetailedStockItems()
+        public async Task<List<InStockItem>> GetDetailedStockItems(string? medicamentName)
         {
-            return await DataContext.InStockItems
-                .Include(i=>i.StockRoom)
-                .Include(i=>i.Medicament)
-                .ToListAsync();
+            var query = DataContext.InStockItems
+                .Include(i => i.StockRoom)
+                .Include(i => i.Medicament)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(medicamentName))
+            {
+                query = query.Where(i => i.Medicament.Description.ToLower().Contains(medicamentName.ToLower()));
+            }
+
+            return await query.ToListAsync();
         }
+
 
         public async Task<List<InStockItem>> GetStockItemsByTagCodes(int stockRoomId, List<string> tagCodes)
         {

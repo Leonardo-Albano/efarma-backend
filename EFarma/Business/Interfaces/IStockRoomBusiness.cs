@@ -13,7 +13,7 @@ namespace EFarma.Business.Interfaces
         Task<ResultObject> EntryStockRoom(EntryLogDTO entryLogDTO);
         Task<ResultObject> ExitStockRoom(string stockRoomUniqueId);
         Task<ResultDataObject<List<StockRoom>>> GetAllStockRooms();
-        Task<ResultDataObject<List<InStockItemView>>> GetAvailableMedicaments();
+        Task<ResultDataObject<List<InStockItemView>>> GetAvailableMedicaments(string? medicamentName);
         Task<ResultDataObject<StockRoom>> GetStockRoom(int id);
         Task<ResultObject> InsertItemToStock(InStockItem inStockItem, int quantity);
     }

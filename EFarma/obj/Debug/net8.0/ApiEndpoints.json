@@ -197,6 +197,32 @@
   },
   {
     "ContainingType": "EFarma.Controllers.EmployeeController",
+    "Method": "GetDoctorByCrm",
+    "RelativePath": "api/Employee/GetDoctor/{crm}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "crm",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[EFarma.Models.Employee, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EFarma.Controllers.EmployeeController",
     "Method": "GetPersonList",
     "RelativePath": "api/Employee/GetPersons",
     "HttpMethod": "GET",
@@ -713,6 +739,32 @@
   },
   {
     "ContainingType": "EFarma.Controllers.PrescriptionController",
+    "Method": "GetPrescriptionDetailed",
+    "RelativePath": "api/Prescription/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.List\u00601[[EFarma.Models.Views.PrescriptionView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EFarma.Controllers.PrescriptionController",
     "Method": "DeletePrescription",
     "RelativePath": "api/Prescription/{id}",
     "HttpMethod": "DELETE",
@@ -740,7 +792,7 @@
   {
     "ContainingType": "EFarma.Controllers.PrescriptionController",
     "Method": "GetPrescriptionItems",
-    "RelativePath": "api/Prescription/{prescriptionId}",
+    "RelativePath": "api/Prescription/GetPrescriptionItems/{prescriptionId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -754,32 +806,6 @@
     "ReturnTypes": [
       {
         "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.List\u00601[[EFarma.Models.Views.PrescriptionItemView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "EFarma.Controllers.PrescriptionController",
-    "Method": "GetPrescriptionDetailed",
-    "RelativePath": "api/Prescription/GetPrescriptionDetailed/{id}",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.List\u00601[[EFarma.Models.Views.PrescriptionView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -1018,10 +1044,42 @@
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "medicamentName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": [
       {
         "Type": "EFarma.Models.Response.ResultDataObject\u00601[[System.Collections.Generic.List\u00601[[EFarma.Models.Views.InStockItemView, EFarma, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EFarma.Controllers.StockRoomController",
+    "Method": "CorrectAccess",
+    "RelativePath": "api/StockRoom/CorrectAccess",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "entryLogDTO",
+        "Type": "EFarma.Models.DTOs.EntryLogDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EFarma.Models.Response.ResultObject",
         "MediaTypes": [
           "text/plain",
           "application/json",
