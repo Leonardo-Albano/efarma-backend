@@ -12,7 +12,7 @@ namespace EFarma.Business.Interfaces
         Task<ResultDataObject<Employee>> GetEmployee(string cpf);
         Task<ResultDataObject<List<Employee>>> GetEmployees();
         Task<ResultObject> Login(LoginDTO loginDTO);
-        Task<ResultDataObject<Employee?>> UpdateEmployee(Employee employee);
+        Task<ResultObject> UpdateEmployee(int id, EmployeeDTO employee);
         Task<ResultObject> UpdatePassword(EmployeeUpdatePasswordDTO updatePasswordDTO);
     }
 }

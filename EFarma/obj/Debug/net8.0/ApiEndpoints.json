@@ -119,15 +119,15 @@
   },
   {
     "ContainingType": "EFarma.Controllers.EmployeeController",
-    "Method": "UpdateEmployee",
-    "RelativePath": "api/Employee",
-    "HttpMethod": "PUT",
+    "Method": "GetEmployee",
+    "RelativePath": "api/Employee/{cpf}",
+    "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "employeeDto",
-        "Type": "EFarma.Models.DTOs.EmployeeDTO",
+        "Name": "cpf",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -145,15 +145,20 @@
   },
   {
     "ContainingType": "EFarma.Controllers.EmployeeController",
-    "Method": "GetEmployee",
-    "RelativePath": "api/Employee/{cpf}",
-    "HttpMethod": "GET",
+    "Method": "UpdateEmployee",
+    "RelativePath": "api/Employee/{id}",
+    "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "cpf",
-        "Type": "System.String",
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "employeeDto",
+        "Type": "EFarma.Models.DTOs.EmployeeDTO",
         "IsRequired": true
       }
     ],

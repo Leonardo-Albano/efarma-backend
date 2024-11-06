@@ -151,15 +151,27 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<Employee?>> UpdateEmployee(Employee employee)
+        public async Task<ResultObject> UpdateEmployee(int id, EmployeeDTO employee)
         {
-            _repository.Employees.Update(employee);
+            var existingEmployeeResult = await _repository.Employees.FirstOrDefault(e=>e.Id == id);
+
+            if (existingEmployeeResult == null)
+            {
+                return new ResultObject
+                {
+                    StatusCode = 404,
+                    Message = "Funcionário não foi encontrado."
+                };
+            }
+
+            _mapper.Map(employee, existingEmployeeResult);
+
+            _repository.Employees.Update(existingEmployeeResult);
             bool success = await _repository.SaveChangesAsync() > 0;
 
-            return new ResultDataObject<Employee?>
+            return new ResultObject
             {
                 Message = success ? "Funcionário atualizado com sucesso." : "Ocorreu um erro ao atualizar o funcionário.",
-                Data = success ? employee : null,
                 StatusCode = success ? 200 : 500,
                 Success = success
             };

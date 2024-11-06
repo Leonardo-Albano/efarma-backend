@@ -20,6 +20,7 @@ docker rm efarmaback					# Remove o container anterior
 docker login							# Login
 docker pull efarmatcc/efarmaback		# Baixa a última versão da imagem (se atualizada remotamente)
 docker run -d -p 5001:5001 --name efarmaback efarmatcc/efarmaback	# Inicia um novo container com a imagem atualizada
+docker run -d -p 8501:8501 -p 5000:5000 --name efarmaembarcado efarmatcc/efarmaembarcado # Embarcado
 
 Run:
 

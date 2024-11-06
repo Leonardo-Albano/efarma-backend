@@ -116,33 +116,18 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
-        /// Endpoint para atualizar as informações de um funcionário existente no sistema.
-        /// Valida se o funcionário existe antes de realizar a atualização.
+        /// Endpoint para atualizar as informações de um funcionário específico com base no ID fornecido.
         /// </summary>
-        /// <param name="employeeDto">Objeto <see cref="EmployeeDTO"/> contendo as novas informações do funcionário a ser atualizado.</param>
-        /// <returns>Objeto <see cref="ResultDataObject{Employee?}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <param name="id">ID do funcionário a ser atualizado.</param>
+        /// <param name="employeeDto">Objeto <see cref="EmployeeDTO"/> contendo as novas informações do funcionário.</param>
+        /// <returns>Objeto <see cref="ResultDataObject{Employee}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Funcionário atualizado com sucesso.</response>
         /// <response code="404">Funcionário não encontrado.</response>
         /// <response code="500">Erro interno ao tentar atualizar o funcionário.</response>
-        [HttpPut]
-        public async Task<ActionResult<ResultDataObject<Employee?>>> UpdateEmployee([FromBody] EmployeeDTO employeeDto)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ResultDataObject<Employee?>>> UpdateEmployee(int id, [FromBody] EmployeeDTO employeeDto)
         {
-            var existingEmployeeResult = await _business.GetEmployee(employeeDto.CPF);
-
-            if (existingEmployeeResult == null || !existingEmployeeResult.Success && existingEmployeeResult.Data == null)
-            {
-                return NotFound(new ResultDataObject<Employee?>
-                {
-                    StatusCode = 404,
-                    Message = "Employee not found.",
-                    Data = null
-                });
-            }
-
-            var existingEmployee = existingEmployeeResult.Data;
-
-            _mapper.Map(employeeDto, existingEmployee);
-            var result = await _business.UpdateEmployee(existingEmployee);
+            var result = await _business.UpdateEmployee(id, employeeDto);
 
             return StatusCode(
                 statusCode: result.StatusCode,

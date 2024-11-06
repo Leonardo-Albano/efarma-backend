@@ -251,7 +251,7 @@ namespace EFarma.Business
             if (hasPendencies)
             {
                 var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
-                //await NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
+                await NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
 
                 return new ResultObject
                 {
@@ -416,7 +416,7 @@ namespace EFarma.Business
         {
             try
             {
-                var requestUrl = $"http://localhost:5000/TagCodes?code={uniqueId}";
+                var requestUrl = $"http://157.230.224.194:5000/TagCodes?code={uniqueId}";
 
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
@@ -486,16 +486,15 @@ namespace EFarma.Business
 
             using (var mail = new MailMessage())
             {
-                mail.From = new MailAddress("efarma@avisos.com");
-                mail.To.Add(employee.Mail);
+                mail.From = new MailAddress("MS_xoSR4R@trial-pq3enl6w73842vwr.mlsender.net");
                 mail.To.Add(employee.ResponsibleMail);
                 mail.Subject = $"Retirada indevida da sala de estoque: {stockRoom.Name}";
                 mail.Body = messageBuilder.ToString();
 
-                using (var smtp = new SmtpClient("smtp.gmail.com")
+                using (var smtp = new SmtpClient("smtp.mailersend.net")
                 {
                     Port = 587,
-                    Credentials = new NetworkCredential("test@gmail.com", "passwrd"),
+                    Credentials = new NetworkCredential("MS_xoSR4R@trial-pq3enl6w73842vwr.mlsender.net", "fQkKwLxM1OXZnVm9"),
                     EnableSsl = true,
                 })
                 {

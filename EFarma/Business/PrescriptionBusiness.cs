@@ -220,7 +220,7 @@ namespace EFarma.Business
             var log = new AccessLog()
             {
                 Employee = responsible,
-                IsEntry = false,
+                IsEntry = null,
                 StockRoom = stockRoom,
                 Date = DateTime.Now
             };
@@ -247,7 +247,7 @@ namespace EFarma.Business
         {
             try
             {
-                var requestUrl = $"http://localhost:5000/TagCodes?code={uniqueId}";
+                var requestUrl = $"http://157.230.224.194:5000/TagCodes?code={uniqueId}";
 
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
