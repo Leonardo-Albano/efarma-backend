@@ -7,7 +7,7 @@ namespace EFarma.Utils
 {
     public class MailManager
     {
-        public static async Task NotifyPendentPrescriptions(Employee employee, StockRoom stockRoom, List<Prescription> prescriptions)
+        public static async Task NotifyUnresolvedPrescriptions(Employee employee, StockRoom stockRoom, List<Prescription> prescriptions)
         {
             var messageBuilder = new StringBuilder();
 
@@ -86,7 +86,7 @@ namespace EFarma.Utils
             {
                 messageBuilder.AppendLine($"Id de funcionário: {employee.EmployeeId}");
             }
-            messageBuilder.AppendLine("==============================================================");
+            messageBuilder.AppendLine("==============================================================\n");
 
             return messageBuilder;
         }
@@ -97,7 +97,7 @@ namespace EFarma.Utils
             messageBuilder.AppendLine($"Sala de estoque:");
             messageBuilder.AppendLine($"Nome: {stockRoom.Name}");
             messageBuilder.AppendLine($"Endereço: {stockRoom.Address}");
-            messageBuilder.AppendLine("==============================================================");
+            messageBuilder.AppendLine("==============================================================\n");
 
             return messageBuilder;
         }
@@ -113,6 +113,7 @@ namespace EFarma.Utils
 
                 messageBuilder.AppendLine($"Id: {prescription.Id}");
                 messageBuilder.AppendLine($"Data de Criação: {prescription.Date}");
+                messageBuilder.AppendLine($"Status: {prescription.Status}");
                 messageBuilder.AppendLine("Itens:");
 
                 foreach (var item in prescription.Items)
@@ -123,7 +124,7 @@ namespace EFarma.Utils
             }
             messageBuilder.AppendLine("--------------------------------------------------------------\n");
 
-            messageBuilder.AppendLine("==============================================================");
+            messageBuilder.AppendLine("==============================================================\n");
 
             return messageBuilder;
         }

@@ -192,6 +192,16 @@ namespace EFarma.Business
                     Success = false
                 };
             }
+            else if(prescription.Status == Prescription.ConcludedMessage)
+            {
+                return new ResultDataObject<List<WithdrawItem>>
+                {
+                    Data = [],
+                    Message = "Receita foi encontrada, porém já está finalizada.",
+                    StatusCode = 202,
+                    Success = true
+                };
+            }
 
             var stockRoom = await _repository.StockRooms.FirstOrDefault(p => p.Id == prescriptionItemsDTO.StockRoomId);
             if (stockRoom == null)
@@ -232,7 +242,7 @@ namespace EFarma.Business
 
 
             log.Message = result.Message;
-            prescription.Status = result.Success ? Prescription.ConcludedMessage : Prescription.PendentMessage;
+            prescription.Status = result.Success ? Prescription.ConcludedMessage : Prescription.UnresolvedMessage;
 
             _repository.AccessLogs.Add(log);
             _repository.Prescriptions.Update(prescription);
@@ -292,7 +302,6 @@ namespace EFarma.Business
                     if (existingExtraMedicament != null)
                     {
                         existingExtraMedicament.Message = $"Retirado(s) {++existingExtraMedicament.Quantity} medicamento(s) a mais";
-
                     }
                     else
                     {

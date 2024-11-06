@@ -248,29 +248,44 @@ namespace EFarma.Business
             var employee = entryAccessLog.Employee;
             var stockRoom = entryAccessLog.StockRoom;
 
-            var hasPendencies = await HasPendentPrescriptions(employee);
-            if (hasPendencies)
-            {
-                var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
-                await MailManager.NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
-
-                return new ResultObject
-                {
-                    Message = "Saída bloqueada devido a prescrições pendentes.",
-                    StatusCode = 403,
-                    Success = false
-                };
-            }
-
             var newAccessLog = entryAccessLog.Clone();
             newAccessLog.Id = 0;
             newAccessLog.Date = DateTime.Now;
+            newAccessLog.IsEntry = false;
+
+            var hasPendencies = await HasPendentPrescriptions(employee);
+            if (hasPendencies)
+            {
+                var prescriptions = await _repository.Prescriptions.GetUnresolvedPrescriptionsByTakeOutResponsibleId(employee.Id);
+                await MailManager.NotifyUnresolvedPrescriptions(employee, stockRoom, prescriptions);
+
+                foreach(var prescription in prescriptions)
+                {
+                    prescription.Status = Prescription.PendentMessage;
+                    _repository.Prescriptions.Update(prescription);
+                }
+
+                newAccessLog.Message = "Saída indevida. Haviam prescrições em aberto.";
+                var combinedDetails = string.Join("; ", prescriptions.Select(item => item.ToString()));
+
+                newAccessLog.Detail = combinedDetails;
+
+                _repository.AccessLogs.Add(newAccessLog);
+                await _repository.SaveChangesAsync();
+
+                return new ResultObject
+                {
+                    Message = "Saída indevida. Haviam prescrições em aberto.",
+                    StatusCode = 200,
+                    Success = true
+                };
+            }
+
 
             var medicamentHasBeenTaken = await AnyMedicamentHasBeenTaken(stockRoom.UniqueId, stockRoom.Id);
             if (medicamentHasBeenTaken.Count > 0)
             {
                 newAccessLog.Message = "Saída indevida. Haviam medicamentos faltantes no armário.";
-                newAccessLog.IsEntry = false;
                 var combinedDetails = string.Join("; ", medicamentHasBeenTaken.Select(item => item.ToString()));
 
                 newAccessLog.Detail = combinedDetails;
@@ -282,9 +297,9 @@ namespace EFarma.Business
 
                 return new ResultObject
                 {
-                    Message = "Saída bloqueada. Medicamentos faltantes no armário.",
-                    StatusCode = 403,
-                    Success = false
+                    Message = "Saída indevida. Medicamentos faltantes no armário.",
+                    StatusCode = 200,
+                    Success = true
                 };
             }
 
@@ -435,7 +450,7 @@ namespace EFarma.Business
 
         private async Task<bool> HasPendentPrescriptions(Employee employee)
         {
-            var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
+            var prescriptions = await _repository.Prescriptions.GetUnresolvedPrescriptionsByTakeOutResponsibleId(employee.Id);
             return prescriptions.Count > 0;
         }
 

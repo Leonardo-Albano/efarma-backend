@@ -29,6 +29,12 @@ namespace EFarma.Models
 
         public static readonly string CreatedMessage = "Nova Receita";
         public static readonly string PendentMessage = "Pendente";
+        public static readonly string UnresolvedMessage = "Em aberto";
         public static readonly string ConcludedMessage = "Concluído";
+
+        public override string ToString()
+        {
+            return $"Prescription: Id={Id}, EmployeeId={EmployeeId}, CPF={CPF}, Status={Status}, Local={Local}, TakeOutResponsibleId={TakeOutResponsibleId}";
+        }
     }
 }
