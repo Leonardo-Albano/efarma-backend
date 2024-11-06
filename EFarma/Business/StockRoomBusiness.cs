@@ -5,6 +5,7 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
+using EFarma.Utils;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Mail;
@@ -251,7 +252,7 @@ namespace EFarma.Business
             if (hasPendencies)
             {
                 var prescriptions = await _repository.Prescriptions.GetPendentPrescriptionsByTakeOutResponsibleId(employee.Id);
-                await NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
+                await MailManager.NotifyPendentPrescriptions(employee, stockRoom, prescriptions);
 
                 return new ResultObject
                 {
@@ -277,7 +278,7 @@ namespace EFarma.Business
                 _repository.AccessLogs.Add(newAccessLog);
                 await _repository.SaveChangesAsync();
 
-                await NotifyPendentPrescriptions(employee, stockRoom, new List<Prescription>());
+                await MailManager.NotifyMedicamentsTaken(employee, stockRoom, medicamentHasBeenTaken);
 
                 return new ResultObject
                 {
@@ -450,74 +451,6 @@ namespace EFarma.Business
             var exits = logs.Where(l => l.IsEntry.HasValue && !l.IsEntry.Value).ToList();
 
             return entries.Count != exits.Count;
-        }
-
-        private async Task NotifyPendentPrescriptions(Employee employee, StockRoom stockRoom, List<Prescription> prescriptions)
-        {
-            var messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine($"Uma retirada indevida foi feita pelo seguinte funcionário:");
-            messageBuilder.AppendLine($"Nome: {employee.Name}");
-            messageBuilder.AppendLine($"Email: {employee.Mail}");
-            messageBuilder.AppendLine($"Telefone: {employee.Phone}");
-
-            if (!string.IsNullOrEmpty(employee.EmployeeId))
-            {
-                messageBuilder.AppendLine($"Id de funcionário: {employee.EmployeeId}");
-            }
-
-            messageBuilder.AppendLine($"Sala de estoque:");
-            messageBuilder.AppendLine($"Nome: {stockRoom.Name}");
-            messageBuilder.AppendLine($"Endereço: {stockRoom.Address}");
-
-            if(prescriptions.Count > 0)
-                messageBuilder.AppendLine("Receita(s):");
-            foreach (var prescription in prescriptions)
-            {
-                messageBuilder.AppendLine($"Id: {prescription.Id}");
-                messageBuilder.AppendLine($"Data de Criação: {prescription.Date}");
-                messageBuilder.AppendLine("Itens:");
-
-                foreach (var item in prescription.Items)
-                {
-                    string medicamentName = $"{item.Medicament.Description} {item.Medicament.Dosage}{item.Medicament.Measure}";
-                    messageBuilder.AppendLine($"   {medicamentName}");
-                }
-            }
-
-            using (var mail = new MailMessage())
-            {
-                mail.From = new MailAddress("MS_xoSR4R@trial-pq3enl6w73842vwr.mlsender.net");
-                mail.To.Add(employee.ResponsibleMail);
-                mail.Subject = $"Retirada indevida da sala de estoque: {stockRoom.Name}";
-                mail.Body = messageBuilder.ToString();
-
-                using (var smtp = new SmtpClient("smtp.mailersend.net")
-                {
-                    Port = 587,
-                    Credentials = new NetworkCredential("MS_xoSR4R@trial-pq3enl6w73842vwr.mlsender.net", "fQkKwLxM1OXZnVm9"),
-                    EnableSsl = true,
-                })
-                {
-                    int retries = 3;
-                    while (retries > 0)
-                    {
-                        try
-                        {
-                            await smtp.SendMailAsync(mail);
-                            break;
-                        }
-                        catch (SmtpException ex)
-                        {
-                            retries--;
-                            if (retries == 0)
-                            {
-                                Console.WriteLine($"Failed to send email: {ex.Message}");
-                                throw;
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         private async Task<List<InStockItem>?> AnyMedicamentHasBeenTaken(string stockRoomUniqueId, int stockRoomId)
