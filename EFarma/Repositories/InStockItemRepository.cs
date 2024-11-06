@@ -1,6 +1,7 @@
 ﻿using EFarma.Data;
 using EFarma.Models;
 using EFarma.Repositories.Interfaces;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFarma.Repositories
@@ -32,6 +33,13 @@ namespace EFarma.Repositories
             return await DataContext.InStockItems
                 .Where(i=>i.StockRoomId == stockRoomId && tagCodes.Contains(i.TagCode))
                 .Include(i=>i.Medicament)
+                .ToListAsync();
+        }
+
+        public async Task<List<InStockItem>> GetAllDetailed()
+        {
+            return await DataContext.InStockItems
+                .Include(i => i.Medicament)
                 .ToListAsync();
         }
 

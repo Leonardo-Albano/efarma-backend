@@ -26,5 +26,10 @@ namespace EFarma.Models
         {
             return (InStockItem)this.MemberwiseClone();
         }
+
+        public override string ToString()
+        {
+            return $"InStockItem: Id={Id}, StockRoomId={StockRoomId}, MedicamentId={MedicamentId}, TagCode={TagCode}";
+        }
     }
 }

@@ -12,6 +12,6 @@ namespace EFarma.Business.Interfaces
         Task<ResultDataObject<PrescriptionViewDetailed?>> GetPrescriptionDetailed(int id);
         Task<ResultDataObject<List<PrescriptionItemView>>> GetPrescriptionItems(int prescriptionId);
         Task<ResultDataObject<List<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date);
-        Task<ResultObject> RemoveItemsFromStock(RemovePrescriptionItemsDTO prescriptionItemsDTO);
+        Task<ResultDataObject<List<WithdrawItem>>> WithdrawPrescription(RemovePrescriptionItemsDTO prescriptionItemsDTO);
     }
 }

@@ -17,6 +17,7 @@ namespace EFarma.Models
 
 
         public DateTime Date { get; set; }
+        public string? Detail { get; set; }
         public string Message { get; set; }
         public bool? IsEntry { get; set; }
 

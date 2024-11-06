@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Text.Encodings.Web;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EFarma.Business
 {
@@ -264,10 +266,14 @@ namespace EFarma.Business
             newAccessLog.Date = DateTime.Now;
 
             var medicamentHasBeenTaken = await AnyMedicamentHasBeenTaken(stockRoom.UniqueId, stockRoom.Id);
-            if (medicamentHasBeenTaken)
+            if (medicamentHasBeenTaken.Count > 0)
             {
-                newAccessLog.Message = "Tentativa de saída bloqueada. Medicamentos faltantes no armário.";
-                newAccessLog.IsEntry = null;
+                newAccessLog.Message = "Saída indevida. Haviam medicamentos faltantes no armário.";
+                newAccessLog.IsEntry = false;
+                var combinedDetails = string.Join("; ", medicamentHasBeenTaken.Select(item => item.ToString()));
+
+                newAccessLog.Detail = combinedDetails;
+
                 _repository.AccessLogs.Add(newAccessLog);
                 await _repository.SaveChangesAsync();
 
@@ -410,7 +416,7 @@ namespace EFarma.Business
         {
             try
             {
-                var requestUrl = $"http://157.230.224.194:8501/TagCodes?code={uniqueId}";
+                var requestUrl = $"http://localhost:5000/TagCodes?code={uniqueId}";
 
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
@@ -515,7 +521,7 @@ namespace EFarma.Business
             }
         }
 
-        private async Task<bool> AnyMedicamentHasBeenTaken(string stockRoomUniqueId, int stockRoomId)
+        private async Task<List<InStockItem>?> AnyMedicamentHasBeenTaken(string stockRoomUniqueId, int stockRoomId)
         {
             var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
             var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
@@ -523,7 +529,20 @@ namespace EFarma.Business
 
             var itemsTaken = allItemsOnStock.Except(actualItemsOnStock).ToList();
 
-            return itemsTaken.Count > 0;
+            if (itemsTaken.Count > 0)
+            {
+                _repository.InStockItems.RemoveRange(itemsTaken);
+            }
+
+            return itemsTaken;
+        }
+
+        public static string RemoveAcentuation(string text)
+        {
+            return
+                System.Web.HttpUtility.UrlDecode(
+                    System.Web.HttpUtility.UrlEncode(
+                        text, Encoding.GetEncoding("iso-8859-7")));
         }
     }
 }

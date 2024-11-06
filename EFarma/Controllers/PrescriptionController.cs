@@ -46,21 +46,19 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
-        /// Endpoint para remover itens do estoque com base em uma receita.
-        /// Valida se a receita e a sala de estoque existem e verifica se os medicamentos no estoque correspondem aos itens prescritos.
-        /// Caso sejam retirados mais medicamentos do que os prescritos na receita, o sistema não permitirá.
-        /// Caso sejam retirados menos medicamentos do que os prescritos na receita, o sistema permitirá.
+        /// Endpoint para realizar a retirada dos medicamentos de uma receita (prescrição) específica de uma sala de estoque.
+        /// Valida a existência da receita, da sala de estoque e do funcionário responsável pela retirada, e compara os medicamentos retirados com os da prescrição.
         /// </summary>
-        /// <param name="prescriptionItemsDTO">Objeto <see cref="RemovePrescriptionItemsDTO"/> contendo as informações da receita e da sala de estoque.</param>
-        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
-        /// <response code="200">Itens removidos do estoque com sucesso e receita finalizada.</response>
-        /// <response code="403">Os medicamentos no estoque não correspondem aos itens prescritos.</response>
-        /// <response code="404">receita ou sala de estoque não encontrada.</response>
-        /// <response code="500">Erro interno ao tentar remover os itens do estoque.</response>
-        [HttpPost("RemoveItems")]
-        public async Task<ActionResult<ResultObject>> RemoveItemsFromStock([FromBody] RemovePrescriptionItemsDTO prescriptionItemsDTO)
+        /// <param name="prescriptionItemsDTO">Objeto <see cref="RemovePrescriptionItemsDTO"/> contendo as informações da prescrição, da sala de estoque e do responsável pela retirada.</param>
+        /// <returns>Objeto <see cref="ResultDataObject{List{PrescriptionItemView}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Medicamentos retirados de acordo com a receita.</response>
+        /// <response code="403">Medicamentos retirados não estão de acordo com a receita.</response>
+        /// <response code="404">Receita, sala de estoque ou responsável pela retirada não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar processar a retirada.</response>
+        [HttpPost("Withdraw")]
+        public async Task<ActionResult<ResultObject>> WithdrawPrescription([FromBody] RemovePrescriptionItemsDTO prescriptionItemsDTO)
         {
-            var result = await _business.RemoveItemsFromStock(prescriptionItemsDTO);
+            var result = await _business.WithdrawPrescription(prescriptionItemsDTO);
             return StatusCode(result.StatusCode, result);
         }
 

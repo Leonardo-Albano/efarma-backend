@@ -5,6 +5,7 @@ using EFarma.Models.Response;
 using EFarma.Models;
 using Microsoft.AspNetCore.Mvc;
 using EFarma.Models.Views;
+using EFarma.Business;
 
 namespace EFarma.Controllers
 {
@@ -106,7 +107,7 @@ namespace EFarma.Controllers
         /// <response code="400">A quantidade de medicamentos indicada não corresponde aos lidos nas prateleiras.</response>
         /// <response code="404">Sala de estoque ou medicamento não encontrado.</response>
         /// <response code="500">Erro interno ao tentar adicionar o item ao estoque.</response>
-        [HttpPost("AddItem")]
+        [HttpPost("InsertItems")]
         public async Task<ActionResult<ResultObject>> InsertItemToStock([FromBody] InStockItemDTO inStockItemDTO)
         {
             var inStockItem = _mapper.Map<InStockItem>(inStockItemDTO);
@@ -119,7 +120,7 @@ namespace EFarma.Controllers
         /// Verifica se o funcionário e a sala de estoque existem, e se o funcionário tem permissão de acesso à sala.
         /// </summary>
         /// <param name="entryLogDTO">Objeto <see cref="EntryLogDTO"/> contendo as informações da tentativa de acesso, incluindo o código de identificação do funcionário e o ID único da sala de estoque.</param>
-        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente. Sempre trará as respostas sem acentos, para permitir sua visualização no display do embarcado. </returns>
         /// <response code="200">Acesso permitido e registrado com sucesso.</response>
         /// <response code="403">Acesso não permitido para a sala de estoque especificada.</response>
         /// <response code="404">Funcionário não encontrado.</response>
@@ -128,6 +129,7 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultObject>> EntryStockRoom([FromBody] EntryLogDTO entryLogDTO)
         {
             var result = await _business.EntryStockRoom(entryLogDTO);
+            result.Message = StockRoomBusiness.RemoveAcentuation(result.Message);
             return StatusCode(result.StatusCode, result);
         }
 
@@ -136,7 +138,7 @@ namespace EFarma.Controllers
         /// Valida se houve uma entrada registrada e verifica pendências de prescrições antes de permitir a saída.
         /// </summary>
         /// <param name="stockRoomUniqueId">ID único da sala de estoque.</param>
-        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente. Sempre trará as respostas sem acentos, para permitir sua visualização no display do embarcado.</returns>
         /// <response code="200">Saída registrada com sucesso.</response>
         /// <response code="403">Saída bloqueada devido a prescrições pendentes.</response>
         /// <response code="404">Nenhuma entrada foi identificada na sala.</response>
@@ -145,6 +147,7 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultObject>> ExitStockRoom(string stockRoomUniqueId)
         {
             var result = await _business.ExitStockRoom(stockRoomUniqueId);
+            result.Message = StockRoomBusiness.RemoveAcentuation(result.Message);
             return StatusCode(result.StatusCode, result);
         }
 

@@ -817,8 +817,8 @@
   },
   {
     "ContainingType": "EFarma.Controllers.PrescriptionController",
-    "Method": "RemoveItemsFromStock",
-    "RelativePath": "api/Prescription/RemoveItems",
+    "Method": "WithdrawPrescription",
+    "RelativePath": "api/Prescription/Withdraw",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -1013,32 +1013,6 @@
   },
   {
     "ContainingType": "EFarma.Controllers.StockRoomController",
-    "Method": "InsertItemToStock",
-    "RelativePath": "api/StockRoom/AddItem",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "inStockItemDTO",
-        "Type": "EFarma.Models.DTOs.InStockItemDTO",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "EFarma.Models.Response.ResultObject",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "EFarma.Controllers.StockRoomController",
     "Method": "GetAvailableMedicaments",
     "RelativePath": "api/StockRoom/AvailableMedicaments",
     "HttpMethod": "GET",
@@ -1127,6 +1101,32 @@
         "Name": "stockRoomUniqueId",
         "Type": "System.String",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "EFarma.Models.Response.ResultObject",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "EFarma.Controllers.StockRoomController",
+    "Method": "InsertItemToStock",
+    "RelativePath": "api/StockRoom/InsertItems",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "inStockItemDTO",
+        "Type": "EFarma.Models.DTOs.InStockItemDTO",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": [

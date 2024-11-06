@@ -179,13 +179,14 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultObject> RemoveItemsFromStock(RemovePrescriptionItemsDTO prescriptionItemsDTO)
+        public async Task<ResultDataObject<List<WithdrawItem>>> WithdrawPrescription(RemovePrescriptionItemsDTO prescriptionItemsDTO)
         {
             var prescription = await _repository.Prescriptions.GetDetailedPrescriptionById(prescriptionItemsDTO.PrescriptionId);
             if (prescription == null)
             {
-                return new ResultObject
+                return new ResultDataObject<List<WithdrawItem>>
                 {
+                    Data = [],
                     Message = "Receita não encontrada.",
                     StatusCode = 404,
                     Success = false
@@ -195,8 +196,9 @@ namespace EFarma.Business
             var stockRoom = await _repository.StockRooms.FirstOrDefault(p => p.Id == prescriptionItemsDTO.StockRoomId);
             if (stockRoom == null)
             {
-                return new ResultObject
+                return new ResultDataObject<List<WithdrawItem>>
                 {
+                    Data = [],
                     Message = "Sala de estoque não encontrada.",
                     StatusCode = 404,
                     Success = false
@@ -206,8 +208,9 @@ namespace EFarma.Business
             var responsible = await _repository.Employees.FirstOrDefault(p => p.Id == prescriptionItemsDTO.TakeOutResponsibleId);
             if (responsible == null)
             {
-                return new ResultObject
+                return new ResultDataObject<List<WithdrawItem>>
                 {
+                    Data = [],
                     Message = "Funcionário não foi encontrado.",
                     StatusCode = 404,
                     Success = false
@@ -224,38 +227,27 @@ namespace EFarma.Business
 
             prescription.TakeOutResponsible = responsible;
 
-            var kvResult = await CompareWithActualMedicamentsAtStock(
-                prescription.Items
-                    .SelectMany(i => Enumerable.Repeat(i.Medicament, i.PrescribedQuantity))
-                    .ToList(),
-                stockRoom.UniqueId, stockRoom.Id
-            );
+            var prescriptionMedicaments = prescription.Items.SelectMany(i => Enumerable.Repeat(i.Medicament, i.PrescribedQuantity)).ToList();
+            var result = await CompareWithActualMedicamentsAtStock(prescriptionMedicaments, stockRoom.UniqueId, stockRoom.Id);
 
-            bool success = kvResult.Key;
-            string message = kvResult.Value;
-            bool storeSuccess = await _repository.SaveChangesAsync() > 0;
 
-            log.Message = message;
-            prescription.Status = success ? Prescription.ConcludedMessage : Prescription.PendentMessage;
+            log.Message = result.Message;
+            prescription.Status = result.Success ? Prescription.ConcludedMessage : Prescription.PendentMessage;
 
             _repository.AccessLogs.Add(log);
             _repository.Prescriptions.Update(prescription);
 
-            int statusCode = !storeSuccess ? 500 : (success ? 200 : 403);
-
-            return new()
-            {
-                Message = message,
-                StatusCode = statusCode,
-                Success = success || storeSuccess // Success is true if either is true
-            };
+            bool storeSuccess = await _repository.SaveChangesAsync() > 0;
+            result.StatusCode = !storeSuccess ? 500 : result.StatusCode;
+            result.Success = result.Success && storeSuccess;
+            return result;
         }
 
         private async Task<List<string>> GetReadTagCodes(string uniqueId)
         {
             try
             {
-                var requestUrl = $"http://http://157.230.224.194:8501/TagCodes?code={uniqueId}";
+                var requestUrl = $"http://localhost:5000/TagCodes?code={uniqueId}";
 
                 var response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
@@ -271,14 +263,16 @@ namespace EFarma.Business
             }
         }
 
-        private async Task<KeyValuePair<bool, string>> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
+        private async Task<ResultDataObject<List<WithdrawItem>>> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
         {
             var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
             var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
-            var allItemsOnStock = await _repository.InStockItems.GetAll();
+            var allItemsOnStock = await _repository.InStockItems.GetAllDetailed();
 
             var itemsTaken = allItemsOnStock.Except(actualItemsOnStock).ToList();
             int extraItemsCount = 0;
+            List<WithdrawItem> extraMedicaments = [];
+            List<InStockItem> correctMedicaments = [];
             int missingItemsCount = 0;
 
             foreach (var itemOnStock in itemsTaken)
@@ -288,11 +282,34 @@ namespace EFarma.Business
                 if (equivalentItem == null)
                 {
                     extraItemsCount++;
+
+                    var existingExtraMedicament = extraMedicaments
+                    .FirstOrDefault(m =>
+                        m.Dosage == itemOnStock.Medicament.Dosage &&
+                        m.Measure == itemOnStock.Medicament.Measure &&
+                        m.Name == itemOnStock.Medicament.Description);
+
+                    if (existingExtraMedicament != null)
+                    {
+                        existingExtraMedicament.Message = $"Retirado(s) {++existingExtraMedicament.Quantity} medicamento(s) a mais";
+
+                    }
+                    else
+                    {
+                        extraMedicaments.Add(new WithdrawItem
+                        {
+                            Dosage = itemOnStock.Medicament.Dosage,
+                            Measure = itemOnStock.Medicament.Measure,
+                            Name = itemOnStock.Medicament.Description,
+                            Message = "Retirado(s) 1 medicamento(s) a mais",
+                            Quantity = 1
+                        });
+                    }
                 }
                 else
                 {
                     prescriptionMedicaments.Remove(equivalentItem);
-                    _repository.InStockItems.Remove(itemOnStock);
+                    correctMedicaments.Add(itemOnStock);
                 }
             }
 
@@ -300,14 +317,25 @@ namespace EFarma.Business
 
             if (extraItemsCount > 0)
             {
-                return new(false, $"Os medicamentos retirados não estão de acordo com a receita. {extraItemsCount} medicamento(s) a mais.");
+                return new(){
+                    Data = extraMedicaments,
+                    Success = false,
+                    Message = $"Os medicamentos retirados não estão de acordo com a receita. {extraItemsCount} medicamento(s) a mais.",
+                    StatusCode = 403
+                };
             }
 
+            _repository.InStockItems.RemoveRange(correctMedicaments);
             var message = "Medicamentos retirados de acordo com a receita. ";
             if (missingItemsCount > 0)
                 message += $"{missingItemsCount} medicamento(s) a menos.";
 
-            return new(true, message);
+            return new(){
+                Data = [],
+                Success = true,
+                Message = message,
+                StatusCode = 200
+            };
         }
     }
 }

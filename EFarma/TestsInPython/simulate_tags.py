@@ -33,8 +33,8 @@ def save_config(config):
     with open(CONFIG_FILE_PATH, 'w') as f:
         json.dump(config, f)
 
-# Função para carregar, gerar e ajustar os códigos conforme necessário
-def load_or_generate_codes(required_code_count):
+# Função para carregar e gerar códigos conforme necessário
+def load_or_generate_codes():
     if not os.path.exists(CODES_FILE_PATH):
         with open(CODES_FILE_PATH, 'w') as f:
             pass
@@ -42,22 +42,19 @@ def load_or_generate_codes(required_code_count):
     with open(CODES_FILE_PATH, 'r') as f:
         tag_codes = [line.strip() for line in f.readlines() if line.strip()]
 
-    # Ajusta a quantidade de códigos conforme o valor desejado
-    if len(tag_codes) < required_code_count:
-        tag_codes.extend(generate_random_string() for _ in range(required_code_count - len(tag_codes)))
-    elif len(tag_codes) > required_code_count:
-        tag_codes = tag_codes[:required_code_count]
-
-    with open(CODES_FILE_PATH, 'w') as f:
-        f.write('\n'.join(tag_codes) + '\n')
-    
     return tag_codes
+
+# Função para adicionar um novo código ao arquivo
+def add_new_code():
+    new_code = generate_random_string()
+    with open(CODES_FILE_PATH, 'a') as f:
+        f.write(new_code + '\n')
+    return new_code
 
 # Rota Flask para obter os códigos via API
 @app.route('/TagCodes', methods=['GET'])
 def get_tag_codes():
-    config = load_or_initialize_config()
-    tag_codes = load_or_generate_codes(config["required_code_count"])
+    tag_codes = load_or_generate_codes()
     return jsonify(tag_codes)
 
 # Função para iniciar o servidor Flask em um thread separado
@@ -72,20 +69,14 @@ flask_thread.start()
 # Interface Streamlit
 st.title("Simulação de Armário RFID")
 
-# Carregar ou inicializar a configuração
-config = load_or_initialize_config()
-
-# Controle para definir a quantidade de códigos
-required_code_count = st.number_input("Número de códigos RFID necessários", min_value=1, value=config["required_code_count"], step=1)
-
-# Salvar alterações na quantidade de códigos
-if required_code_count != config["required_code_count"]:
-    config["required_code_count"] = required_code_count
-    save_config(config)
+# Botão para adicionar um novo código
+if st.button("Adicionar Código"):
+    new_code = add_new_code()
+    st.success(f"Novo código '{new_code}' adicionado.")
 
 # Botão para exibir os códigos gerados
-if st.button("Gerar/Visualizar Códigos RFID"):
-    tag_codes = load_or_generate_codes(config["required_code_count"])
+if st.button("Visualizar Códigos RFID"):
+    tag_codes = load_or_generate_codes()
     st.write("Códigos RFID Gerados:")
     st.write(tag_codes)
 
