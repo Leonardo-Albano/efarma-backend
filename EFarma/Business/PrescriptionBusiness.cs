@@ -204,18 +204,6 @@ namespace EFarma.Business
                 };
             }
 
-            var stockRoom = await _repository.StockRooms.FirstOrDefault(p => p.Id == prescriptionItemsDTO.StockRoomId);
-            if (stockRoom == null)
-            {
-                return new ResultDataObject<List<WithdrawItem>>
-                {
-                    Data = [],
-                    Message = "Sala de estoque não encontrada.",
-                    StatusCode = 404,
-                    Success = false
-                };
-            }
-
             var responsible = await _repository.Employees.FirstOrDefault(p => p.Id == prescriptionItemsDTO.TakeOutResponsibleId);
             if (responsible == null)
             {
@@ -227,6 +215,19 @@ namespace EFarma.Business
                     Success = false
                 };
             }
+
+            var lastEmployeeAccessLog = await _repository.AccessLogs.GetActualLogWithStockRoomByEmployee(prescriptionItemsDTO.TakeOutResponsibleId);
+            if (lastEmployeeAccessLog == null)
+            {
+                return new ResultDataObject<List<WithdrawItem>>
+                {
+                    Data = [],
+                    Message = "Usuário não está em nenhuma sala.",
+                    StatusCode = 403,
+                    Success = false
+                };
+            }
+            var stockRoom = lastEmployeeAccessLog.StockRoom;
 
             var log = new AccessLog()
             {
@@ -241,8 +242,9 @@ namespace EFarma.Business
             var prescriptionMedicaments = prescription.Items.SelectMany(i => Enumerable.Repeat(i.Medicament, i.PrescribedQuantity)).ToList();
             var result = await CompareWithActualMedicamentsAtStock(prescriptionMedicaments, stockRoom.UniqueId, stockRoom.Id);
 
-
             log.Message = result.Message;
+            log.Detail = string.Join("; ", result.Data.Select(item => item.ToString()));
+
             prescription.Status = result.Success ? Prescription.ConcludedMessage : Prescription.UnresolvedMessage;
 
             _repository.AccessLogs.Add(log);

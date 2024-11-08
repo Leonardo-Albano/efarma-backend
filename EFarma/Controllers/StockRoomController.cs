@@ -134,19 +134,19 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
-        /// Endpoint para registrar a saída de um funcionário de uma sala de estoque (StockRoom) com base no ID único da sala.
-        /// Valida se houve uma entrada registrada e verifica pendências de prescrições antes de permitir a saída.
+        /// Endpoint para registrar a saída de um funcionário de uma sala de estoque (StockRoom).
+        /// Verifica se há uma entrada registrada, se medicamentos foram retirados indevidamente e se há prescrições pendentes antes de permitir a saída.
         /// </summary>
-        /// <param name="stockRoomUniqueId">ID único da sala de estoque.</param>
-        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente. Sempre trará as respostas sem acentos, para permitir sua visualização no display do embarcado.</returns>
-        /// <response code="200">Saída registrada com sucesso.</response>
-        /// <response code="403">Saída bloqueada devido a prescrições pendentes.</response>
-        /// <response code="404">Nenhuma entrada foi identificada na sala.</response>
+        /// <param name="entryLogDTO">Objeto <see cref="EntryLogDTO"/> contendo as informações para o registro de saída, incluindo o código de identificação do funcionário e o ID único da sala de estoque.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Saída registrada com sucesso. Pode incluir notificações de medicamentos faltantes ou prescrições pendentes.</response>
+        /// <response code="404">Tag do funcionário, sala de estoque ou entrada não registrada encontrada.</response>
         /// <response code="500">Erro interno ao tentar registrar a saída.</response>
+
         [HttpPost("Exit")]
-        public async Task<ActionResult<ResultObject>> ExitStockRoom(string stockRoomUniqueId)
+        public async Task<ActionResult<ResultObject>> ExitStockRoom([FromBody] EntryLogDTO entryLogDTO)
         {
-            var result = await _business.ExitStockRoom(stockRoomUniqueId);
+            var result = await _business.ExitStockRoom(entryLogDTO);
             result.Message = StockRoomBusiness.RemoveAcentuation(result.Message);
             return StatusCode(result.StatusCode, result);
         }

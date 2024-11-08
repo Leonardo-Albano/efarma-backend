@@ -11,48 +11,34 @@ namespace EFarma.Repositories
         {
         }
 
-        public async Task<AccessLog?> GetFirstUnmatchedEntry(string stockRoomUniqueId)
+        public async Task<AccessLog?> GetFirstUnmatchedEntry(int employeeId)
         {
             var accessLogs = await DataContext.AccessLogs
                 .Include(a => a.Employee)
                 .Include(a => a.StockRoom)
-                .Where(a => a.StockRoom.UniqueId == stockRoomUniqueId && a.IsEntry.HasValue)
-                .OrderBy(a => a.EmployeeId)
-                .ThenBy(a => a.Date)
+                .Where(a => a.EmployeeId == employeeId && a.IsEntry.HasValue)
+                .OrderBy(a => a.Date)
                 .ToListAsync();
 
             AccessLog? unmatchedEntry = null;
-            var employeeEntryStacks = new Dictionary<int, Stack<AccessLog>>();
+            var employeeEntryStacks = new Stack<AccessLog>();
 
             foreach (var log in accessLogs)
             {
-                if (!employeeEntryStacks.ContainsKey(log.EmployeeId))
-                {
-                    employeeEntryStacks[log.EmployeeId] = new Stack<AccessLog>();
-                }
-
-                var entryStack = employeeEntryStacks[log.EmployeeId];
 
                 if (log.IsEntry.HasValue && log.IsEntry.Value)
                 {
-                    // Entry log: push to stack
-                    entryStack.Push(log);
+                    employeeEntryStacks.Push(log);
                 }
-                else if (log.IsEntry.HasValue && !log.IsEntry.Value && entryStack.Count > 0)
+                else if (log.IsEntry.HasValue && !log.IsEntry.Value && employeeEntryStacks.Count > 0)
                 {
-                    // Exit log: pop an entry from the stack (match found)
-                    entryStack.Pop();
+                    employeeEntryStacks.Pop();
                 }
             }
 
-            // Find the first unmatched entry, if any
-            foreach (var stack in employeeEntryStacks.Values)
+            if (employeeEntryStacks.Count > 0)
             {
-                if (stack.Count > 0)
-                {
-                    unmatchedEntry = stack.Peek();
-                    break;
-                }
+                unmatchedEntry = employeeEntryStacks.Peek();
             }
 
             return unmatchedEntry;
@@ -76,6 +62,14 @@ namespace EFarma.Repositories
                     .Where(a => a.StockRoomId == stockRoomId &&
                             a.EmployeeId == employeeId)
                     .ToListAsync();
+        }
+
+        public async Task<AccessLog?> GetActualLogWithStockRoomByEmployee(int takeOutResponsibleId)
+        {
+            return await DataContext.AccessLogs
+                    .Include(a => a.StockRoom)
+                    .OrderByDescending(a => a.Date)
+                    .LastOrDefaultAsync(a => a.EmployeeId == takeOutResponsibleId);
         }
 
         public DataContext DataContext

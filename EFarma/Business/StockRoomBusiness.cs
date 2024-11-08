@@ -1,4 +1,5 @@
-﻿using EFarma.Business.Interfaces;
+﻿using AutoMapper;
+using EFarma.Business.Interfaces;
 using EFarma.Models;
 using EFarma.Models.DTOs;
 using EFarma.Models.Response;
@@ -226,26 +227,73 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultObject> ExitStockRoom(string stockRoomUniqueId)
+        public async Task<ResultObject> ExitStockRoom(EntryLogDTO entryLogDTO)
         {
-            var entryAccessLog = await _repository.AccessLogs.GetFirstUnmatchedEntry(stockRoomUniqueId);
-            if (entryAccessLog == null)
+            var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
+            var employee = await _repository.Employees.GetEmployeeByTagCode(entryLogDTO.TagCode);
+            if (employee == null)
             {
                 return new ResultObject
                 {
-                    Message = "Nenhuma entrada foi identificada na sala.",
+                    Message = "Tag não cadastrada.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+            accessLog.Employee = employee;
+
+            var stockRoom = await _repository.StockRooms.FirstOrDefault(s => s.UniqueId == entryLogDTO.StockRoomUniqueId);
+            if (stockRoom == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Sala não encontrada.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+            accessLog.StockRoom = stockRoom;
+
+            var entryAccessLog = await _repository.AccessLogs.GetFirstUnmatchedEntry(employee.Id);
+
+            if(entryAccessLog == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Entrada não registrada para esse usuário.",
                     StatusCode = 404,
                     Success = false
                 };
             }
 
-            var employee = entryAccessLog.Employee;
-            var stockRoom = entryAccessLog.StockRoom;
-
             var newAccessLog = entryAccessLog.Clone();
             newAccessLog.Id = 0;
             newAccessLog.Date = DateTime.Now;
             newAccessLog.IsEntry = false;
+            newAccessLog.Message = "Funcionário saiu da sala.";
+
+            var medicamentHasBeenTaken = await AnyMedicamentHasBeenTaken(stockRoom.UniqueId, stockRoom.Id);
+            if (medicamentHasBeenTaken.Count > 0)
+            {
+                _repository.InStockItems.RemoveRange(medicamentHasBeenTaken);
+
+                newAccessLog.Message = "Saída indevida. Haviam medicamentos faltantes no armário.";
+                var combinedDetails = string.Join("; ", medicamentHasBeenTaken.Select(item => item.ToString()));
+
+                newAccessLog.Detail = combinedDetails;
+
+                _repository.AccessLogs.Add(newAccessLog);
+                await _repository.SaveChangesAsync();
+
+                await MailManager.NotifyMedicamentsTaken(employee, stockRoom, medicamentHasBeenTaken);
+
+                return new ResultObject
+                {
+                    Message = "Saída indevida. Medicamentos faltantes no armário.",
+                    StatusCode = 200,
+                    Success = true
+                };
+            }
 
             var hasPendencies = await HasPendentPrescriptions(employee);
             if (hasPendencies)
@@ -275,32 +323,7 @@ namespace EFarma.Business
                 };
             }
 
-
-            var medicamentHasBeenTaken = await AnyMedicamentHasBeenTaken(stockRoom.UniqueId, stockRoom.Id);
-            if (medicamentHasBeenTaken.Count > 0)
-            {
-                newAccessLog.Message = "Saída indevida. Haviam medicamentos faltantes no armário.";
-                var combinedDetails = string.Join("; ", medicamentHasBeenTaken.Select(item => item.ToString()));
-
-                newAccessLog.Detail = combinedDetails;
-
-                _repository.AccessLogs.Add(newAccessLog);
-                await _repository.SaveChangesAsync();
-
-                await MailManager.NotifyMedicamentsTaken(employee, stockRoom, medicamentHasBeenTaken);
-
-                return new ResultObject
-                {
-                    Message = "Saída indevida. Medicamentos faltantes no armário.",
-                    StatusCode = 200,
-                    Success = true
-                };
-            }
-
-            newAccessLog.Message = "Funcionário saiu da sala.";
-            newAccessLog.IsEntry = false;
-
-            var lastExit = await _repository.AccessLogs.GetDetailedLastExitByStockRoomUniqueId(stockRoomUniqueId);
+            var lastExit = await _repository.AccessLogs.GetDetailedLastExitByStockRoomUniqueId(stockRoom.UniqueId);
             if (lastExit != null && lastExit.Date > entryAccessLog.Date)
             {
                 newAccessLog.Message = "Funcionário saiu da sala. (Havia mais de um funcionário na sala.)";

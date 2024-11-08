@@ -11,7 +11,7 @@ namespace EFarma.Business.Interfaces
         Task<ResultObject> CreateStockRoom(StockRoomDTO stockRoomDTO);
         Task<ResultObject> DeleteStockRoom(int id);
         Task<ResultObject> EntryStockRoom(EntryLogDTO entryLogDTO);
-        Task<ResultObject> ExitStockRoom(string stockRoomUniqueId);
+        Task<ResultObject> ExitStockRoom(EntryLogDTO entryLogDTO);
         Task<ResultDataObject<List<StockRoom>>> GetAllStockRooms();
         Task<ResultDataObject<List<InStockItemView>>> GetAvailableMedicaments(string? medicamentName);
         Task<ResultDataObject<StockRoom>> GetStockRoom(int id);
