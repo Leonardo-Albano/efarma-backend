@@ -21,13 +21,18 @@ namespace EFarma.Repositories
                     .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<List<Prescription>> GetDetailedPrescriptions(string? cpf = null, DateTime? date = null)
+        public async Task<List<Prescription>> GetDetailedPrescriptions(bool filterPendent, string? cpf = null, DateTime? date = null)
         {
             var query = DataContext.Prescriptions
                 .Include(p => p.Items)
                 .Include(p => p.Patient)
                 .Include(p => p.Employee)
                 .AsQueryable();
+
+            if (filterPendent)
+            {
+                query = query.Where(p => p.Status != Prescription.ConcludedMessage);
+            }
 
             if (!string.IsNullOrEmpty(cpf))
             {

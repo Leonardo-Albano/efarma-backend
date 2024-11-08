@@ -71,9 +71,9 @@ namespace EFarma.Controllers
         /// <response code="200">receitas encontradas com sucesso.</response>
         /// <response code="404">Nenhuma receita encontrada com os critérios fornecidos.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<List<PrescriptionView>>>> GetPrescriptions(string? cpf, DateTime? date)
+        public async Task<ActionResult<ResultDataObject<List<PrescriptionView>>>> GetPrescriptions(string? cpf, DateTime? date, bool filterPendent)
         {
-            var result = await _business.GetPrescriptions(cpf, date);
+            var result = await _business.GetPrescriptions(cpf, date, filterPendent);
 
             return StatusCode(
                 statusCode: result.StatusCode,

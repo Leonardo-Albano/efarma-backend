@@ -137,9 +137,9 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<List<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date)
+        public async Task<ResultDataObject<List<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date, bool filterPendent)
         {
-            var detailedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions(cpf, date);
+            var detailedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions(filterPendent, cpf, date);
             var prescriptions = _mapper.Map<List<PrescriptionView>>(detailedPrescriptions);
 
             bool success = prescriptions.Any();
