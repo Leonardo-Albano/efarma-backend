@@ -1,17 +1,11 @@
-﻿using AutoMapper;
-using EFarma.Business.Interfaces;
+﻿using EFarma.Business.Interfaces;
 using EFarma.Models;
 using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
 using EFarma.Utils;
-using Newtonsoft.Json;
-using System.Net;
-using System.Net.Mail;
 using System.Text;
-using System.Text.Encodings.Web;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace EFarma.Business
 {
@@ -413,7 +407,7 @@ namespace EFarma.Business
 
         private async Task<List<string>> GetNewTagCodes(string uniqueId)
         {
-            var readTagCodes = await GetReadTagCodes(uniqueId);
+            var readTagCodes = await MqttRequest.GetReadTagCodes(_httpClient, uniqueId);
             var unassignedTags = new List<string>();
 
             foreach (var readTagCode in readTagCodes)
@@ -426,26 +420,6 @@ namespace EFarma.Business
             }
 
             return unassignedTags;
-        }
-
-        private async Task<List<string>> GetReadTagCodes(string uniqueId)
-        {
-            try
-            {
-                var requestUrl = $"http://157.230.224.194:5000/TagCodes?code={uniqueId}";
-
-                var response = await _httpClient.GetAsync(requestUrl);
-                response.EnsureSuccessStatusCode();
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var tagCodeResponse = JsonConvert.DeserializeObject<List<string>>(responseBody);
-
-                return tagCodeResponse ?? [];
-            }
-            catch (Exception ex)
-            {
-                return [];
-            }
         }
 
         private async Task<bool> HasPendentPrescriptions(Employee employee)
@@ -470,9 +444,9 @@ namespace EFarma.Business
 
         private async Task<List<InStockItem>?> AnyMedicamentHasBeenTaken(string stockRoomUniqueId, int stockRoomId)
         {
-            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
+            var actualTagCodes = await MqttRequest.GetReadTagCodes(_httpClient, stockRoomUniqueId);
             var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
-            var allItemsOnStock = await _repository.InStockItems.GetAll();
+            var allItemsOnStock = await _repository.InStockItems.GetAllDetailed();
 
             var itemsTaken = allItemsOnStock.Except(actualItemsOnStock).ToList();
 

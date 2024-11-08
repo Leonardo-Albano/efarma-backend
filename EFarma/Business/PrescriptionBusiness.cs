@@ -6,6 +6,7 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
+using EFarma.Utils;
 using Newtonsoft.Json;
 using System.Net.Http;
 
@@ -253,29 +254,9 @@ namespace EFarma.Business
             return result;
         }
 
-        private async Task<List<string>> GetReadTagCodes(string uniqueId)
-        {
-            try
-            {
-                var requestUrl = $"http://157.230.224.194:5000/TagCodes?code={uniqueId}";
-
-                var response = await _httpClient.GetAsync(requestUrl);
-                response.EnsureSuccessStatusCode();
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var tagCodeResponse = JsonConvert.DeserializeObject<List<string>>(responseBody);
-
-                return tagCodeResponse ?? [];
-            }
-            catch (Exception ex)
-            {
-                return [];
-            }
-        }
-
         private async Task<ResultDataObject<List<WithdrawItem>>> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
         {
-            var actualTagCodes = await GetReadTagCodes(stockRoomUniqueId);
+            var actualTagCodes = await MqttRequest.GetReadTagCodes(_httpClient, stockRoomUniqueId);
             var actualItemsOnStock = await _repository.InStockItems.GetStockItemsByTagCodes(stockRoomId, actualTagCodes);
             var allItemsOnStock = await _repository.InStockItems.GetAllDetailed();
 
