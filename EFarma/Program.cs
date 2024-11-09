@@ -4,9 +4,11 @@ using EFarma.Repositories;
 using EFarma.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure services
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
 DependencyInjection.AddBusiness(builder);
@@ -33,10 +35,21 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddAutoMapper(typeof(Program));
 
+// Configure Entity Framework DbContext with logging settings
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(warnings => warnings.Ignore())
+           .EnableSensitiveDataLogging(false)
+           .LogTo(Console.WriteLine, LogLevel.Warning); // Suppresses logs below Warning level
 });
+
+// Configure logging to suppress EF Core command logs but allow application logs
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information); // Default log level
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning); // Suppresses EF Core command logs unless they are warnings or errors
+builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Information); // Allows general EF logs at Information level
 
 var app = builder.Build();
 

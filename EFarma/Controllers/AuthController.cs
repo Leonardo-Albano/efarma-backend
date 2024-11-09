@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
 {
+    /// <summary>
+    /// Controlador responsável por fornecer endpoints para autenticação e gerenciamento de senhas no sistema.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -14,6 +17,12 @@ namespace EFarma.Controllers
         private readonly IEmployeeBusiness _business;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inicializa uma nova instância do controlador <see cref="AuthController"/>.
+        /// </summary>
+        /// <param name="logger">Instância de logger para registrar informações de execução.</param>
+        /// <param name="business">Serviço de negócios para manipulação das operações de autenticação e atualização de senha.</param>
+        /// <param name="mapper">Instância de mapeamento de objetos.</param>
         public AuthController(ILogger<EmployeeController> logger, IEmployeeBusiness business, IMapper mapper)
         {
             _logger = logger;
@@ -22,7 +31,7 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
-        /// Método para realizar o login do usuário. Retorna <c>Success = true</c> se o login for bem-sucedido, e <c>false</c> caso contrário. 
+        /// Método para realizar o login do usuário. Retorna <c>Success = true</c> se o login for bem-sucedido, e <c>false</c> caso contrário.
         /// A propriedade <c>message</c> conterá detalhes do possível erro ocorrido no processo de login.
         /// </summary>
         /// <param name="loginDTO">Objeto contendo as informações necessárias para realizar o login, como email e senha.</param>
@@ -30,7 +39,7 @@ namespace EFarma.Controllers
         /// <response code="200">Login bem-sucedido. Retorna o objeto <see cref="ResultObject"/> com <c>Success = true</c>.</response>
         /// <response code="400">Requisição inválida. Retorna o objeto <see cref="ResultObject"/> com <c>Success = false</c> e uma mensagem de erro.</response>
         /// <response code="403">Acesso negado. O login falhou devido a credenciais inválidas ou falta de permissão.</response>
-        /// <response code="404">Acesso negado. O login falhou devido ao usuário que não foi encontrado no sistema. </response>
+        /// <response code="404">Acesso negado. O login falhou devido ao usuário que não foi encontrado no sistema.</response>
         [HttpPost("Login")]
         public async Task<ActionResult<ResultObject>> Login([FromBody] LoginDTO loginDTO)
         {

@@ -72,6 +72,19 @@ namespace EFarma.Repositories
                     .LastOrDefaultAsync(a => a.EmployeeId == takeOutResponsibleId);
         }
 
+        public async Task<List<AccessLog>> GetAllWithFilter(bool filterEntries)
+        {
+            var query = DataContext.AccessLogs
+                    .AsQueryable();
+
+            if (filterEntries)
+            {
+                query = query.Where(a=>a.IsEntry.HasValue);
+            }
+
+            return await query.ToListAsync();
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }
