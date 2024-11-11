@@ -6,6 +6,7 @@ using EFarma.Models;
 using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
+using System.Text;
 
 namespace EFarma.Business
 {
@@ -133,6 +134,54 @@ namespace EFarma.Business
         }
 
         /// <summary>
+        /// Exporta uma lista de todos os funcionários cadastrados no sistema em formato CSV.
+        /// </summary>
+        /// <returns>Resultado da operação de exportação contendo o arquivo CSV, o status e a mensagem apropriada.</returns>
+        public async Task<ResultDataObject<byte[]?>> ExportEmployees()
+        {
+            _logger.LogInformation("Iniciando exportação de funcionários em formato CSV.");
+
+            try
+            {
+                var employees = await _repository.Employees.GetAllDetailed(); ;
+
+                if (employees.Count == 0)
+                {
+                    _logger.LogWarning("Nenhum funcionário encontrado para exportação.");
+                    return new ResultDataObject<byte[]?>
+                    {
+                        Data = null,
+                        Success = false,
+                        Message = "Nenhum funcionário encontrado para exportação.",
+                        StatusCode = 404
+                    };
+                }
+
+                var csvContent = GenerateCsvContent(employees);
+                _logger.LogInformation("Exportação de funcionários concluída com sucesso.");
+
+                return new ResultDataObject<byte[]?>
+                {
+                    Success = true,
+                    Data = csvContent,
+                    Message = "Arquivo CSV exportado com sucesso.",
+                    StatusCode = 200
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Erro ao exportar funcionários: {ExceptionMessage}", ex.Message);
+                return new ResultDataObject<byte[]?>
+                {
+                    Data = null,
+                    Success = false,
+                    Message = "Erro ao exportar o arquivo CSV.",
+                    StatusCode = 500
+                };
+            }
+        }
+
+        /// <summary>
         /// Obtém um médico pelo número de CRM.
         /// </summary>
         /// <param name="crm">CRM do médico a ser localizado.</param>
@@ -222,6 +271,99 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Importa uma lista de funcionários a partir de um arquivo CSV. O arquivo deve conter os campos na mesma estrutura do CSV exportado.
+        /// Observação: As funções devem ser criadas antes de importar funcionários, pois são referenciadas pelo nome no arquivo.
+        /// </summary>
+        /// <param name="csvData">Array de bytes representando o conteúdo do arquivo CSV.</param>
+        /// <returns>Resultado da operação de importação, incluindo os funcionários criados e uma lista de entradas incorretas.</returns>
+        public async Task<ResultDataObject<List<string>>> ImportEmployees(byte[] csvData)
+        {
+            _logger.LogInformation("Iniciando importação de funcionários a partir de CSV.");
+
+            var createdEmployees = new List<Employee>();
+            var invalidEntries = new List<string>();
+
+            try
+            {
+                using var reader = new StreamReader(new MemoryStream(csvData));
+                var header = reader.ReadLine();
+
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (string.IsNullOrEmpty(line)) continue;
+
+                    var values = line.Split(',');
+
+                    if (values.Length < 9)
+                    {
+                        _logger.LogWarning("Linha com dados insuficientes: {Line}", line);
+                        invalidEntries.Add(line);
+                        continue;
+                    }
+
+                    try
+                    {
+                        // Retrieve role by name
+                        var roleName = values[8];
+                        var role = await _repository.Roles.GetRoleByName(roleName);
+
+                        if (role == null)
+                        {
+                            _logger.LogWarning("Função não encontrada para o nome: {RoleName}", roleName);
+                            invalidEntries.Add(line);
+                            continue;
+                        }
+
+                        // Extract data from the CSV line and map to Employee
+                        var employee = new Employee
+                        {
+                            EmployeeId = values[0],
+                            Name = values[1],
+                            CPF = values[2],
+                            PasswordHash = _passwordHasher.Hash(values[2].Replace(".", "").Replace("-", "")),
+                            BirthDate = DateTime.Parse(values[3]),
+                            Mail = values[4],
+                            ResponsibleMail = values[5],
+                            CRM = values[6],
+                            TagCode = values[7],
+                            Role = role
+                        };
+
+                        _repository.Employees.Add(employee);
+                        createdEmployees.Add(employee);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning("Erro ao processar a linha: {Line}. Erro: {ExceptionMessage}", line, ex.Message);
+                        invalidEntries.Add(line);
+                    }
+                }
+
+                bool success = await _repository.SaveChangesAsync() > 0;
+                _logger.LogInformation("Importação de funcionários concluída com sucesso. Funcionários criados: {Count}", createdEmployees.Count);
+
+                return new ResultDataObject<List<string>>
+                {
+                    Success = success,
+                    Message = success ? "Funcionários importados com sucesso." : "Ocorreu um erro ao salvar os funcionários.",
+                    StatusCode = success ? 200 : 500,
+                    Data = invalidEntries
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Erro ao importar funcionários: {ExceptionMessage}", ex.Message);
+                return new ResultDataObject<List<string>>
+                {
+                    Success = false,
+                    Data = invalidEntries,
+                    Message = "Erro ao importar o arquivo CSV.",
+                    StatusCode = 500,
+                };
+            }
+        }
 
         /// <summary>
         /// Realiza o login de um funcionário, verificando as credenciais fornecidas.
@@ -337,6 +479,24 @@ namespace EFarma.Business
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
+        }
+
+        /// <summary>
+        /// Gera o conteúdo CSV para exportação de uma lista de funcionários.
+        /// </summary>
+        /// <param name="employees">Lista de funcionários a serem exportados.</param>
+        /// <returns>Arquivo CSV em formato de array de bytes.</returns>
+        private byte[] GenerateCsvContent(IEnumerable<Employee> employees)
+        {
+            var csv = new StringBuilder();
+            csv.AppendLine("IdFuncionario,Nome,CPF,DataDeNascimento,Email,EmailDoResponsavel,CRM,CodigoCracha,Cargo");
+
+            foreach (var employee in employees)
+            {
+                csv.AppendLine($"{employee.EmployeeId},{employee.Name},{employee.CPF},{employee.BirthDate},{employee.Mail},{employee.ResponsibleMail},{employee.CRM},{employee.TagCode},{employee.Role.Name}");
+            }
+
+            return Encoding.UTF8.GetBytes(csv.ToString());
         }
     }
 }

@@ -5,7 +5,6 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using Microsoft.AspNetCore.Mvc;
-using MySqlX.XDevAPI.Common;
 
 namespace EFarma.Controllers
 {
@@ -153,6 +152,64 @@ namespace EFarma.Controllers
                 statusCode: deleteResult.StatusCode,
                 value: deleteResult
             );
+        }
+
+        /// <summary>
+        /// Exporta uma lista de todos os funcionários cadastrados no sistema em formato CSV.
+        /// </summary>
+        /// <returns>Um arquivo CSV contendo a lista de funcionários.</returns>
+        /// <response code="200">Arquivo CSV exportado com sucesso.</response>
+        /// <response code="404">Nenhum funcionário encontrado para exportação.</response>
+        /// <response code="500">Erro interno ao tentar exportar o arquivo CSV.</response>
+        [HttpGet("Export")]
+        public async Task<IActionResult> ExportEmployees()
+        {
+            var result = await _business.ExportEmployees();
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
+
+            var fileContent = result.Data;
+            var fileName = "employees.csv";
+
+            return File(fileContent, "text/csv", fileName);
+        }
+
+        /// <summary>
+        /// Importa uma lista de funcionários a partir de um arquivo CSV. O arquivo deve conter os campos na mesma estrutura do CSV exportado.
+        /// Observação: As funções devem ser criadas antes de importar funcionários, pois são referenciadas pelo nome no arquivo.
+        /// </summary>
+        /// <param name="file">Arquivo CSV contendo a lista de funcionários a serem importados.</param>
+        /// <returns>Resultado da operação, incluindo os funcionários criados e as entradas incorretas (caso existam).</returns>
+        /// <response code="200">Funcionários importados com sucesso.</response>
+        /// <response code="400">Arquivo CSV inválido ou estrutura incorreta.</response>
+        /// <response code="500">Erro interno ao tentar importar o arquivo CSV.</response>
+        [HttpPost("Import")]
+        public async Task<IActionResult> ImportEmployees(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("Arquivo CSV inválido ou vazio.");
+            }
+
+            using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            var csvData = memoryStream.ToArray();
+
+            var result = await _business.ImportEmployees(csvData);
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, result.Message);
+            }
+
+            return Ok(new
+            {
+                result.Message,
+                InvalidEntries = result.Data
+            });
         }
     }
 }

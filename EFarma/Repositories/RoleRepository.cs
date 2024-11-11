@@ -11,6 +11,12 @@ namespace EFarma.Repositories
         {
         }
 
+        public async Task<Role?> GetRoleByName(string roleName)
+        {
+            return await DataContext.Roles
+                .FirstOrDefaultAsync(r=>r.Name == roleName);
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }

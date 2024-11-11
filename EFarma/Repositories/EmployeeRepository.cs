@@ -25,6 +25,14 @@ namespace EFarma.Repositories
                     .ThenInclude(r=>r.Permissions)
                         .ThenInclude(p => p.StockRooms)
                 .FirstOrDefaultAsync(e => e.TagCode == code);
+
+        public async Task<List<Employee>> GetAllDetailed()
+        {
+            return await DataContext.Employees
+                .Include(e=>e.Role)
+                .ToListAsync();
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }
