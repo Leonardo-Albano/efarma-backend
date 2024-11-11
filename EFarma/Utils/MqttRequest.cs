@@ -7,8 +7,8 @@ namespace EFarma.Utils
     {
         public static async Task<List<string>> GetReadTagCodes(HttpClient httpClient, string uniqueId)
         {
-            //string url = "http://157.230.224.194:5002/get_tags";
-            string url = "http://157.230.224.194:5000/TagCodes";
+            string url = "http://157.230.224.194:5002/get_tags";
+            //string url = "http://157.230.224.194:5000/TagCodes";
             try
             {
                 var requestUrl = $"{url}?code={uniqueId}";
