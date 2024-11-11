@@ -305,7 +305,6 @@ namespace EFarma.Business
 
                     try
                     {
-                        // Retrieve role by name
                         var roleName = values[8];
                         var role = await _repository.Roles.GetRoleByName(roleName);
 
@@ -316,7 +315,15 @@ namespace EFarma.Business
                             continue;
                         }
 
-                        // Extract data from the CSV line and map to Employee
+                        var existantEmployee = await _repository.Employees.GetEmployeeByCpfOrName(values[2], null);
+
+                        if(existantEmployee == null)
+                        {
+                            _logger.LogWarning("Funcionário com esse CPF já foi cadastrado: {Cpf}", values[2]);
+                            invalidEntries.Add(line);
+                            continue;
+                        }
+
                         var employee = new Employee
                         {
                             EmployeeId = values[0],
