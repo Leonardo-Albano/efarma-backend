@@ -7,5 +7,6 @@ namespace EFarma.Repositories.Interfaces
         Task<List<Employee>> GetAllDetailed();
         Task<List<Employee?>> GetEmployeeByCpfOrName(string? cpf, string? name);
         Task<Employee?> GetEmployeeByTagCode(string code);
+        Task<Employee?> GetEmployeeDetailedByMail(string mail);
     }
 }

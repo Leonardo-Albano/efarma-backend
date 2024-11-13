@@ -33,6 +33,18 @@ namespace EFarma.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Employee?> GetEmployeeDetailedByMail(string mail)
+        {
+            return await DataContext.Employees
+            .Include(e => e.Role)
+                .ThenInclude(r => r.Permissions)
+                    .ThenInclude(p => p.Pages)
+            .Include(e => e.Role)
+                .ThenInclude(r => r.Permissions)
+                    .ThenInclude(p => p.StockRooms)
+            .FirstOrDefaultAsync(e => e.Mail == mail);
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }

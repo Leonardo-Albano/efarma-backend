@@ -377,13 +377,14 @@ namespace EFarma.Business
         /// </summary>
         /// <param name="loginDTO">Dados do login, incluindo email e senha.</param>
         /// <returns>Resultado da operação de login com status e mensagem apropriada.</returns>
-        public async Task<ResultObject> Login(LoginDTO loginDTO)
+        public async Task<ResultDataObject<Employee?>> Login(LoginDTO loginDTO)
         {
-            var employee = await _repository.Employees.FirstOrDefault(e => e.Mail == loginDTO.Mail);
+            var employee = await _repository.Employees.GetEmployeeDetailedByMail(loginDTO.Mail);
             if (employee == null)
             {
                 return new()
                 {
+                    Data = null,
                     Message = "Funcionário não encontrado.",
                     StatusCode = 404,
                     Success = false
@@ -394,6 +395,7 @@ namespace EFarma.Business
 
             return new()
             {
+                Data = result ? employee : null,
                 Message = result ? "Acesso permitido." : "Acesso negado.",
                 StatusCode = result ? 200 : 403,
                 Success = result
