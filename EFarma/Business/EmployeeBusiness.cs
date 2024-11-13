@@ -7,6 +7,7 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace EFarma.Business
 {
@@ -19,6 +20,7 @@ namespace EFarma.Business
         private readonly IUnitOfWork _repository;
         private readonly IMapper _mapper;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly HttpClient _httpClient;
 
         /// <summary>
         /// Inicializa uma nova instância da classe <see cref="EmployeeBusiness"/>.
@@ -27,13 +29,14 @@ namespace EFarma.Business
         /// <param name="repository">Instância do repositório para manipulação de dados de funcionários.</param>
         /// <param name="mapper">Instância de mapeamento de objetos.</param>
         /// <param name="passwordHasher">Serviço de hashing de senhas.</param>
-        public EmployeeBusiness(ILogger<EmployeeController> logger, IUnitOfWork repository, IMapper mapper, IPasswordHasher passwordHasher)
+        public EmployeeBusiness(ILogger<EmployeeController> logger, IUnitOfWork repository, IMapper mapper, IPasswordHasher passwordHasher, HttpClient httpClient)
             : base(logger, repository, mapper)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
+            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -506,6 +509,37 @@ namespace EFarma.Business
             }
 
             return Encoding.UTF8.GetBytes(csv.ToString());
+        }
+
+        private async Task<bool> IsValidCrm(string crm)
+        {
+            // Extract the state (letters) and registry (numbers) from the CRM
+            string state = Regex.Replace(crm, "[^a-zA-Z]", "");
+            string registry = Regex.Replace(crm, "[^0-9]", "");
+
+            using var client = new HttpClient();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://portal.cfm.org.br/api_rest_php/api/v1/medicos/buscar_medicos");
+
+            // Essential headers
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("X-Requested-With", "XMLHttpRequest");
+
+            // Dynamically set the state and registry in the JSON payload
+            var jsonPayload = $"[{{\"medico\":{{\"nome\":\"\",\"ufMedico\":\"{state}\",\"crmMedico\":\"{registry}\",\"municipioMedico\":\"\",\"tipoInscricaoMedico\":\"\",\"situacaoMedico\":\"\",\"detalheSituacaoMedico\":\"\",\"especialidadeMedico\":\"\",\"areaAtuacaoMedico\":\"\"}},\"page\":1,\"pageNumber\":1,\"pageSize\":10}}]";
+            var content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
+            request.Content = content;
+
+            // Send the request
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            // Check if the CRM is valid (you may want to parse the response here)
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseBody);
+
+            // Logic to determine validity (update this based on the response format)
+            return responseBody.Contains("\"sucesso\": true"); // Adjust condition based on actual API response
         }
     }
 }

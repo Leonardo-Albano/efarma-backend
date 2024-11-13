@@ -20,7 +20,9 @@ namespace EFarma.Config
             CreateMap<EmployeeDTO, Employee>();
             CreateMap<Employee, PersonView>()
                 .ForMember(pa => pa.Role, 
-                            opt => opt.MapFrom(src => src.Role.Name));
+                            opt => opt.MapFrom(src => src.Role.Name))
+                .ForMember(pa => pa.RoleId,
+                            opt => opt.MapFrom(src => src.Role.Id));
 
             CreateMap<EntryLogDTO, AccessLog>();
 

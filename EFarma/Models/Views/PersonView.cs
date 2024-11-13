@@ -7,5 +7,6 @@
         public string Name { get; set; }
         public string CPF { get; set; }
         public string Role { get; set; }
+        public int RoleId { get; set; }
     }
 }
