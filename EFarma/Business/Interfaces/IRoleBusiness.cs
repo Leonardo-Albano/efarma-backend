@@ -7,6 +7,7 @@ namespace EFarma.Business.Interfaces
     {
         Task<ResultObject> CreateRole(Role role, List<int> PermissionIds);
         Task<ResultObject> DeleteRole(int id);
-        Task<ResultDataObject<List<KeyValuePair<int, string>>>> GetRoles();
+        Task<ResultDataObject<List<Role>>> GetRoles();
+        Task<ResultObject> UpdateRole(int id, Role updatedRole, List<int>? permissionIds);
     }
 }

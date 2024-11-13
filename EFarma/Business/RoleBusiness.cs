@@ -81,18 +81,60 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<List<KeyValuePair<int, string>>>> GetRoles()
+        public async Task<ResultDataObject<List<Role>>> GetRoles()
         {
-            var roles = await _repository.Roles.GetAll();
-            var result = roles.Select(r => new KeyValuePair<int, string>(r.Id, r.Name)).ToList();
+            var roles = await _repository.Roles.GetAllDetailed();
 
-            bool success = result.Any();
+            bool success = roles.Any();
 
             return new()
             {
                 Message = success ? "Funções encontradas." : "Nenhuma função encontrada.",
-                Data = result,
+                Data = roles,
                 StatusCode = success ? 200 : 400,
+                Success = success
+            };
+        }
+
+        public async Task<ResultObject> UpdateRole(int id, Role updatedRole, List<int>? permissionIds)
+        {
+            var existingRole = await _repository.Roles.FirstOrDefault(r => r.Id == id);
+
+            if (existingRole == null)
+            {
+                return new ResultObject
+                {
+                    Message = "Função não encontrada.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            existingRole.Name = updatedRole.Name;
+
+            if (permissionIds != null && permissionIds.Any())
+            {
+                var permissions = await _repository.Permissions.Find(p => permissionIds.Contains(p.Id));
+
+                if (permissions.Count != permissionIds.Count)
+                {
+                    return new ResultObject
+                    {
+                        Message = "Uma ou mais permissões não existem.",
+                        StatusCode = 404,
+                        Success = false
+                    };
+                }
+
+                existingRole.Permissions = permissions;
+            }
+
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Função atualizada com sucesso." : "Ocorreu um erro ao atualizar a função.",
+                StatusCode = success ? 200 : 500,
                 Success = success
             };
         }

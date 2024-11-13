@@ -51,7 +51,7 @@ namespace EFarma.Controllers
         /// <response code="200">Funções encontradas com sucesso.</response>
         /// <response code="400">Nenhuma função encontrada.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<List<KeyValuePair<int, string>>>>> GetRoles()
+        public async Task<ActionResult<ResultDataObject<List<Role>>>> GetRoles()
         {
             var result = await _business.GetRoles();
 
@@ -73,6 +73,28 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultObject>> DeleteRole(int id)
         {
             var result = await _business.DeleteRole(id);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        /// <summary>
+        /// Endpoint para atualizar uma função (role) existente com base no ID fornecido.
+        /// Atualiza o nome da função e as permissões associadas.
+        /// </summary>
+        /// <param name="id">ID da função a ser atualizada.</param>
+        /// <param name="roleDto">Objeto <see cref="RoleDTO"/> contendo as novas informações da função.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Função atualizada com sucesso.</response>
+        /// <response code="404">Função ou permissões não encontradas.</response>
+        /// <response code="500">Erro interno ao tentar atualizar a função.</response>
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ResultObject>> UpdateRole(int id, [FromBody] RoleDTO roleDto)
+        {
+            var role = _mapper.Map<Role>(roleDto);
+            var result = await _business.UpdateRole(id, role, roleDto.PermissionIds);
 
             return StatusCode(
                 statusCode: result.StatusCode,

@@ -17,6 +17,13 @@ namespace EFarma.Repositories
                 .FirstOrDefaultAsync(r=>r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase));
         }
 
+        public async Task<List<Role>> GetAllDetailed()
+        {
+            return await DataContext.Roles
+                 .Include(r=>r.Permissions)   
+                 .ToListAsync();
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }
