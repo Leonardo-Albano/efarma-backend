@@ -71,5 +71,25 @@ namespace EFarma.Controllers
                 value: result
             );
         }
+
+        /// <summary>
+        /// Endpoint para redefinir a senha de um funcionário com base no ID fornecido.
+        /// A nova senha será gerada a partir do CPF do funcionário.
+        /// </summary>
+        /// <param name="employeeId">ID do funcionário cuja senha será redefinida.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Senha redefinida com sucesso.</response>
+        /// <response code="404">Funcionário não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar redefinir a senha.</response>
+        [HttpGet("ResetPassword/{employeeId}")]
+        public async Task<ActionResult<ResultObject>> ResetPassword(int employeeId)
+        {
+            var result = await _business.ResetPassword(employeeId);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
     }
 }

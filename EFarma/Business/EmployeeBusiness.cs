@@ -73,6 +73,17 @@ namespace EFarma.Business
                 };
             }
 
+            if (!string.IsNullOrEmpty(employee.CRM) && !(await IsValidCrm(employee.CRM)))
+            {
+                _logger.LogWarning("CRM inválido: {crm}", employee.CRM);
+                return new ResultObject
+                {
+                    Message = "CRM inválido.",
+                    StatusCode = 409,
+                    Success = false
+                };
+            }
+
             employee.PasswordHash = _passwordHasher.Hash(employee.CPF.Replace(".", "").Replace("-", ""));
             _repository.Employees.Add(employee);
 
@@ -438,6 +449,38 @@ namespace EFarma.Business
         }
 
         /// <summary>
+        /// Redefine a senha de um funcionário para o hash do seu CPF.
+        /// </summary>
+        /// <param name="employeeId">ID do funcionário cuja senha será redefinida.</param>
+        /// <returns>Resultado da operação de redefinição de senha com o status e mensagem apropriada.</returns>
+        public async Task<ResultObject> ResetPassword(int employeeId)
+        {
+            var employee = await _repository.Employees.FirstOrDefault(e => e.Id == employeeId);
+            if (employee == null)
+            {
+                return new()
+                {
+                    Message = "Funcionário não encontrado.",
+                    StatusCode = 404,
+                    Success = false
+                };
+            }
+
+            employee.PasswordHash = _passwordHasher.Hash(employee.CPF.Replace(".", "").Replace("-", ""));
+
+            _repository.Employees.Update(employee);
+            bool success = await _repository.SaveChangesAsync() > 0;
+
+            return new ResultObject
+            {
+                Message = success ? "Senha redefinida com sucesso." : "Ocorreu um erro ao redefinir a senha.",
+                StatusCode = success ? 200 : 500,
+                Success = success
+            };
+        }
+
+
+        /// <summary>
         /// Atualiza a senha de um funcionário, validando a senha antiga e a nova.
         /// </summary>
         /// <param name="updatePasswordDTO">Dados para atualização da senha: email, senha antiga e nova senha.</param>
@@ -513,7 +556,6 @@ namespace EFarma.Business
 
         private async Task<bool> IsValidCrm(string crm)
         {
-            // Extract the state (letters) and registry (numbers) from the CRM
             string state = Regex.Replace(crm, "[^a-zA-Z]", "");
             string registry = Regex.Replace(crm, "[^0-9]", "");
 
@@ -521,25 +563,21 @@ namespace EFarma.Business
 
             var request = new HttpRequestMessage(HttpMethod.Post, "https://portal.cfm.org.br/api_rest_php/api/v1/medicos/buscar_medicos");
 
-            // Essential headers
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("X-Requested-With", "XMLHttpRequest");
 
-            // Dynamically set the state and registry in the JSON payload
             var jsonPayload = $"[{{\"medico\":{{\"nome\":\"\",\"ufMedico\":\"{state}\",\"crmMedico\":\"{registry}\",\"municipioMedico\":\"\",\"tipoInscricaoMedico\":\"\",\"situacaoMedico\":\"\",\"detalheSituacaoMedico\":\"\",\"especialidadeMedico\":\"\",\"areaAtuacaoMedico\":\"\"}},\"page\":1,\"pageNumber\":1,\"pageSize\":10}}]";
             var content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
             request.Content = content;
 
-            // Send the request
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
-            // Check if the CRM is valid (you may want to parse the response here)
             string responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(responseBody);
 
-            // Logic to determine validity (update this based on the response format)
-            return responseBody.Contains("\"sucesso\": true"); // Adjust condition based on actual API response
+            bool isValid = responseBody.Contains("\"status\":\"sucesso\"") && responseBody.Contains("\"dados\":[{");
+
+            return isValid;
         }
     }
 }
