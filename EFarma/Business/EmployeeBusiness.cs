@@ -318,9 +318,9 @@ namespace EFarma.Business
                             continue;
                         }
 
-                        var existantEmployee = await _repository.Employees.GetEmployeeByCpfOrName(values[2], null);
+                        var existentEmployee = await _repository.Employees.GetEmployeeByCpfOrName(values[2], null);
 
-                        if(existantEmployee == null)
+                        if(existentEmployee == null)
                         {
                             _logger.LogWarning("Funcionário com esse CPF já foi cadastrado: {Cpf}", values[2]);
                             invalidEntries.Add(line);

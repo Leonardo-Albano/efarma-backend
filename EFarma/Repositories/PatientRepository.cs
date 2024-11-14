@@ -12,6 +12,12 @@ namespace EFarma.Repository
         {
         }
 
+        public async Task<Patient?> GetPatientByCPF(string cpf)
+        {
+            return await DataContext.Patients
+                .FirstOrDefaultAsync(p=>p.CPF == cpf);
+        }
+
         public DataContext DataContext
         {
             get { return _context as DataContext; }

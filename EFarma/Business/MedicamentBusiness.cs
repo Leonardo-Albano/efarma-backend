@@ -25,13 +25,13 @@ namespace EFarma.Business
         {
             var medicament = _mapper.Map<Medicament>(medicamentDTO);
 
-            var existant_medicament = await _repository.Medicaments.FirstOrDefault(m =>
+            var existent_medicament = await _repository.Medicaments.FirstOrDefault(m =>
                 m.Description == medicamentDTO.Description &&
                 m.Dosage == medicamentDTO.Dosage &&
                 m.Measure == medicamentDTO.Measure
             );
 
-            if (existant_medicament != null)
+            if (existent_medicament != null)
             {
                 return new ResultObject
                 {
