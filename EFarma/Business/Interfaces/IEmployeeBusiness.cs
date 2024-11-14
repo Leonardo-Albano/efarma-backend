@@ -14,6 +14,7 @@ namespace EFarma.Business.Interfaces
         Task<ResultDataObject<List<Employee>>> GetEmployees();
         Task<ResultDataObject<List<string>>> ImportEmployees(byte[] csvData);
         Task<ResultDataObject<Employee?>> Login(LoginDTO loginDTO);
+        Task<ResultObject> ResetPassword(int employeeId);
         Task<ResultObject> UpdateEmployee(int id, EmployeeDTO employee);
         Task<ResultObject> UpdatePassword(EmployeeUpdatePasswordDTO updatePasswordDTO);
     }
