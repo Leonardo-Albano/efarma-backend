@@ -31,7 +31,7 @@ namespace EFarma.Controllers
         /// Endpoint para obter todos os logs de acesso, com a opção de filtrar apenas entradas.
         /// </summary>
         /// <param name="filterEntries">Booleano que indica se apenas as entradas devem ser retornadas nos logs.</param>
-        /// <returns>Objeto <see cref="ResultDataObject{List{AccessLog}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="List{AccessLog}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Logs de acesso obtidos com sucesso.</response>
         /// <response code="404">Nenhum log de acesso encontrado.</response>
         /// <response code="500">Erro interno ao tentar obter os logs de acesso.</response>

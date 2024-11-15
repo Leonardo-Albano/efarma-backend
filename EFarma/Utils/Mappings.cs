@@ -64,6 +64,19 @@ namespace EFarma.Config
                             opt => opt.MapFrom(src => $"{src.Medicament.Dosage}{src.Medicament.Measure}"))
                 .ForMember(isi => isi.MedicamentName, 
                             opt => opt.MapFrom(src => src.Medicament.Description));
+
+            CreateMap<DoctorDataDto, DoctorInfoView>()
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.NM_MEDICO))
+            .ForMember(dest => dest.SocialName, opt => opt.MapFrom(src => src.NM_SOCIAL))
+            .ForMember(dest => dest.CRM, opt => opt.MapFrom(src => src.NU_CRM))
+            .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.SG_UF))
+            .ForMember(dest => dest.RegistrationDate, opt => opt.MapFrom(src => src.DT_INSCRICAO))
+            .ForMember(dest => dest.RegistrationType, opt => opt.MapFrom(src => src.TIPO_INSCRICAO))
+            .ForMember(dest => dest.RegistrationStatus, opt => opt.MapFrom(src => src.SITUACAO))
+            .ForMember(dest => dest.Specialty, opt => opt.MapFrom(src => src.ESPECIALIDADE))
+            .ForMember(dest => dest.SituationCode, opt => opt.MapFrom(src => src.COD_SITUACAO))
+            .ForMember(dest => dest.FirstRegistrationDate, opt => opt.MapFrom(src => src.PRIM_INSCRICAO_UF))
+            .ForMember(dest => dest.RestrictionNotes, opt => opt.MapFrom(src => src.OBS_INTERDICAO));
         }
     }
 }

@@ -12,10 +12,22 @@ namespace EFarma.Repository
         {
         }
 
-        public async Task<Patient?> GetPatientByCPF(string cpf)
+        public async Task<Patient?> GetByCPF(string cpf)
         {
             return await DataContext.Patients
                 .FirstOrDefaultAsync(p=>p.CPF == cpf);
+        }
+
+        public async Task<List<Patient>> GetFiltered(string? cpf, string? name)
+        {
+            return await DataContext.Patients
+                .Where(p =>
+                    (!string.IsNullOrEmpty(name) && p.Name.ToLower().Trim().Contains(name.ToLower().Trim())) ||
+                    (!string.IsNullOrEmpty(cpf) && p.CPF == cpf) ||
+                    (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(cpf))
+                )
+                .OrderBy(p => p.Id)
+                .ToListAsync();
         }
 
         public DataContext DataContext

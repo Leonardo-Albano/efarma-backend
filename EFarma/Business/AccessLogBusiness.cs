@@ -30,7 +30,7 @@ namespace EFarma.Business
         }
 
         /// <summary>
-        /// Obtém todos os logs de acesso com a opção de aplicar um filtro para entradas.
+        /// Obtém todos os logs de acesso com a opção de aplicar um filtro para obter somente as entradas/saídas na sala de estoque.
         /// </summary>
         /// <param name="filterEntries">Indica se o filtro para entradas deve ser aplicado.</param>
         /// <returns>Retorna um objeto <see cref="ResultDataObject{T}"/> contendo uma lista de logs de acesso.</returns>

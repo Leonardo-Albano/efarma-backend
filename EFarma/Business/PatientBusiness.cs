@@ -194,7 +194,7 @@ namespace EFarma.Business
 
                     try
                     {
-                        var existentPatients = await _repository.Patients.GetPatientByCPF(values[1]);
+                        var existentPatients = await _repository.Patients.GetByCPF(values[1]);
 
                         if (existentPatients == null)
                         {
