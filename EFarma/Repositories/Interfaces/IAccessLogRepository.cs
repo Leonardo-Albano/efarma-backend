@@ -7,7 +7,7 @@ namespace EFarma.Repositories.Interfaces
         Task<AccessLog?> GetFirstUnmatchedEntry(int employeeId);
         Task<AccessLog?> GetDetailedLastExitByStockRoomUniqueId(string stockRoomUniqueId);
         Task<List<AccessLog>> GetLogsByEmployeeAndStockRoom(int employeeId, int stockRoomId);
-        Task<AccessLog?> GetActualLogWithStockRoomByEmployee(int takeOutResponsibleId);
+        Task<AccessLog?> GetLastUnmatchedEntry(int takeOutResponsibleId);
         Task<List<AccessLog>> GetAllWithFilter(bool filterEntries);
     }
 }

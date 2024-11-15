@@ -64,12 +64,35 @@ namespace EFarma.Repositories
                     .ToListAsync();
         }
 
-        public async Task<AccessLog?> GetActualLogWithStockRoomByEmployee(int takeOutResponsibleId)
+        public async Task<AccessLog?> GetLastUnmatchedEntry(int takeOutResponsibleId)
         {
-            return await DataContext.AccessLogs
-                    .Include(a => a.StockRoom)
-                    .OrderByDescending(a => a.Date)
-                    .LastOrDefaultAsync(a => a.EmployeeId == takeOutResponsibleId);
+            var accessLogs = await DataContext.AccessLogs
+                .Include(a => a.StockRoom)
+                .Where(a => a.EmployeeId == takeOutResponsibleId && a.IsEntry.HasValue)
+                .OrderBy(a => a.Date)
+                .ToListAsync();
+
+            AccessLog? unmatchedEntry = null;
+            var employeeEntryStacks = new Stack<AccessLog>();
+
+            foreach (var log in accessLogs)
+            {
+                if (log.IsEntry.HasValue && log.IsEntry.Value)
+                {
+                    employeeEntryStacks.Push(log);
+                }
+                else if (log.IsEntry.HasValue && !log.IsEntry.Value && employeeEntryStacks.Count > 0)
+                {
+                    employeeEntryStacks.Pop();
+                }
+            }
+
+            if (employeeEntryStacks.Count > 0)
+            {
+                unmatchedEntry = employeeEntryStacks.Peek();
+            }
+
+            return unmatchedEntry;
         }
 
         public async Task<List<AccessLog>> GetAllWithFilter(bool filterEntries)

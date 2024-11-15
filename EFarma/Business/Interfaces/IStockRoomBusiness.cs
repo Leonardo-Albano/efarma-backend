@@ -15,6 +15,6 @@ namespace EFarma.Business.Interfaces
         Task<ResultDataObject<List<StockRoom>>> GetAllStockRooms();
         Task<ResultDataObject<List<InStockItemView>>> GetAvailableMedicaments(string? medicamentName);
         Task<ResultDataObject<StockRoom>> GetStockRoom(int id);
-        Task<ResultObject> InsertItemToStock(InStockItem inStockItem, int quantity);
+        Task<ResultObject> InsertItemToStock(InStockItem inStockItem, int quantity, int employeeId);
     }
 }

@@ -111,7 +111,7 @@ namespace EFarma.Controllers
         public async Task<ActionResult<ResultObject>> InsertItemToStock([FromBody] InStockItemDTO inStockItemDTO)
         {
             var inStockItem = _mapper.Map<InStockItem>(inStockItemDTO);
-            var result = await _business.InsertItemToStock(inStockItem, inStockItemDTO.Quantity);
+            var result = await _business.InsertItemToStock(inStockItem, inStockItemDTO.Quantity, inStockItemDTO.EmployeeId);
             return StatusCode(result.StatusCode, result);
         }
 

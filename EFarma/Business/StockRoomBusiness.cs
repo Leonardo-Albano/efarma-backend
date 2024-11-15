@@ -100,19 +100,19 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultObject> InsertItemToStock(InStockItem inStockItem, int quantity)
+        public async Task<ResultObject> InsertItemToStock(InStockItem inStockItem, int quantity, int employeeId)
         {
-            var stockRoom = await _repository.StockRooms.FirstOrDefault(sr => sr.Id == inStockItem.StockRoomId);
-            if (stockRoom == null)
+            var lastEntryAccessLog = await _repository.AccessLogs.GetLastUnmatchedEntry(employeeId);
+            if (lastEntryAccessLog == null)
             {
                 return new ResultObject
                 {
                     StatusCode = 404,
-                    Message = "Sala de Estoque não encontrada.",
+                    Message = "Usuário não está dentro de nenhuma sala de estoque.",
                     Success = false
                 };
             }
-            inStockItem.StockRoom = stockRoom;
+            inStockItem.StockRoom = lastEntryAccessLog.StockRoom;
 
             var medicament = await _repository.Medicaments.FirstOrDefault(m => m.Id == inStockItem.MedicamentId);
             if (medicament == null)

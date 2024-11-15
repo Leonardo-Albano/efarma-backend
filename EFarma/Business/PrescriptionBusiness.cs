@@ -216,7 +216,7 @@ namespace EFarma.Business
                 };
             }
 
-            var lastEmployeeAccessLog = await _repository.AccessLogs.GetActualLogWithStockRoomByEmployee(prescriptionItemsDTO.TakeOutResponsibleId);
+            var lastEmployeeAccessLog = await _repository.AccessLogs.GetLastUnmatchedEntry(prescriptionItemsDTO.TakeOutResponsibleId);
             if (lastEmployeeAccessLog == null)
             {
                 return new ResultDataObject<List<WithdrawItem>>
