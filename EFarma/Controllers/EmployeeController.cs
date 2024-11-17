@@ -124,6 +124,25 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
+        /// Endpoint para validar o CRM de um médico e obter suas informações detalhadas, caso encontrado.
+        /// </summary>
+        /// <param name="crm">CRM do médico a ser validado.</param>
+        /// <returns>Objeto <see cref="ResultDataObject{DoctorInfoView}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Doutor(a) encontrado com sucesso.</response>
+        /// <response code="404">Doutor(a) não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar validar o CRM.</response>
+        [HttpGet("ValidateCrm")]
+        public async Task<IActionResult> ValidateCrm(string crm)
+        {
+            var result = await _business.ValidateCrm(crm);
+
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        /// <summary>
         /// Endpoint para atualizar as informações de um funcionário específico com base no ID fornecido.
         /// </summary>
         /// <param name="id">ID do funcionário a ser atualizado.</param>
@@ -218,25 +237,6 @@ namespace EFarma.Controllers
                 result.Message,
                 InvalidEntries = result.Data
             });
-        }
-
-        /// <summary>
-        /// Endpoint para validar o CRM de um médico e obter suas informações detalhadas, caso encontrado.
-        /// </summary>
-        /// <param name="crm">CRM do médico a ser validado.</param>
-        /// <returns>Objeto <see cref="ResultDataObject{DoctorInfoView}"/> com o status da operação e o código HTTP correspondente.</returns>
-        /// <response code="200">Doutor(a) encontrado com sucesso.</response>
-        /// <response code="404">Doutor(a) não encontrado.</response>
-        /// <response code="500">Erro interno ao tentar validar o CRM.</response>
-        [HttpGet("ValidateCrm")]
-        public async Task<IActionResult> ValidateCrm(string crm)
-        {
-            var result = await _business.ValidateCrm(crm);
-
-            return StatusCode(
-                statusCode: result.StatusCode,
-                value: result
-            );
         }
     }
 }

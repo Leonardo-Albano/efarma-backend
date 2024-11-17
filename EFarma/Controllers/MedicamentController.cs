@@ -1,23 +1,34 @@
-﻿using EFarma.Business.Interfaces;
+﻿using AutoMapper;
+using EFarma.Business.Interfaces;
 using EFarma.Models;
 using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using Microsoft.AspNetCore.Mvc;
-using MySqlX.XDevAPI.Common;
 
 namespace EFarma.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pelos endpoints relacionados a medicamentos.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class MedicamentController : ControllerBase
     {
         private readonly ILogger<MedicamentController> _logger;
         private readonly IMedicamentBusiness _business;
+        private readonly IMapper _mapper;
 
-        public MedicamentController(ILogger<MedicamentController> logger, IMedicamentBusiness business)
+        /// <summary>
+        /// Inicializa uma nova instância do controlador <see cref="MedicamentController"/>.
+        /// </summary>
+        /// <param name="logger">Instância de logger para registrar informações de execução.</param>
+        /// <param name="business">Serviço de negócios para manipulação das operações relacionadas a medicamentos.</param>
+        /// <param name="mapper">Serviço utilizado para auto-mapear objetos.</param>
+        public MedicamentController(ILogger<MedicamentController> logger, IMedicamentBusiness business, IMapper mapper)
         {
             _logger = logger;
             _business = business;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -30,9 +41,10 @@ namespace EFarma.Controllers
         /// <response code="409">O medicamento já existe no sistema.</response>
         /// <response code="500">Erro interno ao tentar criar o medicamento.</response>
         [HttpPost]
-        public async Task<ActionResult<ResultObject>> CreateMedicament(MedicamentDTO medicamentDTO)
+        public async Task<ActionResult<ResultObject>> Create(MedicamentDTO medicamentDTO)
         {
-            var result = await _business.CreateMedicament(medicamentDTO);
+            var medicament = _mapper.Map<Medicament>(medicamentDTO);
+            var result = await _business.Create(medicament);
 
             return StatusCode(
                 statusCode: result.StatusCode,
@@ -44,33 +56,13 @@ namespace EFarma.Controllers
         /// Endpoint para obter uma lista de todos os medicamentos no sistema.
         /// Retorna o objeto completo do medicamento.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{List{Medicament}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="List{Medicament}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Medicamentos encontrados com sucesso.</response>
         /// <response code="400">Nenhum medicamento encontrado.</response>
         [HttpGet]
-        public async Task<ActionResult<ResultDataObject<List<Medicament>>>> GetAllMedicaments()
+        public async Task<ActionResult<ResultDataObject<List<Medicament>>>> GetAll()
         {
-            var result = await _business.GetAllMedicaments();
-  
-            return StatusCode(
-                statusCode: result.StatusCode,
-                value: result
-            );
-        }
-
-        /// <summary>
-        /// Endpoint para deletar um medicamento existente no sistema com base no ID fornecido.
-        /// </summary>
-        /// <param name="id">ID do medicamento a ser deletado.</param>
-        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
-        /// <response code="200">Medicamento deletado com sucesso.</response>
-        /// <response code="404">Medicamento não encontrado.</response>
-        /// <response code="500">Erro interno ao tentar deletar o medicamento.</response>
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<ResultObject>> DeleteMedicament(int id)
-        {
-            var result = await _business.DeleteMedicament(id);
-
+            var result = await _business.GetAll();
             return StatusCode(
                 statusCode: result.StatusCode,
                 value: result
@@ -87,10 +79,28 @@ namespace EFarma.Controllers
         /// <response code="404">Medicamento não encontrado.</response>
         /// <response code="500">Erro interno ao tentar atualizar o medicamento.</response>
         [HttpPut("{id}")]
-        public async Task<ActionResult<ResultObject>> UpdateMedicament(int id, [FromBody] MedicamentDTO medicamentDto)
+        public async Task<ActionResult<ResultObject>> Update(int id, [FromBody] MedicamentDTO medicamentDto)
         {
-            var result = await _business.UpdateMedicament(id, medicamentDto);
+            var result = await _business.Update(id, medicamentDto);
 
+            return StatusCode(
+                statusCode: result.StatusCode,
+                value: result
+            );
+        }
+
+        /// <summary>
+        /// Endpoint para deletar um medicamento existente no sistema com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID do medicamento a ser deletado.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <response code="200">Medicamento deletado com sucesso.</response>
+        /// <response code="404">Medicamento não encontrado.</response>
+        /// <response code="500">Erro interno ao tentar deletar o medicamento.</response>
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<ResultObject>> Delete(int id)
+        {
+            var result = await _business.Delete(id);
             return StatusCode(
                 statusCode: result.StatusCode,
                 value: result
