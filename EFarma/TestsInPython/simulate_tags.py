@@ -55,7 +55,8 @@ def add_new_code():
 @app.route('/TagCodes', methods=['GET'])
 def get_tag_codes():
     tag_codes = load_or_generate_codes()
-    return jsonify(tag_codes)
+    json_data = {"tags": tag_codes}
+    return jsonify(json_data)
 
 # Função para iniciar o servidor Flask em um thread separado
 def run_flask():
