@@ -3,12 +3,16 @@ import random
 import string
 import os
 import json
+import requests
 from flask import Flask, jsonify, request
 from threading import Thread
 
-# Configurações de caminhos
+# Configurações de caminhos e URLs
 CODES_FILE_PATH = 'tag_codes.txt'
 CONFIG_FILE_PATH = 'config.json'
+ENDPOINT_ENTRY_URL = "http://157.230.224.194:5001/api/StockRoom/Entry"
+ENDPOINT_EXIT_URL = "http://157.230.224.194:5001/api/StockRoom/Exit"
+STOCKROOM_UNIQUE_ID = "bf6a7dcc"  # ID fixo para ambos os tópicos
 
 # Inicialização do Flask
 app = Flask(__name__)
@@ -96,3 +100,41 @@ if st.button("Salvar Alterações"):
     with open(CODES_FILE_PATH, 'w') as f:
         f.write(edited_content)
     st.success("Alterações salvas em tag_codes.txt")
+
+# Input para o código da tag
+tag_code = st.text_input("Código da Tag", "")
+
+# Função para enviar o registro de entrada ou saída
+def send_registration(url):
+    if tag_code.strip() == "":
+        st.error("O código da tag não pode estar vazio.")
+        return None
+
+    payload = {
+        "stockRoomUniqueId": STOCKROOM_UNIQUE_ID,
+        "tagCode": tag_code
+    }
+    response = requests.post(url, json=payload)
+
+    if response.status_code == 200:
+        return response.json().get("message", "Registro enviado com sucesso.")
+    else:
+        return f"Erro: {response.status_code} - {response.text}"
+
+# Botões para registrar entrada e saída
+col1, col2 = st.columns(2)
+
+# Mensagem de resposta
+response_message = ""
+
+with col1:
+    if st.button("Registrar Entrada", key="entry", help="Clique para registrar uma entrada"):
+        response_message = send_registration(ENDPOINT_ENTRY_URL)
+        if response_message:
+            st.write(response_message)
+
+with col2:
+    if st.button("Registrar Saída", key="exit", help="Clique para registrar uma saída"):
+        response_message = send_registration(ENDPOINT_EXIT_URL)
+        if response_message:
+            st.write(response_message)
