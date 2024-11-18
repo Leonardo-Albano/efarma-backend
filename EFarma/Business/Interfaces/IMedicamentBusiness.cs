@@ -7,9 +7,9 @@ namespace EFarma.Business.Interfaces
 {
     public interface IMedicamentBusiness
     {
-        Task<ResultObject> CreateMedicament(MedicamentDTO medicamentDTO);
-        Task<ResultObject> DeleteMedicament(int id);
-        Task<ResultDataObject<List<Medicament>>> GetAllMedicaments();
-        Task<ResultObject> UpdateMedicament(int id, MedicamentDTO medicamentDto);
+        Task<ResultObject> Create(Medicament medicament);
+        Task<ResultObject> Delete(int id);
+        Task<ResultDataObject<List<Medicament>>> GetAll();
+        Task<ResultObject> Update(int id, MedicamentDTO medicamentDto);
     }
 }

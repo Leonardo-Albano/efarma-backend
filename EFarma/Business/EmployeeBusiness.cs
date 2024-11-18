@@ -199,6 +199,25 @@ namespace EFarma.Business
         }
 
         /// <summary>
+        /// Valida o CRM de um médico e obtém suas informações, se encontrado.
+        /// </summary>
+        /// <param name="crm">Número do CRM do médico a ser validado.</param>
+        /// <returns>Objeto de resultado contendo as informações do médico, status da operação e mensagem apropriada.</returns>
+        public async Task<ResultDataObject<DoctorInfoView?>> ValidateCrm(string crm)
+        {
+            var doctorInfoView = await GetCrmData(crm);
+            var result = doctorInfoView != null;
+
+            return new()
+            {
+                Data = result ? doctorInfoView : null,
+                Message = result ? "Doutor(a) encontrado." : "Doutor(a) não foi encontrado.",
+                StatusCode = result ? 200 : 404,
+                Success = result
+            };
+        }
+
+        /// <summary>
         /// Atualiza os dados de um funcionário pelo ID.
         /// </summary>
         /// <param name="id">ID do funcionário a ser atualizado.</param>
@@ -418,25 +437,6 @@ namespace EFarma.Business
                     StatusCode = 500,
                 };
             }
-        }
-
-        /// <summary>
-        /// Valida o CRM de um médico e obtém suas informações, se encontrado.
-        /// </summary>
-        /// <param name="crm">Número do CRM do médico a ser validado.</param>
-        /// <returns>Objeto de resultado contendo as informações do médico, status da operação e mensagem apropriada.</returns>
-        public async Task<ResultDataObject<DoctorInfoView?>> ValidateCrm(string crm)
-        {
-            var doctorInfoView = await GetCrmData(crm);
-            var result = doctorInfoView != null;
-
-            return new()
-            {
-                Data = result ? doctorInfoView : null,
-                Message = result ? "Doutor(a) encontrado." : "Doutor(a) não foi encontrado.",
-                StatusCode = result ? 200 : 404,
-                Success = result
-            };
         }
 
         // AUTH

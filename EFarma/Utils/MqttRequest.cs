@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.Net.Http;
+using Newtonsoft.Json.Linq;
 
 namespace EFarma.Utils
 {
@@ -17,9 +17,11 @@ namespace EFarma.Utils
                 response.EnsureSuccessStatusCode();
 
                 var responseBody = await response.Content.ReadAsStringAsync();
-                var tagCodeResponse = JsonConvert.DeserializeObject<List<string>>(responseBody);
+                var tagCodeResponse = JsonConvert.DeserializeObject<JObject>(responseBody);
 
-                return tagCodeResponse ?? [];
+                var tags = tagCodeResponse["tags"]?.ToObject<List<string>>() ?? [];
+
+                return tags;
             }
             catch (Exception ex)
             {

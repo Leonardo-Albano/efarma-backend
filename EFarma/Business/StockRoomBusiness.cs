@@ -295,20 +295,19 @@ namespace EFarma.Business
                 };
             }
 
-            var hasPendencies = await HasPendentPrescriptions(employee);
-            if (hasPendencies)
+            var pendentPrescriptions = await _repository.Prescriptions.GetUnresolvedPrescriptionsByTakeOutResponsibleId(employee.Id);
+            if (pendentPrescriptions.Count > 0)
             {
-                var prescriptions = await _repository.Prescriptions.GetUnresolvedPrescriptionsByTakeOutResponsibleId(employee.Id);
-                await MailManager.NotifyUnresolvedPrescriptions(employee, stockRoom, prescriptions);
+                await MailManager.NotifyUnresolvedPrescriptions(employee, stockRoom, pendentPrescriptions);
 
-                foreach(var prescription in prescriptions)
+                foreach(var prescription in pendentPrescriptions)
                 {
                     prescription.Status = Prescription.PendentMessage;
                     _repository.Prescriptions.Update(prescription);
                 }
 
                 newAccessLog.Message = "Saída indevida. Haviam prescrições em aberto.";
-                var combinedDetails = string.Join("; ", prescriptions.Select(item => item.ToString()));
+                var combinedDetails = string.Join("; ", pendentPrescriptions.Select(item => item.ToString()));
 
                 newAccessLog.Detail = combinedDetails;
 
