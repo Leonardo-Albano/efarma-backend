@@ -9,7 +9,7 @@ namespace EFarma.Business.Interfaces
         Task<ResultObject> DeletePatient(int id);
         Task<ResultDataObject<List<string>>> ImportPatients(byte[] csvData);
         Task<ResultDataObject<List<Patient>>> GetAllPatients();
-        Task<ResultDataObject<Patient>> GetPatient(string cpf);
+        Task<ResultDataObject<Patient?>> GetPatient(string cpf);
         Task<ResultDataObject<byte[]?>> ExportPatients();
         Task<ResultDataObject<Patient?>> UpdatePatient(Patient patient);
     }

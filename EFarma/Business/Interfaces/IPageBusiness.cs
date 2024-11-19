@@ -6,7 +6,7 @@ namespace EFarma.Business.Interfaces
 {
     public interface IPageBusiness
     {
-        Task<ResultObject> CreatePage(PageDTO pageDTO);
+        Task<ResultObject> CreatePage(Page page);
         Task<ResultObject> DeletePage(int id);
         Task<ResultDataObject<List<Page>>> GetAllPages();
     }

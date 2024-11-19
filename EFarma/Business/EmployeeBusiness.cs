@@ -7,7 +7,6 @@ using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
-using MySqlX.XDevAPI.Common;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;

@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EFarma.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pelos endpoints relacionados às páginas do sistema.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PageController : ControllerBase
@@ -15,6 +18,12 @@ namespace EFarma.Controllers
         private readonly IPageBusiness _business;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inicializa uma nova instância do controlador <see cref="PageController"/>.
+        /// </summary>
+        /// <param name="logger">Instância de logger para registrar informações de execução.</param>
+        /// <param name="business">Serviço de negócios para manipulação das operações relacionadas às páginas.</param>
+        /// <param name="mapper">Instância de mapeamento de objetos.</param>
         public PageController(ILogger<PageController> logger, IPageBusiness business, IMapper mapper)
         {
             _logger = logger;
@@ -34,14 +43,15 @@ namespace EFarma.Controllers
         [HttpPost]
         public async Task<ActionResult<ResultObject>> CreatePage([FromBody] PageDTO pageDTO)
         {
-            var result = await _business.CreatePage(pageDTO);
+            var page = _mapper.Map<Page>(pageDTO);
+            var result = await _business.CreatePage(page);
             return StatusCode(result.StatusCode, result);
         }
 
         /// <summary>
         /// Endpoint para obter todas as páginas cadastradas no sistema.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{List{Page}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="List{Page}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Páginas recuperadas com sucesso.</response>
         /// <response code="404">Nenhuma página encontrada.</response>
         [HttpGet]

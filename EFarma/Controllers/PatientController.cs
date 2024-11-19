@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
 using EFarma.Models;
-using EFarma.Models.DTOs;
 using EFarma.Models.Resource;
 using EFarma.Models.Response;
-using EFarma.Models.Views;
 using Microsoft.AspNetCore.Mvc;
-using MySqlX.XDevAPI.Common;
 
 namespace EFarma.Controllers
 {
+    /// <summary>
+    /// Controlador responsável pelos endpoints relacionados aos pacientes no sistema.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class PatientController : ControllerBase
@@ -18,6 +18,12 @@ namespace EFarma.Controllers
         private readonly IPatientBusiness _business;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inicializa uma nova instância do controlador <see cref="PatientController"/>.
+        /// </summary>
+        /// <param name="logger">Instância de logger para registrar informações de execução.</param>
+        /// <param name="business">Serviço de negócios para manipulação das operações relacionadas a pacientes.</param>
+        /// <param name="mapper">Instância de mapeamento de objetos.</param>
         public PatientController(ILogger<PatientController> logger, IPatientBusiness business, IMapper mapper)
         {
             _logger = logger;
@@ -50,7 +56,7 @@ namespace EFarma.Controllers
         /// Endpoint para obter as informações de um paciente com base no CPF fornecido.
         /// </summary>
         /// <param name="cpf">CPF do paciente a ser consultado.</param>
-        /// <returns>Objeto <see cref="ResultDataObject{Patient}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="Patient"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Paciente encontrado com sucesso.</response>
         /// <response code="404">Nenhum paciente encontrado com o CPF fornecido.</response>
         [HttpGet("{cpf}")]
@@ -67,7 +73,7 @@ namespace EFarma.Controllers
         /// <summary>
         /// Endpoint para obter todos os pacientes cadastrados no sistema.
         /// </summary>
-        /// <returns>Objeto <see cref="ResultDataObject{List{Patient}}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="List{Patient}"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Pacientes encontrados com sucesso.</response>
         /// <response code="404">Nenhum paciente encontrado.</response>
         [HttpGet]
@@ -86,7 +92,7 @@ namespace EFarma.Controllers
         /// Valida se o paciente existe antes de realizar a atualização.
         /// </summary>
         /// <param name="patientDto">Objeto <see cref="PatientDTO"/> contendo as novas informações do paciente a ser atualizado.</param>
-        /// <returns>Objeto <see cref="ResultDataObject{Patient?}"/> com o status da operação e o código HTTP correspondente.</returns>
+        /// <returns>Objeto <see cref="Patient"/> com o status da operação e o código HTTP correspondente.</returns>
         /// <response code="200">Paciente atualizado com sucesso.</response>
         /// <response code="404">Paciente não encontrado.</response>
         /// <response code="500">Erro interno ao tentar atualizar o paciente.</response>

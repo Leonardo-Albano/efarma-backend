@@ -1,29 +1,38 @@
 ﻿using AutoMapper;
 using EFarma.Business.Interfaces;
-using EFarma.Controllers;
 using EFarma.Models;
-using EFarma.Models.DTOs;
 using EFarma.Models.Response;
 using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
 {
+    /// <summary>
+    /// Classe responsável pelas operações relacionadas a páginas do sistema.
+    /// </summary>
     public class PageBusiness : IPageBusiness
     {
         private readonly IUnitOfWork _repository;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="PageBusiness"/>.
+        /// </summary>
+        /// <param name="repository">Instância do repositório para manipulação de dados das páginas.</param>
+        /// <param name="mapper">Instância de mapeamento de objetos.</param>
         public PageBusiness(IUnitOfWork repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
-        public async Task<ResultObject> CreatePage(PageDTO pageDTO)
+        /// <summary>
+        /// Cria uma nova página no sistema, verificando se uma página com o mesmo nome já existe.
+        /// </summary>
+        /// <param name="page">Objeto da página a ser criada.</param>
+        /// <returns>Resultado da operação de criação com o status e mensagem apropriada.</returns>
+        public async Task<ResultObject> CreatePage(Page page)
         {
-            var page = _mapper.Map<Page>(pageDTO);
-
-            var existingPage = await _repository.Pages.FirstOrDefault(p => p.Name == pageDTO.Name);
+            var existingPage = await _repository.Pages.FirstOrDefault(p => p.Name == page.Name);
             if (existingPage != null)
             {
                 return new ResultObject
@@ -44,12 +53,16 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém todas as páginas cadastradas no sistema.
+        /// </summary>
+        /// <returns>Objeto de resultado contendo a lista de páginas, o status da operação e uma mensagem apropriada.</returns>
         public async Task<ResultDataObject<List<Page>>> GetAllPages()
         {
             var pages = await _repository.Pages.GetAll();
             var result = _mapper.Map<List<Page>>(pages);
 
-            bool success = result.Any();
+            bool success = result.Count != 0;
             return new ResultDataObject<List<Page>>
             {
                 Message = success ? "Páginas recuperadas com sucesso." : "Nenhuma página encontrada.",
@@ -59,6 +72,11 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Exclui uma página existente no sistema com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID da página a ser excluída.</param>
+        /// <returns>Resultado da operação de exclusão com o status e mensagem apropriada.</returns>
         public async Task<ResultObject> DeletePage(int id)
         {
             var page = await _repository.Pages.FirstOrDefault(p => p.Id == id);

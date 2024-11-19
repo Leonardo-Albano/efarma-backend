@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EFarma.Business.Interfaces;
+﻿using EFarma.Business.Interfaces;
 using EFarma.Controllers;
 using EFarma.Models;
 using EFarma.Models.Response;
@@ -8,19 +7,30 @@ using System.Text;
 
 namespace EFarma.Business
 {
+    /// <summary>
+    /// Classe responsável pelas operações relacionadas aos pacientes no sistema.
+    /// </summary>
     public class PatientBusiness : IPatientBusiness
     {
         private readonly ILogger<PatientController> _logger;
         private readonly IUnitOfWork _repository;
-        private readonly IMapper _mapper;
 
-        public PatientBusiness(ILogger<PatientController> logger, IUnitOfWork repository, IMapper mapper)
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="PatientBusiness"/>.
+        /// </summary>
+        /// <param name="logger">Instância de logger para registrar informações de execução.</param>
+        /// <param name="repository">Instância do repositório para manipulação de dados dos pacientes.</param>
+        public PatientBusiness(ILogger<PatientController> logger, IUnitOfWork repository)
         {
             _logger = logger;
             _repository = repository;
-            _mapper = mapper;
         }
 
+        /// <summary>
+        /// Cria um novo paciente no sistema, verificando se o CPF já existe.
+        /// </summary>
+        /// <param name="patient">Objeto do paciente a ser criado.</param>
+        /// <returns>Resultado da operação de criação com o status e mensagem apropriada.</returns>
         public async Task<ResultObject> CreatePatient(Patient patient)
         {
             var existent_patients = await _repository.Patients.FirstOrDefault(p => p.CPF == patient.CPF);
@@ -45,6 +55,11 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Exclui um paciente do sistema com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID do paciente a ser excluído.</param>
+        /// <returns>Resultado da operação de exclusão com o status e mensagem apropriada.</returns>
         public async Task<ResultObject> DeletePatient(int id)
         {
             var patient = await _repository.Patients.FirstOrDefault(e => e.Id == id);
@@ -69,11 +84,15 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém todos os pacientes cadastrados no sistema.
+        /// </summary>
+        /// <returns>Objeto de resultado contendo a lista de pacientes, o status da operação e uma mensagem apropriada.</returns>
         public async Task<ResultDataObject<List<Patient>>> GetAllPatients()
         {
             var patients = await _repository.Patients.GetAll();
 
-            bool success = patients.Any();
+            bool success = patients.Count != 0;
 
             return new()
             {
@@ -84,7 +103,12 @@ namespace EFarma.Business
             };
         }
 
-        public async Task<ResultDataObject<Patient>> GetPatient(string cpf)
+        /// <summary>
+        /// Obtém as informações de um paciente com base no CPF fornecido.
+        /// </summary>
+        /// <param name="cpf">CPF do paciente a ser consultado.</param>
+        /// <returns>Objeto de resultado contendo as informações do paciente, o status da operação e uma mensagem apropriada.</returns>
+        public async Task<ResultDataObject<Patient?>> GetPatient(string cpf)
         {
             var patient = await _repository.Patients.FirstOrDefault(p => p.CPF == cpf);
             bool success = patient != null;
@@ -98,6 +122,11 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Atualiza as informações de um paciente existente no sistema.
+        /// </summary>
+        /// <param name="patient">Objeto contendo as novas informações do paciente.</param>
+        /// <returns>Resultado da operação de atualização com o status e mensagem apropriada.</returns>
         public async Task<ResultDataObject<Patient?>> UpdatePatient(Patient patient)
         {
             _repository.Patients.Update(patient);
@@ -122,7 +151,7 @@ namespace EFarma.Business
 
             try
             {
-                var patients = await _repository.Patients.GetAll(); ;
+                var patients = await _repository.Patients.GetAll();
 
                 if (patients.Count == 0)
                 {
@@ -252,7 +281,7 @@ namespace EFarma.Business
         /// </summary>
         /// <param name="patients">Lista de pacientes a serem exportados.</param>
         /// <returns>Arquivo CSV em formato de array de bytes.</returns>
-        private byte[] GenerateCsvContent(IEnumerable<Patient> patients)
+        private static byte[] GenerateCsvContent(IEnumerable<Patient> patients)
         {
             var csv = new StringBuilder();
             csv.AppendLine("Nome,CPF,DataDeNascimento,Email,Celular,Observacoes");
