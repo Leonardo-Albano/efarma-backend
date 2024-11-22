@@ -165,16 +165,15 @@ namespace EFarma.Controllers
         }
 
         /// <summary>
-        /// Importa uma lista de funcionários a partir de um arquivo CSV. O arquivo deve conter os campos na mesma estrutura do CSV exportado.
-        /// Observação: As funções devem ser criadas antes de importar funcionários, pois são referenciadas pelo nome no arquivo.
+        /// Importa uma lista de pacientes a partir de um arquivo CSV. O arquivo deve conter os campos na mesma estrutura do CSV exportado.
         /// </summary>
-        /// <param name="file">Arquivo CSV contendo a lista de funcionários a serem importados.</param>
-        /// <returns>Resultado da operação, incluindo os funcionários criados e as entradas incorretas (caso existam).</returns>
-        /// <response code="200">Funcionários importados com sucesso.</response>
+        /// <param name="file">Arquivo CSV contendo a lista de pacientes a serem importados.</param>
+        /// <returns>Linhas que foram processadas incorretamente (caso existam).</returns>
+        /// <response code="200">Pacientes importados com sucesso.</response>
         /// <response code="400">Arquivo CSV inválido ou estrutura incorreta.</response>
         /// <response code="500">Erro interno ao tentar importar o arquivo CSV.</response>
         [HttpPost("Import")]
-        public async Task<IActionResult> ImportEmployees(IFormFile file)
+        public async Task<IActionResult> ImportPatients(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
@@ -187,12 +186,7 @@ namespace EFarma.Controllers
 
             var result = await _business.ImportPatients(csvData);
 
-            if (!result.Success)
-            {
-                return StatusCode(result.StatusCode, result.Message);
-            }
-
-            return Ok(new
+            return StatusCode(result.StatusCode, new
             {
                 result.Message,
                 InvalidEntries = result.Data

@@ -2,6 +2,7 @@
 using EFarma.Controllers;
 using EFarma.Models;
 using EFarma.Models.Response;
+using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
 using System.Text;
 
@@ -194,13 +195,13 @@ namespace EFarma.Business
         /// Observação: As funções devem ser criadas antes de importar pacientes, pois são referenciadas pelo nome no arquivo.
         /// </summary>
         /// <param name="csvData">Array de bytes representando o conteúdo do arquivo CSV.</param>
-        /// <returns>Resultado da operação de importação, incluindo os pacientes criados e uma lista de entradas incorretas.</returns>
-        public async Task<ResultDataObject<List<string>>> ImportPatients(byte[] csvData)
+        /// <returns>Linhas que foram processadas incorretamente (caso existam).</returns>
+        public async Task<ResultDataObject<List<ImportError>>> ImportPatients(byte[] csvData)
         {
             _logger.LogInformation("Iniciando importação de pacientes a partir de CSV.");
 
             var createdPatients = new List<Patient>();
-            var invalidEntries = new List<string>();
+            var invalidEntries = new List<ImportError>();
 
             try
             {
@@ -210,14 +211,18 @@ namespace EFarma.Business
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    if (string.IsNullOrEmpty(line)) continue;
+                    if (string.IsNullOrEmpty(line)) 
+                        continue;
+
+                    var importErrorBase = new ImportError() { Line = line };
 
                     var values = line.Split(',');
 
                     if (values.Length < 6)
                     {
                         _logger.LogWarning("Linha com dados insuficientes: {Line}", line);
-                        invalidEntries.Add(line);
+                        importErrorBase.Error = "Linha com colunas insuficientes";
+                        invalidEntries.Add(importErrorBase);
                         continue;
                     }
 
@@ -225,10 +230,12 @@ namespace EFarma.Business
                     {
                         var existentPatients = await _repository.Patients.GetByCPF(values[1]);
 
-                        if (existentPatients == null)
+                        if (existentPatients != null)
                         {
-                            _logger.LogWarning("Funcionário com esse CPF já foi cadastrado: {Cpf}", values[2]);
-                            invalidEntries.Add(line);
+                            var message = $"Funcionário com esse CPF já foi cadastrado: {values[1]}";
+                            _logger.LogWarning(message);
+                            importErrorBase.Error = message;
+                            invalidEntries.Add(importErrorBase);
                             continue;
                         }
 
@@ -236,10 +243,10 @@ namespace EFarma.Business
                         {
                             Name = values[0],
                             CPF = values[1],
-                            BirthDay = DateTime.Parse(values[3]),
-                            Mail = values[4],
-                            PhoneNumber = values[5],
-                            Observations = values[6]
+                            BirthDay = DateTime.Parse(values[2]),
+                            Mail = values[3],
+                            PhoneNumber = values[4],
+                            Observations = values[5]
                         };
 
                         _repository.Patients.Add(patient);
@@ -248,14 +255,15 @@ namespace EFarma.Business
                     catch (Exception ex)
                     {
                         _logger.LogWarning("Erro ao processar a linha: {Line}. Erro: {ExceptionMessage}", line, ex.Message);
-                        invalidEntries.Add(line);
+                        importErrorBase.Error = $"Exceção ao processar a linha: {ex.Message}";
+                        invalidEntries.Add(importErrorBase);
                     }
                 }
 
                 bool success = await _repository.SaveChangesAsync() > 0;
                 _logger.LogInformation("Importação de pacientes concluída com sucesso. Pacientes criados: {Count}", createdPatients.Count);
 
-                return new ResultDataObject<List<string>>
+                return new ResultDataObject<List<ImportError>>
                 {
                     Success = success,
                     Message = success ? "Pacientes importados com sucesso." : "Ocorreu um erro ao salvar os pacientes.",
@@ -266,7 +274,7 @@ namespace EFarma.Business
             catch (Exception ex)
             {
                 _logger.LogError("Erro ao importar pacientes: {ExceptionMessage}", ex.Message);
-                return new ResultDataObject<List<string>>
+                return new ResultDataObject<List<ImportError>>
                 {
                     Success = false,
                     Data = invalidEntries,

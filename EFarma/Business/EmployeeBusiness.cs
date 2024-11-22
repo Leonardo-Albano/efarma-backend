@@ -343,12 +343,12 @@ namespace EFarma.Business
         /// </summary>
         /// <param name="csvData">Array de bytes representando o conteúdo do arquivo CSV.</param>
         /// <returns>Resultado da operação de importação, incluindo os funcionários criados e uma lista de entradas incorretas.</returns>
-        public async Task<ResultDataObject<List<string>>> ImportEmployees(byte[] csvData)
+        public async Task<ResultDataObject<List<ImportError>>> ImportEmployees(byte[] csvData)
         {
             _logger.LogInformation("Iniciando importação de funcionários a partir de CSV.");
 
             var createdEmployees = new List<Employee>();
-            var invalidEntries = new List<string>();
+            var invalidEntries = new List<ImportError>();
 
             try
             {
@@ -358,14 +358,18 @@ namespace EFarma.Business
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    if (string.IsNullOrEmpty(line)) continue;
+                    if (string.IsNullOrEmpty(line)) 
+                        continue;
+
+                    var importErrorBase = new ImportError() { Line = line };
 
                     var values = line.Split(',');
 
                     if (values.Length < 9)
                     {
                         _logger.LogWarning("Linha com dados insuficientes: {Line}", line);
-                        invalidEntries.Add(line);
+                        importErrorBase.Error = "Linha com colunas insuficientes";
+                        invalidEntries.Add(importErrorBase);
                         continue;
                     }
 
@@ -376,17 +380,22 @@ namespace EFarma.Business
 
                         if (role == null)
                         {
-                            _logger.LogWarning("Função não encontrada para o nome: {RoleName}", roleName);
-                            invalidEntries.Add(line);
+                            string message = $"Função não encontrada para o nome: {roleName}";
+                            _logger.LogWarning(message);
+                            importErrorBase.Error = message;
+
+                            invalidEntries.Add(importErrorBase);
                             continue;
                         }
 
                         var existentEmployee = await _repository.Employees.GetFiltered(values[2], null);
 
-                        if(existentEmployee == null)
+                        if(existentEmployee != null)
                         {
-                            _logger.LogWarning("Funcionário com esse CPF já foi cadastrado: {Cpf}", values[2]);
-                            invalidEntries.Add(line);
+                            var message = $"Funcionário com esse CPF já foi cadastrado: {values[2]}";
+                            _logger.LogWarning(message);
+                            importErrorBase.Error = message;
+                            invalidEntries.Add(importErrorBase);
                             continue;
                         }
 
@@ -410,14 +419,15 @@ namespace EFarma.Business
                     catch (Exception ex)
                     {
                         _logger.LogWarning("Erro ao processar a linha: {Line}. Erro: {ExceptionMessage}", line, ex.Message);
-                        invalidEntries.Add(line);
+                        importErrorBase.Error = $"Exceção ao processar a linha: {ex.Message}";
+                        invalidEntries.Add(importErrorBase);
                     }
                 }
 
                 bool success = await _repository.SaveChangesAsync() > 0;
                 _logger.LogInformation("Importação de funcionários concluída com sucesso. Funcionários criados: {Count}", createdEmployees.Count);
 
-                return new ResultDataObject<List<string>>
+                return new ResultDataObject<List<ImportError>>
                 {
                     Success = success,
                     Message = success ? "Funcionários importados com sucesso." : "Ocorreu um erro ao salvar os funcionários.",
@@ -428,7 +438,7 @@ namespace EFarma.Business
             catch (Exception ex)
             {
                 _logger.LogError("Erro ao importar funcionários: {ExceptionMessage}", ex.Message);
-                return new ResultDataObject<List<string>>
+                return new ResultDataObject<List<ImportError>>
                 {
                     Success = false,
                     Data = invalidEntries,
