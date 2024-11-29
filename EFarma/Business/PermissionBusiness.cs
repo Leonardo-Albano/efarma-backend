@@ -23,7 +23,7 @@ namespace EFarma.Business
 
         public async Task<ResultObject> CreatePermission(Permission permission, List<int>? stockRoomIds, List<int>? pageIds)
         {
-            if (stockRoomIds != null && stockRoomIds.Any())
+            if (stockRoomIds != null && stockRoomIds.Count != 0)
             {
                 var stockRooms = await _repository.StockRooms.Find(s => stockRoomIds.Contains(s.Id));
 

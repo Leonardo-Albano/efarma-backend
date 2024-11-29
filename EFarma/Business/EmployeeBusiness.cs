@@ -48,7 +48,7 @@ namespace EFarma.Business
         /// <returns>Resultado da operação de criação com o status e mensagem apropriada.</returns>
         public async Task<ResultObject> Create(Employee employee)
         {
-            _logger.LogInformation("Iniciando criação de novo funcionário com CPF: {CPF} e código de tag: {TagCode}", employee.CPF, employee.TagCode);
+            _logger.LogInformation("Iniciando criação de novo funcionário com CPF: {CPF}", employee.CPF);
 
             var existentEmployee = await _repository.Employees.Find(e => e.CPF == employee.CPF ||
                                      (!string.IsNullOrEmpty(employee.EmployeeId) && e.EmployeeId == employee.EmployeeId));
@@ -63,16 +63,19 @@ namespace EFarma.Business
                 };
             }
 
-            var existentTagCode = await _repository.Employees.GetEmployeeByTagCode(employee.TagCode);
-            if (existentTagCode != null)
+            if (!string.IsNullOrEmpty(employee.TagCode))
             {
-                _logger.LogWarning("Código de tag duplicado detectado para o código: {TagCode}", employee.TagCode);
-                return new ResultObject
+                var existentTagCode = await _repository.Employees.GetEmployeeByTagCode(employee.TagCode);
+                if (existentTagCode != null)
                 {
-                    Message = "Este código de tag pertence a outro funcionário.",
-                    StatusCode = 409,
-                    Success = false
-                };
+                    _logger.LogWarning("Código de tag duplicado detectado para o código: {TagCode}", employee.TagCode);
+                    return new ResultObject
+                    {
+                        Message = "Este código de tag pertence a outro funcionário.",
+                        StatusCode = 409,
+                        Success = false
+                    };
+                }
             }
 
             if (!string.IsNullOrEmpty(employee.CRM) && await GetCrmData(employee.CRM) == null)

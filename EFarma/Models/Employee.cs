@@ -20,7 +20,7 @@ namespace EFarma.Models
         public required string ResponsibleMail { get; set; }
         public required string PasswordHash { get; set; }
         public string? CRM { get; set; }
-        public required string TagCode { get; set; }
+        public string? TagCode { get; set; } 
 
         public required Role Role { get; set; }
     }
