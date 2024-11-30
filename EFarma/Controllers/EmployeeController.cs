@@ -227,12 +227,7 @@ namespace EFarma.Controllers
 
             var result = await _business.ImportEmployees(csvData);
 
-            if (!result.Success)
-            {
-                return StatusCode(result.StatusCode, result.Message);
-            }
-
-            return Ok(new
+            return StatusCode(result.StatusCode, new
             {
                 result.Message,
                 InvalidEntries = result.Data
