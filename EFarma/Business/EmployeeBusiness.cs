@@ -393,7 +393,7 @@ namespace EFarma.Business
 
                         var existentEmployee = await _repository.Employees.GetFiltered(values[2], null);
 
-                        if(existentEmployee != null)
+                        if(existentEmployee.Count > 0)
                         {
                             var message = $"Funcionário com esse CPF já foi cadastrado: {values[2]}";
                             _logger.LogWarning(message);
