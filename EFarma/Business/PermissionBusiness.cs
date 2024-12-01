@@ -8,12 +8,21 @@ using EFarma.Repositories.Interfaces;
 
 namespace EFarma.Business
 {
+    /// <summary>
+    /// Classe responsável pelas operações relacionadas às permissões no sistema.
+    /// </summary>
     public class PermissionBusiness : IPermissionBusiness
     {
         private readonly ILogger<PermissionController> _logger;
         private readonly IUnitOfWork _repository;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="PermissionBusiness"/>.
+        /// </summary>
+        /// <param name="logger">Instância de logger para registrar informações de execução.</param>
+        /// <param name="repository">Instância do repositório para manipulação de dados das permissões.</param>
+        /// <param name="mapper">Instância de mapeamento de objetos.</param>
         public PermissionBusiness(ILogger<PermissionController> logger, IUnitOfWork repository, IMapper mapper)
         {
             _logger = logger;
@@ -21,6 +30,13 @@ namespace EFarma.Business
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Cria uma nova permissão no sistema, associando salas de estoque e páginas existentes.
+        /// </summary>
+        /// <param name="permission">Objeto da permissão a ser criada.</param>
+        /// <param name="stockRoomIds">Lista de IDs das salas de estoque a serem associadas.</param>
+        /// <param name="pageIds">Lista de IDs das páginas a serem associadas.</param>
+        /// <returns>Resultado da operação de criação com o status e mensagem apropriada.</returns>
         public async Task<ResultObject> CreatePermission(Permission permission, List<int>? stockRoomIds, List<int>? pageIds)
         {
             if (stockRoomIds != null && stockRoomIds.Count != 0)
@@ -39,7 +55,7 @@ namespace EFarma.Business
                 permission.StockRooms = stockRooms.ToList();
             }
 
-            if (pageIds != null && pageIds.Any())
+            if (pageIds != null && pageIds.Count != 0)
             {
                 var pages = await _repository.Pages.Find(s => pageIds.Contains(s.Id));
 
@@ -66,12 +82,16 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém todas as permissões cadastradas no sistema.
+        /// </summary>
+        /// <returns>Objeto de resultado contendo a lista de permissões, o status da operação e uma mensagem apropriada.</returns>
         public async Task<ResultDataObject<List<PermissionView>>> GetPermissions()
         {
             var permissions = await _repository.Permissions.GetAll();
             var permissionsView = _mapper.Map<List<PermissionView>>(permissions);
 
-            bool success = permissionsView.Any();
+            bool success = permissionsView.Count != 0;
 
             return new()
             {
@@ -82,6 +102,11 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém os detalhes de uma permissão específica com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID da permissão a ser consultada.</param>
+        /// <returns>Objeto de resultado contendo os detalhes da permissão, o status da operação e uma mensagem apropriada.</returns>
         public async Task<ResultDataObject<Permission?>> GetPermissionDetailed(int id)
         {
             var permission = await _repository.Permissions.GetPermissionDetailed(id);
@@ -97,6 +122,14 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Atualiza uma permissão existente no sistema, associando salas de estoque e páginas fornecidas.
+        /// </summary>
+        /// <param name="id">ID da permissão a ser atualizada.</param>
+        /// <param name="updatedPermission">Objeto contendo os novos dados da permissão.</param>
+        /// <param name="stockRoomIds">Lista de IDs das salas de estoque a serem associadas.</param>
+        /// <param name="pageIds">Lista de IDs das páginas a serem associadas.</param>
+        /// <returns>Resultado da operação de atualização com o status e mensagem apropriada.</returns>
         public async Task<ResultObject> UpdatePermission(int id, Permission updatedPermission, List<int>? stockRoomIds, List<int>? pageIds)
         {
             var existingPermission = await _repository.Permissions.FirstOrDefault(p => p.Id == id);
@@ -114,7 +147,7 @@ namespace EFarma.Business
             existingPermission.Name = updatedPermission.Name;
             existingPermission.Description = updatedPermission.Description;
 
-            if (stockRoomIds != null && stockRoomIds.Any())
+            if (stockRoomIds != null && stockRoomIds.Count != 0)
             {
                 var stockRooms = await _repository.StockRooms.Find(s => stockRoomIds.Contains(s.Id));
 
@@ -131,7 +164,7 @@ namespace EFarma.Business
                 existingPermission.StockRooms = stockRooms.ToList();
             }
 
-            if (pageIds != null && pageIds.Any())
+            if (pageIds != null && pageIds.Count != 0)
             {
                 var pages = await _repository.Pages.Find(s => pageIds.Contains(s.Id));
 
@@ -158,6 +191,11 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Exclui uma permissão existente no sistema com base no ID fornecido.
+        /// </summary>
+        /// <param name="id">ID da permissão a ser excluída.</param>
+        /// <returns>Resultado da operação de exclusão com o status e mensagem apropriada.</returns>
         public async Task<ResultObject> DeletePermission(int id)
         {
             var permission = await _repository.Permissions.FirstOrDefault(p => p.Id == id);

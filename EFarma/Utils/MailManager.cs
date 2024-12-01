@@ -7,6 +7,29 @@ namespace EFarma.Utils
 {
     public class MailManager
     {
+        /// <summary>
+        /// Sends a prescription email to the specified patient.
+        /// </summary>
+        /// <param name="prescription">The prescription to send.</param>
+        /// <returns>An asynchronous task.</returns>
+        public static async Task SendPrescriptionToPatient(Prescription prescription)
+        {
+            if (prescription == null)
+            {
+                throw new ArgumentNullException(nameof(prescription), "Prescrição nula.");
+            }
+
+            if (string.IsNullOrEmpty(prescription.Patient?.Mail))
+            {
+                throw new InvalidOperationException("Email do paciente não foi informado.");
+            }
+
+            string mailTitle = $"Receita: {prescription.Patient?.Name}";
+            string mailBody = BuildPrescriptionMailBody(prescription);
+
+            await SendMail(mailTitle, mailBody, prescription.Patient?.Mail);
+        }
+
         public static async Task NotifyUnresolvedPrescriptions(Employee employee, StockRoom stockRoom, List<Prescription> prescriptions)
         {
             var messageBuilder = new StringBuilder();
@@ -36,13 +59,41 @@ namespace EFarma.Utils
             await SendMail(mailTitle, messageBuilder.ToString(), employee.ResponsibleMail);
         }
 
+        /// <summary>
+        /// Builds the email body for a prescription.
+        /// </summary>
+        /// <param name="prescription">The prescription to include in the email.</param>
+        /// <returns>The formatted email body.</returns>
+        private static string BuildPrescriptionMailBody(Prescription prescription)
+        {
+            var messageBuilder = new StringBuilder();
+
+            messageBuilder.AppendLine("Olá, segue abaixo os detalhes da sua receita:");
+            messageBuilder.AppendLine("==============================================================");
+            messageBuilder.AppendLine($"Paciente: {prescription.Patient.Name}");
+            messageBuilder.AppendLine($"Data: {prescription.Date:dd/MM/yyyy}");
+            messageBuilder.AppendLine("Itens Prescritos:");
+
+            foreach (var item in prescription.Items)
+            {
+                string medicamentDetails =
+                    $"{item.Medicament.Description} - {item.Medicament.Dosage}{item.Medicament.Measure}";
+                messageBuilder.AppendLine($"- {medicamentDetails}, Quantidade: {item.PrescribedQuantity}");
+            }
+
+            messageBuilder.AppendLine($"Emitida por: {prescription.Employee.Name}");
+            messageBuilder.AppendLine($"Local: {prescription.Local}");
+            messageBuilder.AppendLine("==============================================================");
+            return messageBuilder.ToString();
+        }
+
         private static async Task SendMail(string title, string body, string receiverMail)
         {
             using (var mail = new MailMessage())
             {
                 mail.From = new MailAddress("MS_xoSR4R@trial-pq3enl6w73842vwr.mlsender.net");
                 mail.To.Add(receiverMail);
-                mail.Subject = title;
+                mail.Subject = "EFARMA - " + title;
                 mail.Body = body;
 
                 using (var smtp = new SmtpClient("smtp.mailersend.net")

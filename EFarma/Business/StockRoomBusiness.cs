@@ -10,12 +10,23 @@ using System.Text;
 
 namespace EFarma.Business
 {
+    /// <summary>
+    /// Classe responsável pela lógica de negócios relacionada às Salas de Estoque (StockRooms) no sistema.
+    /// Oferece funcionalidades para gerenciamento de salas de estoque, incluindo criação, exclusão, controle de acessos,
+    /// inserção de itens em estoque e verificação de medicamentos disponíveis.
+    /// </summary>
     public class StockRoomBusiness : IStockRoomBusiness
     {
         private readonly IUnitOfWork _repository;
         private readonly IMapper _mapper;
         private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// Inicializa uma nova instância da classe <see cref="StockRoomBusiness"/>.
+        /// </summary>
+        /// <param name="repository">Instância do repositório para acesso ao banco de dados.</param>
+        /// <param name="mapper">Instância do AutoMapper para conversão de modelos.</param>
+        /// <param name="httpClient">Cliente HTTP para comunicação externa, como chamadas MQTT.</param>
         public StockRoomBusiness(IUnitOfWork repository, IMapper mapper, HttpClient httpClient)
         {
             _repository = repository;
@@ -23,6 +34,14 @@ namespace EFarma.Business
             _httpClient = httpClient;
         }
 
+        /// <summary>
+        /// Cria uma nova Sala de Estoque (StockRoom).
+        /// Verifica se já existe uma sala com o mesmo nome antes de realizar a criação.
+        /// </summary>
+        /// <param name="stockRoomDTO">Objeto <see cref="StockRoomDTO"/> contendo as informações da sala de estoque.</param>
+        /// <returns>
+        /// <see cref="ResultObject"/> indicando o status da operação.
+        /// </returns>
         public async Task<ResultObject> CreateStockRoom(StockRoomDTO stockRoomDTO)
         {
             var stockRoom = _mapper.Map<StockRoom>(stockRoomDTO);
@@ -48,12 +67,21 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém todas as salas de estoque registradas no sistema.
+        /// </summary>
+        /// <returns>
+        /// <see cref="List{StockRoom}"/> contendo:
+        /// - Data: Lista de salas de estoque.
+        /// - Código 200: Salas encontradas.
+        /// - Código 404: Nenhuma sala encontrada.
+        /// </returns>
         public async Task<ResultDataObject<List<StockRoom>>> GetAllStockRooms()
         {
             var stockRooms = await _repository.StockRooms.GetAll();
             var result = _mapper.Map<List<StockRoom>>(stockRooms);
 
-            bool success = result.Any();
+            bool success = result.Count != 0;
             return new ResultDataObject<List<StockRoom>>
             {
                 Message = success ? "Salas de Estoque recuperadas com sucesso." : "Nenhuma Sala de Estoque encontrada.",
@@ -63,6 +91,16 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Deleta uma Sala de Estoque existente.
+        /// </summary>
+        /// <param name="id">ID da sala de estoque a ser deletada.</param>
+        /// <returns>
+        /// <see cref="ResultObject"/> indicando o status da operação.
+        /// - Código 200: Sala deletada com sucesso.
+        /// - Código 404: Sala não encontrada.
+        /// - Código 500: Erro interno durante a exclusão.
+        /// </returns>
         public async Task<ResultObject> DeleteStockRoom(int id)
         {
             var stockRoom = await _repository.StockRooms.FirstOrDefault(sr => sr.Id == id);
@@ -86,6 +124,15 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém detalhes de uma Sala de Estoque específica.
+        /// </summary>
+        /// <param name="id">ID da sala de estoque.</param>
+        /// <returns>
+        /// <see cref="StockRoom"/> contendo os detalhes da sala.
+        /// - Código 200: Sala encontrada.
+        /// - Código 404: Sala não encontrada.
+        /// </returns>
         public async Task<ResultDataObject<StockRoom?>> GetStockRoom(int id)
         {
             var stockRoom = await _repository.StockRooms.GetStockRoomDetailed(id);
@@ -100,6 +147,16 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Adiciona itens ao estoque de uma sala específica.
+        /// Valida a existência da sala e dos medicamentos antes de realizar a inserção.
+        /// </summary>
+        /// <param name="inStockItem">Objeto representando o item a ser inserido.</param>
+        /// <param name="quantity">Quantidade de itens a serem adicionados.</param>
+        /// <param name="employeeId">ID do funcionário responsável pela operação.</param>
+        /// <returns>
+        /// <see cref="ResultObject"/> indicando o status da operação.
+        /// </returns>
         public async Task<ResultObject> InsertItemToStock(InStockItem inStockItem, int quantity, int employeeId)
         {
             var lastEntryAccessLog = await _repository.AccessLogs.GetLastUnmatchedEntry(employeeId);
@@ -157,6 +214,18 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Registra a entrada de um funcionário em uma Sala de Estoque.
+        /// Verifica permissões de acesso antes de registrar a entrada.
+        /// </summary>
+        /// <param name="entryLogDTO">Objeto contendo os dados de acesso do funcionário.</param>
+        /// <returns>
+        /// <see cref="ResultObject"/> indicando o status da operação.
+        /// - Código 200: Entrada registrada com sucesso.
+        /// - Código 403: Acesso negado.
+        /// - Código 404: Funcionário ou sala não encontrado.
+        /// - Código 500: Erro interno durante a operação.
+        /// </returns>
         public async Task<ResultObject> EntryStockRoom(EntryLogDTO entryLogDTO)
         {
             var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
@@ -227,6 +296,17 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Registra a saída de um funcionário de uma Sala de Estoque.
+        /// Verifica inconsistências como medicamentos faltantes ou prescrições pendentes.
+        /// </summary>
+        /// <param name="entryLogDTO">Objeto contendo os dados de saída do funcionário.</param>
+        /// <returns>
+        /// <see cref="ResultObject"/> indicando o status da operação.
+        /// - Código 200: Saída registrada com sucesso.
+        /// - Código 404: Funcionário ou sala não encontrado.
+        /// - Código 500: Erro interno durante a operação.
+        /// </returns>
         public async Task<ResultObject> ExitStockRoom(EntryLogDTO entryLogDTO)
         {
             var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
@@ -338,6 +418,17 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Recupera a lista de medicamentos disponíveis no estoque.
+        /// Opcionalmente filtra os resultados pelo nome do medicamento e agrupa-os por sala de estoque e medicamento.
+        /// </summary>
+        /// <param name="medicamentName">Nome opcional do medicamento para filtrar os resultados. Caso seja nulo, todos os medicamentos serão retornados.</param>
+        /// <returns>
+        /// <see cref="List{InStockItemView}"/> contendo:
+        /// - A lista agrupada de medicamentos disponíveis no estoque.
+        /// - Status 200 se medicamentos forem encontrados.
+        /// - Status 404 se nenhum medicamento for encontrado.
+        /// </returns>
         public async Task<ResultDataObject<List<InStockItemView>>> GetAvailableMedicaments(string? medicamentName)
         {
             var inStockItems = await _repository.InStockItems.GetDetailedStockItems(medicamentName);
@@ -367,6 +458,20 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Corrige o registro de acesso de um funcionário a uma sala de estoque.
+        /// Verifica se o funcionário possui entradas pendentes na sala e valida as permissões de acesso.
+        /// </summary>
+        /// <param name="entryLogDTO">
+        /// Objeto contendo o código de identificação do funcionário (tag) e o identificador único da sala de estoque.
+        /// </param>
+        /// <returns>
+        /// <see cref="ResultObject"/> indicando o resultado da correção.
+        /// - Status 200 se a correção for bem-sucedida.
+        /// - Status 403 se o funcionário não possuir entradas pendentes.
+        /// - Status 404 se o funcionário ou a sala de estoque não forem encontrados.
+        /// - Status 500 em caso de erro interno durante a operação.
+        /// </returns>
         public async Task<ResultObject> CorrectAccess(EntryLogDTO entryLogDTO)
         {
             var accessLog = _mapper.Map<AccessLog>(entryLogDTO);
@@ -427,6 +532,12 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém a lista de novos códigos de etiquetas detectados pelo sistema embarcado em uma sala de estoque específica.
+        /// Filtra os códigos de etiquetas que já estão atribuídos a itens em estoque.
+        /// </summary>
+        /// <param name="uniqueId">Identificador único da sala de estoque.</param>
+        /// <returns>Uma lista de novos códigos de etiquetas não atribuídos detectados na sala de estoque.</returns>
         private async Task<List<string>> GetNewTagCodes(string uniqueId)
         {
             var readTagCodes = await MqttRequest.GetReadTagCodes(_httpClient, uniqueId);
@@ -444,12 +555,28 @@ namespace EFarma.Business
             return unassignedTags;
         }
 
+        /// <summary>
+        /// Verifica se um funcionário possui prescrições pendentes atribuídas a ele.
+        /// </summary>
+        /// <param name="employee">O funcionário cujas prescrições estão sendo verificadas.</param>
+        /// <returns>
+        /// Um booleano indicando se o funcionário possui prescrições pendentes.
+        /// </returns>
         private async Task<bool> HasPendentPrescriptions(Employee employee)
         {
             var prescriptions = await _repository.Prescriptions.GetUnresolvedPrescriptionsByTakeOutResponsibleId(employee.Id);
             return prescriptions.Count > 0;
         }
 
+        /// <summary>
+        /// Determina se um funcionário ainda está dentro de uma sala de estoque com base nos registros de acesso.
+        /// Compara o número de registros de entrada e saída do funcionário na sala de estoque especificada.
+        /// </summary>
+        /// <param name="employeeId">ID do funcionário.</param>
+        /// <param name="stockRoomId">ID da sala de estoque.</param>
+        /// <returns>
+        /// Um booleano indicando se o funcionário ainda está na sala de estoque.
+        /// </returns>
         private async Task<bool> IsUserAlreadyOnStockRoom(int employeeId, int stockRoomId)
         {
             var logs = await _repository.AccessLogs.GetLogsByEmployeeAndStockRoom(employeeId, stockRoomId);
@@ -464,6 +591,16 @@ namespace EFarma.Business
             return entries.Count != exits.Count;
         }
 
+        /// <summary>
+        /// Verifica se algum medicamento foi retirado de uma sala de estoque.
+        /// Compara os códigos de etiquetas atuais lidos pelo sistema embarcado com os itens atualmente em estoque.
+        /// </summary>
+        /// <param name="stockRoomUniqueId">Identificador único da sala de estoque.</param>
+        /// <param name="stockRoomId">ID da sala de estoque.</param>
+        /// <returns>
+        /// Uma lista de medicamentos que foram retirados da sala de estoque.
+        /// Caso nenhum item tenha sido retirado, retorna uma lista vazia.
+        /// </returns>
         private async Task<List<InStockItem>?> AnyMedicamentHasBeenTaken(string stockRoomUniqueId, int stockRoomId)
         {
             var actualTagCodes = await MqttRequest.GetReadTagCodes(_httpClient, stockRoomUniqueId);
@@ -480,6 +617,12 @@ namespace EFarma.Business
             return itemsTaken;
         }
 
+        /// <summary>
+        /// Remove acentos e diacríticos de uma string de texto.
+        /// Este método é utilizado para garantir compatibilidade com sistemas que não suportam caracteres acentuados.
+        /// </summary>
+        /// <param name="text">A string de texto a ser processada.</param>
+        /// <returns>A string de texto processada, sem acentos ou diacríticos.</returns>
         public static string RemoveAcentuation(string text)
         {
             return

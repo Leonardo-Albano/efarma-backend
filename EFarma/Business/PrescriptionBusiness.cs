@@ -7,11 +7,13 @@ using EFarma.Models.Response;
 using EFarma.Models.Views;
 using EFarma.Repositories.Interfaces;
 using EFarma.Utils;
-using Newtonsoft.Json;
-using System.Net.Http;
+using System.Text;
 
 namespace EFarma.Business
 {
+    /// <summary>
+    /// Classe de negócio responsável pelas operações relacionadas às receitas no sistema.
+    /// </summary>
     public class PrescriptionBusiness : IPrescriptionBusiness
     {
         private readonly ILogger<PrescriptionController> _logger;
@@ -19,6 +21,13 @@ namespace EFarma.Business
         private readonly IMapper _mapper;
         private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// Inicializa uma nova instância de <see cref="PrescriptionBusiness"/>.
+        /// </summary>
+        /// <param name="logger">Instância de logger para registrar informações de execução.</param>
+        /// <param name="repository">Unidade de trabalho para manipulação dos repositórios.</param>
+        /// <param name="mapper">Instância de mapeamento de objetos.</param>
+        /// <param name="httpClient">Cliente HTTP para comunicação com serviços externos.</param>
         public PrescriptionBusiness(ILogger<PrescriptionController> logger, IUnitOfWork repository, IMapper mapper, HttpClient httpClient)
         {
             _logger = logger;
@@ -27,6 +36,12 @@ namespace EFarma.Business
             _httpClient = httpClient;
         }
 
+        /// <summary>
+        /// Cria uma nova receita no sistema.
+        /// Valida os medicamentos, o funcionário (com CRM registrado) e o paciente antes de criar a receita.
+        /// </summary>
+        /// <param name="prescription">Objeto contendo as informações da receita a ser criada.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> contendo o status da operação e o código HTTP correspondente.</returns>
         public async Task<ResultObject> CreatePrescription(Prescription prescription)
         {
             prescription.Status = Prescription.CreatedMessage;
@@ -84,14 +99,32 @@ namespace EFarma.Business
             _repository.Prescriptions.Add(prescription);
 
             bool success = await _repository.SaveChangesAsync() > 0;
+
+            string message = string.Empty;
+            try
+            {
+                await MailManager.SendPrescriptionToPatient(prescription);
+
+                message = "Receita criada e e-mail enviado com sucesso.";
+            }
+            catch (Exception ex)
+            {
+                message = "Receita criada, porém: " + ex.Message;
+            }
+
             return new ResultObject
             {
-                Message = success ? "Receita criada com sucesso." : "Ocorreu um erro ao criar a receita.",
+                Message = success ? message : "Ocorreu um erro ao criar a receita.",
                 StatusCode = success ? 200 : 500,
                 Success = success
             };
         }
 
+        /// <summary>
+        /// Deleta uma receita existente no sistema.
+        /// </summary>
+        /// <param name="id">ID da receita a ser deletada.</param>
+        /// <returns>Objeto <see cref="ResultObject"/> contendo o status da operação e o código HTTP correspondente.</returns>
         public async Task<ResultObject> DeletePrescription(int id)
         {
             var prescription = await _repository.Prescriptions.FirstOrDefault(e => e.Id == id);
@@ -116,6 +149,11 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém os itens de uma receita específica.
+        /// </summary>
+        /// <param name="prescriptionId">ID da receita cujos itens serão consultados.</param>
+        /// <returns>Objeto <see cref="List{PrescriptionItemView}"/> contendo os itens da receita.</returns>
         public async Task<ResultDataObject<List<PrescriptionItemView>>> GetPrescriptionItems(int prescriptionId)
         {
             var items = await _repository.PrescriptionItems.GetPrescriptionItems(prescriptionId);
@@ -138,12 +176,19 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém uma lista de receitas filtradas por CPF do paciente, data ou status de pendência.
+        /// </summary>
+        /// <param name="cpf">CPF do paciente a ser filtrado (opcional).</param>
+        /// <param name="date">Data da receita a ser filtrada (opcional).</param>
+        /// <param name="filterPendent">Indica se apenas receitas pendentes devem ser retornadas.</param>
+        /// <returns>Objeto <see cref="List{PrescriptionView}"/> contendo as receitas filtradas.</returns>
         public async Task<ResultDataObject<List<PrescriptionView>>> GetPrescriptions(string? cpf, DateTime? date, bool filterPendent)
         {
             var detailedPrescriptions = await _repository.Prescriptions.GetDetailedPrescriptions(filterPendent, cpf, date);
             var prescriptions = _mapper.Map<List<PrescriptionView>>(detailedPrescriptions);
 
-            bool success = prescriptions.Any();
+            bool success = prescriptions.Count != 0;
 
             return new()
             {
@@ -154,6 +199,11 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Obtém os detalhes de uma receita específica.
+        /// </summary>
+        /// <param name="id">ID da receita cujos detalhes serão obtidos.</param>
+        /// <returns>Objeto <see cref="PrescriptionViewDetailed"/> contendo os detalhes da receita.</returns>
         public async Task<ResultDataObject<PrescriptionViewDetailed?>> GetPrescriptionDetailed(int id)
         {
             var detailedPrescription = await _repository.Prescriptions.GetDetailedPrescriptionById(id);
@@ -180,6 +230,40 @@ namespace EFarma.Business
             };
         }
 
+        /// <summary>
+        /// Realiza a retirada de medicamentos de uma receita específica em uma sala de estoque.
+        /// Este método realiza diversas validações, incluindo a existência da receita, acesso à sala de estoque 
+        /// e o responsável pela retirada. Compara os medicamentos efetivamente retirados com os itens da receita
+        /// e atualiza o status da receita de acordo com o resultado.
+        /// </summary>
+        /// <param name="prescriptionItemsDTO">
+        /// Objeto contendo os detalhes necessários para processar a retirada, incluindo:
+        /// </param>
+        /// <returns>
+        /// Um <see cref="List{WithdrawItem}"/> contendo:
+        /// - Data: Uma lista de discrepâncias (itens extras ou faltantes).
+        /// - Message: Um resumo do resultado da operação.
+        /// - StatusCode: Códigos de status HTTP-like indicando o resultado:
+        ///   - 200: Retirada realizada com sucesso e compatível com a receita.
+        ///   - 202: Receita já concluída.
+        ///   - 403: Discrepâncias encontradas ou problemas de acesso.
+        ///   - 404: Receita ou funcionário responsável não encontrados.
+        ///   - 500: Erro interno ao salvar a operação.
+        /// </returns>
+        /// <remarks>
+        /// O método realiza as seguintes etapas:
+        /// 1. Valida a existência da receita.
+        /// 2. Verifica se a receita já foi concluída.
+        /// 3. Valida a existência do funcionário responsável.
+        /// 4. Confirma se o funcionário tem acesso à sala de estoque relevante.
+        /// 5. Compara os itens retirados com os itens da receita:
+        ///    - Identifica itens extras retirados.
+        ///    - Identifica itens faltantes.
+        /// 6. Registra a operação e atualiza o status da receita:
+        ///    - O status é definido como "Concluded" se a retirada for compatível com a receita.
+        ///    - O status é definido como "Unresolved" se houver discrepâncias.
+        /// 7. Salva os resultados no banco de dados, incluindo o registro de acesso e as atualizações da receita.
+        /// </remarks>
         public async Task<ResultDataObject<List<WithdrawItem>>> WithdrawPrescription(RemovePrescriptionItemsDTO prescriptionItemsDTO)
         {
             var prescription = await _repository.Prescriptions.GetDetailedPrescriptionById(prescriptionItemsDTO.PrescriptionId);
@@ -256,6 +340,13 @@ namespace EFarma.Business
             return result;
         }
 
+        /// <summary>
+        /// Compara os medicamentos prescritos com os disponíveis no estoque.
+        /// </summary>
+        /// <param name="prescriptionMedicaments">Lista de medicamentos prescritos.</param>
+        /// <param name="stockRoomUniqueId">Identificador único da sala de estoque.</param>
+        /// <param name="stockRoomId">ID da sala de estoque.</param>
+        /// <returns>Objeto <see cref="List{WithdrawItem}"/> contendo o resultado da comparação.</returns>
         private async Task<ResultDataObject<List<WithdrawItem>>> CompareWithActualMedicamentsAtStock(List<Medicament> prescriptionMedicaments, string stockRoomUniqueId, int stockRoomId)
         {
             var actualTagCodes = await MqttRequest.GetReadTagCodes(_httpClient, stockRoomUniqueId);
